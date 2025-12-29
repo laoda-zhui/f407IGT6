@@ -1,0 +1,7 @@
+../Core/Src/can.c:46:6:Hard_Can_SpeedMode	16	static
+../Core/Src/can.c:57:6:MX_CAN1_Init	56	static
+../Core/Src/can.c:127:6:HAL_CAN_MspInit	48	static
+../Core/Src/can.c:157:6:HAL_CAN_MspDeInit	16	static
+../Core/Src/can.c:187:6:MyCAN_Transmit	24	static
+../Core/Src/can.c:200:9:MyCAN_ReceiveFlag	8	static
+../Core/Src/can.c:215:6:MyCAN_Receive	16	static
