@@ -30,6 +30,9 @@ extern "C" {
 
 /* USER CODE BEGIN Includes */
 
+#include "can_Tx.h"
+#include "can_RxSolve.h"
+
 /* USER CODE END Includes */
 
 extern CAN_HandleTypeDef hcan1;

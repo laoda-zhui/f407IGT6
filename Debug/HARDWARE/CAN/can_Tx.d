@@ -1,6 +1,5 @@
-HARDWARE/CAN/can_RxSolve.o: ../HARDWARE/CAN/can_RxSolve.c \
- ../HARDWARE/CAN/can_RxSolve.h ../Core/Inc/main.h \
- ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
+HARDWARE/CAN/can_Tx.o: ../HARDWARE/CAN/can_Tx.c ../HARDWARE/CAN/can_Tx.h \
+ ../Core/Inc/main.h ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
  ../Core/Inc/stm32f4xx_hal_conf.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h \
@@ -29,7 +28,7 @@ HARDWARE/CAN/can_RxSolve.o: ../HARDWARE/CAN/can_RxSolve.c \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h \
  ../Core/Inc/can.h ../Core/Inc/main.h ../HARDWARE/CAN/can_Tx.h \
  ../HARDWARE/CAN/can_RxSolve.h
-../HARDWARE/CAN/can_RxSolve.h:
+../HARDWARE/CAN/can_Tx.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:

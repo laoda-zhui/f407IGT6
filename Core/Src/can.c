@@ -92,14 +92,15 @@ void MX_CAN1_Init(void)
   }
   /* USER CODE BEGIN CAN1_Init 2 */
 
+
   /**************************************************************************
    *  用户-配置和初始化滤波器
-   *  注意:SFilterArry结构体数组要为偶数倍
+   *  注意:SFilterArry结构体数组要为偶数倍(奇数倍麻烦不写)
    **************************************************************************/
   for(uint8_t i=0;i < (sizeof(SFilterArry)/sizeof(Can_Filter_Struct));i+=2)
   {
 	  CAN_FilterTypeDef SFilterConfig;
-	  SFilterConfig.FilterBank = i/2;                     			/*使用过滤器组0*/
+	  SFilterConfig.FilterBank = i/2;                     			/*使用过滤器组*/
 	  SFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK; 			/*使用掩码模式*/
 	  SFilterConfig.FilterScale = CAN_FILTERSCALE_16BIT; 			/*16位宽*/
 
@@ -121,13 +122,15 @@ void MX_CAN1_Init(void)
   /*配置高速模式*/
   Hard_Can_SpeedMode(0);
 
+  /**************************************************************************
+   *  接收结构体输出化
+   **************************************************************************/
+  CanP_FifoInit();
 
-//  /*CAN发送结构体*/
-//  TxMessage.StdId = 0x12;//0x321;
-//  TxMessage.ExtId = 0x12;//0x01;
-//  TxMessage.RTR = CAN_RTR_DATA;
-//  TxMessage.IDE = CAN_ID_STD;
-//  TxMessage.DLC = 1;
+  /**************************************************************************
+   *  发送结构体输出化
+   **************************************************************************/
+  CanP_Cmd_Init();
 
 
   /* USER CODE END CAN1_Init 2 */
