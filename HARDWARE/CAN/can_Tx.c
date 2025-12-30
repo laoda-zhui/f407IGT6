@@ -12,8 +12,10 @@ typedef struct _CanP_Cmd_Struct
 	uint32_t eid;/*扩展Id*/
 }CanP_Cmd_Struct;
 
+
 /*创建发送CAN结构体数组*/
 CanP_Cmd_Struct CanP_Cmd_SBuf[CANP_CMD_ID_SIZE];
+
 
 /**************************************************************************
 函数功能：CAN发送结构体初始化 - 将结构体有效长度l值0
@@ -25,3 +27,7 @@ void CanP_Cmd_Init(void)
 	for(uint8_t i = 0;i < CANP_CMD_ID_SIZE;i++)
 		CanP_Cmd_SBuf[i].l = 0;
 }
+
+/***************************************功能函数************************************************/
+
+

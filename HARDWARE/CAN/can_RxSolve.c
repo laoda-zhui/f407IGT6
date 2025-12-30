@@ -71,6 +71,50 @@ void CanP_FifoInit(void)
 
 /**************************************************接收FIFO功能函数***************************************************************/
 
+/**************************************************************************
+函数功能：CAN发送结构体初始化 - 将结构体有效长度l值0
+入口参数：无
+返回  值：无
+**************************************************************************/
+uint32_t FifoDrv_BufWrite(Fifo_Drv_Struct *p,uint8_t *buf,uint32_t l)
+{
+	uint32_t Rt = 0;
+	while(l--)
+	{
+		if(FifoDrv_WriteOne(p,buf[Rt]) == 0)
+			break;
+		Rt++;
+	}
+	return Rt;
+}
+
+/**************************************************************************
+函数功能：CAN接收-识别指定设备数据，将数据存储到指定结构体中
+入口参数：无
+返回  值：无
+**************************************************************************/
+void CanP_CanRx_Irq(void)
+{
+	CanDrv_RxGetMeesage(&crm);							 //获取挂起邮箱中消息
+	switch(crm.FMI)										 //判断消息邮箱索引
+	{
+	case 0:			//disp
+		FifoDrv_BufWrite(&Fifo_Info,crm.Data,crm.DLC);	 //向Fifo_Info中写入消息
+		break;
+	case 1:			//wifi rx
+		FifoDrv_BufWrite(&Fifo_WifiRx,crm.Data,crm.DLC); //向Fifo_WifiRx中写入消息
+		break;
+	case 2:			//zigbee rx
+		FifoDrv_BufWrite(&Fifo_ZigbRx,crm.Data,crm.DLC); //向Fifo_ZigbRx中写入消息
+		break;
+	default:
+		if((crm.FMI >= 3)&&(crm.FMI <= 6))				 //判断邮箱索引
+			memcpy(crbuf[crm.FMI-3],crm.Data,8);		 //向crbuf二维数组中写入数据
+		break;
+	}
+	if(crm.FMI <= 6)
+		CanP_RxFMI_Flag |= bit_tab[crm.FMI];			//统计邮箱索引号
+}
 
 
 

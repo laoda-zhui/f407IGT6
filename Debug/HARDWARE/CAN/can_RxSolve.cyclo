@@ -1,3 +1,0 @@
-../HARDWARE/CAN/can_RxSolve.c:29:6:FifoDrv_Init	3
-../HARDWARE/CAN/can_RxSolve.c:47:6:CanP_FifoInitS	1
-../HARDWARE/CAN/can_RxSolve.c:59:6:CanP_FifoInit	1

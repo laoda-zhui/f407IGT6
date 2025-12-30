@@ -1,20 +1,15 @@
 /* USER CODE BEGIN Header */
-/**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2025 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
+/*******************************************************************************
+  *致吾辈好儿郎们
+  *不要问我改的程序有没有问题;
+  *这种东西就像问你女朋友爱不爱你一样
+  *毫无意义;
+  *程序有没有问题要长时间跑过才知道;
+  *爱情亦是如此;
+  *晚上记得早点睡;
+  *加油!
+  *电子界吴彦祖;
+  *******************************************************************************/
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"

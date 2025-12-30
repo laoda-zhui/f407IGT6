@@ -26,7 +26,7 @@
 CAN_RxHeaderTypeDef RxMsgArray;
 
 /*CAN接收缓冲数组*/
-uint8_t RxData[16]={0};
+uint8_t RxData[50]={0};
 
 /*CAN接收成功标志位 0-无数据 1-接收到数据*/
 uint8_t MyCAN_RxFlag = 0;
@@ -43,7 +43,7 @@ Can_Filter_Struct SFilterArry[]={
 		{0x1C00, 	0x7C00},	 /*4*/
 		{0x2000, 	0x7C00},	 /*5*/
 		{0x3C00, 	0x7C00},	 /*6*/
-
+		//{0	   ,	0}
 };
 
 
@@ -242,10 +242,9 @@ void MyCAN_Receive(CAN_RxHeaderTypeDef *RxMessage, uint8_t *Data)
 **************************************************************************/
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {
-	if(HAL_CAN_GetRxMessage(&hcan1, CAN_FILTER_FIFO0, &RxMsgArray, RxData)  == HAL_OK)
+	if(HAL_CAN_GetRxMessage(&hcan1, CAN_FILTER_FIFO0, &RxMsgArray, RxData)  == HAL_OK)	/*中断中接收*/
 	{
-		MyCAN_RxFlag = 1;
-
+		MyCAN_RxFlag = 1;	/*接收后标志位置1*/
 	}
 }
 

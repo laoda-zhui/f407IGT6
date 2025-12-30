@@ -728,7 +728,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
  80006fa:	b082      	sub	sp, #8
  80006fc:	af00      	add	r7, sp, #0
  80006fe:	6078      	str	r0, [r7, #4]
-	if(HAL_CAN_GetRxMessage(&hcan1, CAN_FILTER_FIFO0, &RxMsgArray, RxData)  == HAL_OK)
+	if(HAL_CAN_GetRxMessage(&hcan1, CAN_FILTER_FIFO0, &RxMsgArray, RxData)  == HAL_OK)	/*中断中接收*/
  8000700:	4b07      	ldr	r3, [pc, #28]	@ (8000720 <HAL_CAN_RxFifo0MsgPendingCallback+0x28>)
  8000702:	4a08      	ldr	r2, [pc, #32]	@ (8000724 <HAL_CAN_RxFifo0MsgPendingCallback+0x2c>)
  8000704:	2100      	movs	r1, #0
@@ -738,11 +738,10 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
  800070e:	2b00      	cmp	r3, #0
  8000710:	d102      	bne.n	8000718 <HAL_CAN_RxFifo0MsgPendingCallback+0x20>
 	{
-		MyCAN_RxFlag = 1;
+		MyCAN_RxFlag = 1;	/*接收后标志位置1*/
  8000712:	4b06      	ldr	r3, [pc, #24]	@ (800072c <HAL_CAN_RxFifo0MsgPendingCallback+0x34>)
  8000714:	2201      	movs	r2, #1
  8000716:	701a      	strb	r2, [r3, #0]
-
 	}
 }
  8000718:	bf00      	nop
