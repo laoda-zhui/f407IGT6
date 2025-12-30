@@ -92,14 +92,44 @@ int main(void)
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
 
+  CAN_TxHeaderTypeDef TxMsgArray[] = {
+  /*  StdId   ExtId        IDE          RTR        DLC*/
+  	{0x3C0, 0x00000000, CAN_ID_STD, CAN_RTR_DATA,   4,},
+  	{0x280, 0x00000000, CAN_ID_STD, CAN_RTR_DATA,   4,},
+  	{0x2A0, 0x00000000, CAN_ID_STD, CAN_RTR_DATA, 	4,},
+  	{0x0E0, 0x00000000, CAN_ID_STD, CAN_RTR_DATA,  	4,},
+	{0x100, 0x00000000, CAN_ID_STD, CAN_RTR_DATA,   4,},
+	{0x1E0, 0x00000000, CAN_ID_STD, CAN_RTR_DATA,   4,},
+	{0x1B3, 0x00000000, CAN_ID_STD, CAN_RTR_DATA,   4,}
+  };
+
+  uint8_t index=0;
+  uint8_t TxData[][4]={
+		  {0x11, 0x11, 0x11, 0x11},
+		  {0x22, 0x22, 0x22, 0x22},
+		  {0x33, 0x33, 0x33, 0x33},
+		  {0x44, 0x44, 0x44, 0x44},
+		  {0x55, 0x55, 0x55, 0x55},
+		  {0xAA, 0xAA, 0xAA, 0xAA},
+		  {0x22, 0x33, 0x44, 0x55}
+
+  };
+
+
+
+
+
   /*键值*/
   uint8_t KeyNum=0;
 
   /*启动CAN1*/
-  HAL_CAN_Start(&hcan1);
+  __HAL_CAN_ENABLE_IT(&hcan1,CAN_IT_RX_FIFO0_MSG_PENDING);
+  uint8_t error = HAL_CAN_Start(&hcan1);
 
   /*OLED初始化*/
   OLED_Init();
+  OLED_ShowNum(0, 0, error, 2, OLED_6X8);
+  OLED_UpDate();
 
   /* USER CODE END 2 */
 
@@ -117,11 +147,24 @@ int main(void)
 
 	  if(KeyNum == 1)
 	  {
-
+		  OLED_ShowNum(0, 10, index, 2, OLED_6X8);
+		  OLED_UpDate();
+		  KeyNum=0;
+		  MyCAN_Transmit(&TxMsgArray[index], TxData[index]);
+		  index++;
+		  if(index >6){index = 0;}
 	  }
-	  if (MyCAN_ReceiveFlag())
+	  if (MyCAN_RxFlag)
 	  {
+		  MyCAN_RxFlag = 0;
+		  OLED_ShowString(0, 20, "ID:", OLED_6X8);
+		  OLED_ShowHexNum(20, 20, RxMsgArray.StdId, 8, OLED_6X8);
+		  OLED_ShowHexNum(0, 30,  RxData[0], 2, OLED_6X8);
+		  OLED_ShowHexNum(15, 30,  RxData[1], 2,  OLED_6X8);
+		  OLED_ShowHexNum(30, 30, RxData[2], 2,  OLED_6X8);
+		  OLED_ShowHexNum(45, 30, RxData[3], 2, OLED_6X8);
 
+		  OLED_UpDate();
 	  }
 
 

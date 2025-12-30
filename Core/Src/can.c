@@ -22,11 +22,19 @@
 
 /* USER CODE BEGIN 0 */
 
+/*CAN接收结构体*/
+CAN_RxHeaderTypeDef RxMsgArray;
+
+/*CAN接收缓冲数组*/
+uint8_t RxData[16]={0};
+
+/*CAN接收成功标志位 0-无数据 1-接收到数据*/
+uint8_t MyCAN_RxFlag = 0;
 
 /**************************************************************************
- *  CAN滤波器结构体数组 - 数组参考can.h
- * 	成员:1.ID 2.MASK
- *	数组:1.显示模块 2.WiFi模块 3.Zigbee模块 4.寻迹模块 5.导航模块 6.主机模块
+CAN滤波器结构体数组 - 数组参考can.h
+成员:左边:ID 右边:MASK
+数组:1.显示模块 2.WiFi模块 3.Zigbee模块 4.寻迹模块 5.导航模块 6.主机模块
 **************************************************************************/
 Can_Filter_Struct SFilterArry[]={
 		{0x7800, 	0x7C00},	 /*1*/
@@ -84,9 +92,10 @@ void MX_CAN1_Init(void)
   }
   /* USER CODE BEGIN CAN1_Init 2 */
 
-  /* 用户-配置和初始化滤波器
-   * 注意:SFilterArry结构体数组要为偶数倍
-   * */
+  /**************************************************************************
+   *  用户-配置和初始化滤波器
+   *  注意:SFilterArry结构体数组要为偶数倍
+   **************************************************************************/
   for(uint8_t i=0;i < (sizeof(SFilterArry)/sizeof(Can_Filter_Struct));i+=2)
   {
 	  CAN_FilterTypeDef SFilterConfig;
@@ -149,6 +158,9 @@ void HAL_CAN_MspInit(CAN_HandleTypeDef* canHandle)
     GPIO_InitStruct.Alternate = GPIO_AF9_CAN1;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
+    /* CAN1 interrupt Init */
+    HAL_NVIC_SetPriority(CAN1_RX0_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(CAN1_RX0_IRQn);
   /* USER CODE BEGIN CAN1_MspInit 1 */
 
   /* USER CODE END CAN1_MspInit 1 */
@@ -172,6 +184,8 @@ void HAL_CAN_MspDeInit(CAN_HandleTypeDef* canHandle)
     */
     HAL_GPIO_DeInit(GPIOA, GPIO_PIN_11|GPIO_PIN_12);
 
+    /* CAN1 interrupt Deinit */
+    HAL_NVIC_DisableIRQ(CAN1_RX0_IRQn);
   /* USER CODE BEGIN CAN1_MspDeInit 1 */
 
   /* USER CODE END CAN1_MspDeInit 1 */
@@ -216,6 +230,20 @@ uint8_t MyCAN_ReceiveFlag()
 void MyCAN_Receive(CAN_RxHeaderTypeDef *RxMessage, uint8_t *Data)
 {
 	HAL_CAN_GetRxMessage(&hcan1, CAN_FILTER_FIFO0, RxMessage, Data);
+}
+
+/**************************************************************************
+函数功能：CAN-FIFO0回调中断函数-邮箱有数据
+入口参数：无
+返回  值：无
+**************************************************************************/
+void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
+{
+	if(HAL_CAN_GetRxMessage(&hcan1, CAN_FILTER_FIFO0, &RxMsgArray, RxData)  == HAL_OK)
+	{
+		MyCAN_RxFlag = 1;
+
+	}
 }
 
 /* USER CODE END 1 */

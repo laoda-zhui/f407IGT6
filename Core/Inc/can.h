@@ -36,11 +36,8 @@ extern CAN_HandleTypeDef hcan1;
 
 /* USER CODE BEGIN Private defines */
 
-/* USER CODE END Private defines */
-
-void MX_CAN1_Init(void);
-
-/* USER CODE BEGIN Prototypes */
+/*CAN接收结构体*/
+extern CAN_RxHeaderTypeDef RxMsgArray;
 
 /*滤波器id和掩码mask结构体*/
 typedef struct _Can_Filter_Struct
@@ -48,6 +45,20 @@ typedef struct _Can_Filter_Struct
 	uint16_t sid_id;	/*ID*/
 	uint16_t sid_mask;	/*MASK*/
 }Can_Filter_Struct;
+
+/*CAN接收缓冲数组*/
+extern uint8_t RxData[];
+
+/*CAN接收成功标志位 0-无数据 1-接收到数据*/
+extern uint8_t MyCAN_RxFlag;
+
+/* USER CODE END Private defines */
+
+void MX_CAN1_Init(void);
+
+/* USER CODE BEGIN Prototypes */
+
+
 
 
 /*CAN-底层发送函数*/
