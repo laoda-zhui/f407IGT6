@@ -2961,14 +2961,58 @@ Discarded input sections
  .group         0x00000000        0xc ./HARDWARE/CAN/can_RxSolve.o
  .group         0x00000000        0xc ./HARDWARE/CAN/can_RxSolve.o
  .group         0x00000000        0xc ./HARDWARE/CAN/can_RxSolve.o
+ .group         0x00000000        0xc ./HARDWARE/CAN/can_RxSolve.o
+ .group         0x00000000        0xc ./HARDWARE/CAN/can_RxSolve.o
+ .group         0x00000000        0xc ./HARDWARE/CAN/can_RxSolve.o
+ .group         0x00000000        0xc ./HARDWARE/CAN/can_RxSolve.o
+ .group         0x00000000        0xc ./HARDWARE/CAN/can_RxSolve.o
+ .group         0x00000000        0xc ./HARDWARE/CAN/can_RxSolve.o
+ .group         0x00000000        0xc ./HARDWARE/CAN/can_RxSolve.o
+ .group         0x00000000        0xc ./HARDWARE/CAN/can_RxSolve.o
+ .group         0x00000000        0xc ./HARDWARE/CAN/can_RxSolve.o
+ .group         0x00000000        0xc ./HARDWARE/CAN/can_RxSolve.o
+ .group         0x00000000        0xc ./HARDWARE/CAN/can_RxSolve.o
+ .group         0x00000000        0xc ./HARDWARE/CAN/can_RxSolve.o
+ .group         0x00000000        0xc ./HARDWARE/CAN/can_RxSolve.o
+ .group         0x00000000        0xc ./HARDWARE/CAN/can_RxSolve.o
+ .group         0x00000000        0xc ./HARDWARE/CAN/can_RxSolve.o
+ .group         0x00000000        0xc ./HARDWARE/CAN/can_RxSolve.o
  .text          0x00000000        0x0 ./HARDWARE/CAN/can_RxSolve.o
  .data          0x00000000        0x0 ./HARDWARE/CAN/can_RxSolve.o
  .bss           0x00000000        0x0 ./HARDWARE/CAN/can_RxSolve.o
- .debug_info    0x00000000       0x70 ./HARDWARE/CAN/can_RxSolve.o
- .debug_abbrev  0x00000000       0x28 ./HARDWARE/CAN/can_RxSolve.o
+ .bss.Fifo_Info
+                0x00000000       0x10 ./HARDWARE/CAN/can_RxSolve.o
+ .bss.Fifo_WifiRx
+                0x00000000       0x10 ./HARDWARE/CAN/can_RxSolve.o
+ .bss.Fifo_WifiTx
+                0x00000000       0x10 ./HARDWARE/CAN/can_RxSolve.o
+ .bss.Fifo_ZigbRx
+                0x00000000       0x10 ./HARDWARE/CAN/can_RxSolve.o
+ .bss.Fifo_ZigbTx
+                0x00000000       0x10 ./HARDWARE/CAN/can_RxSolve.o
+ .bss.FifoBuf_Info
+                0x00000000       0x32 ./HARDWARE/CAN/can_RxSolve.o
+ .bss.FifoBuf_WifiRx
+                0x00000000       0x32 ./HARDWARE/CAN/can_RxSolve.o
+ .bss.FifoBuf_WifiTx
+                0x00000000       0x32 ./HARDWARE/CAN/can_RxSolve.o
+ .bss.FifoBuf_ZigbRx
+                0x00000000       0x32 ./HARDWARE/CAN/can_RxSolve.o
+ .bss.FifoBuf_ZigbTx
+                0x00000000       0x32 ./HARDWARE/CAN/can_RxSolve.o
+ .text.FifoDrv_Init
+                0x00000000       0x3e ./HARDWARE/CAN/can_RxSolve.o
+ .text.CanP_FifoInitS
+                0x00000000       0x26 ./HARDWARE/CAN/can_RxSolve.o
+ .text.CanP_FifoInit
+                0x00000000       0x64 ./HARDWARE/CAN/can_RxSolve.o
+ .debug_info    0x00000000      0x252 ./HARDWARE/CAN/can_RxSolve.o
+ .debug_abbrev  0x00000000      0x113 ./HARDWARE/CAN/can_RxSolve.o
  .debug_aranges
-                0x00000000       0x18 ./HARDWARE/CAN/can_RxSolve.o
- .debug_macro   0x00000000      0x1dd ./HARDWARE/CAN/can_RxSolve.o
+                0x00000000       0x30 ./HARDWARE/CAN/can_RxSolve.o
+ .debug_rnglists
+                0x00000000       0x1f ./HARDWARE/CAN/can_RxSolve.o
+ .debug_macro   0x00000000      0x2d7 ./HARDWARE/CAN/can_RxSolve.o
  .debug_macro   0x00000000      0xad8 ./HARDWARE/CAN/can_RxSolve.o
  .debug_macro   0x00000000      0x29b ./HARDWARE/CAN/can_RxSolve.o
  .debug_macro   0x00000000       0x2e ./HARDWARE/CAN/can_RxSolve.o
@@ -3008,9 +3052,26 @@ Discarded input sections
  .debug_macro   0x00000000      0x225 ./HARDWARE/CAN/can_RxSolve.o
  .debug_macro   0x00000000      0x12d ./HARDWARE/CAN/can_RxSolve.o
  .debug_macro   0x00000000       0x28 ./HARDWARE/CAN/can_RxSolve.o
- .debug_line    0x00000000      0x6d2 ./HARDWARE/CAN/can_RxSolve.o
- .debug_str     0x00000000    0xbe6d3 ./HARDWARE/CAN/can_RxSolve.o
+ .debug_macro   0x00000000       0x61 ./HARDWARE/CAN/can_RxSolve.o
+ .debug_macro   0x00000000       0x2a ./HARDWARE/CAN/can_RxSolve.o
+ .debug_macro   0x00000000       0x43 ./HARDWARE/CAN/can_RxSolve.o
+ .debug_macro   0x00000000       0x34 ./HARDWARE/CAN/can_RxSolve.o
+ .debug_macro   0x00000000      0x370 ./HARDWARE/CAN/can_RxSolve.o
+ .debug_macro   0x00000000       0x16 ./HARDWARE/CAN/can_RxSolve.o
+ .debug_macro   0x00000000       0x4a ./HARDWARE/CAN/can_RxSolve.o
+ .debug_macro   0x00000000       0x34 ./HARDWARE/CAN/can_RxSolve.o
+ .debug_macro   0x00000000       0x10 ./HARDWARE/CAN/can_RxSolve.o
+ .debug_macro   0x00000000       0x58 ./HARDWARE/CAN/can_RxSolve.o
+ .debug_macro   0x00000000       0x8e ./HARDWARE/CAN/can_RxSolve.o
+ .debug_macro   0x00000000       0x1c ./HARDWARE/CAN/can_RxSolve.o
+ .debug_macro   0x00000000      0x185 ./HARDWARE/CAN/can_RxSolve.o
+ .debug_macro   0x00000000       0x10 ./HARDWARE/CAN/can_RxSolve.o
+ .debug_macro   0x00000000       0x3c ./HARDWARE/CAN/can_RxSolve.o
+ .debug_macro   0x00000000       0x20 ./HARDWARE/CAN/can_RxSolve.o
+ .debug_line    0x00000000      0x892 ./HARDWARE/CAN/can_RxSolve.o
+ .debug_str     0x00000000    0xc1a36 ./HARDWARE/CAN/can_RxSolve.o
  .comment       0x00000000       0x44 ./HARDWARE/CAN/can_RxSolve.o
+ .debug_frame   0x00000000       0x74 ./HARDWARE/CAN/can_RxSolve.o
  .ARM.attributes
                 0x00000000       0x34 ./HARDWARE/CAN/can_RxSolve.o
  .text          0x00000000        0x0 D:/ST/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-exit.o)

@@ -470,8 +470,8 @@ void MX_CAN1_Init(void)
  8000578:	f000 f9dc 	bl	8000934 <Error_Handler>
   /* USER CODE BEGIN CAN1_Init 2 */
 
-  /*	用户-配置和初始化滤波器
-   * 	注意:SFilterArry结构体数组要为偶数倍
+  /* 用户-配置和初始化滤波器
+   * 注意:SFilterArry结构体数组要为偶数倍
    * */
   for(uint8_t i=0;i < (sizeof(SFilterArry)/sizeof(Can_Filter_Struct));i+=2)
  800057c:	2300      	movs	r3, #0

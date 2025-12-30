@@ -57,6 +57,8 @@ void MyCAN_Transmit(CAN_TxHeaderTypeDef	*TxMessage, uint8_t *Data);
 void MyCAN_Receive(CAN_RxHeaderTypeDef *RxMessage, uint8_t *Data);
 uint8_t MyCAN_ReceiveFlag();
 
+/*GPIO配置外部CAN硬件的模式*/
+void Hard_Can_SpeedMode(uint8_t f);
 
 /* USER CODE END Prototypes */
 
