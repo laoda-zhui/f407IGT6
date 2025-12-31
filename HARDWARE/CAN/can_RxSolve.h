@@ -7,19 +7,25 @@
 #include <stdint.h>
 #include <string.h>
 
+#define FIFOSIZE_INFO		10	/*对应缓冲数组大小*/
+#define FIFOSIZE_WIFIRX		10
+#define FIFOSIZE_WIFITX		10
+#define FIFOSIZE_ZIGBRX		10
+#define FIFOSIZE_ZIGBTX		10
 
-/*定义接收缓冲FIFO结构体*/
-typedef struct _Fifo_Drv_Struct
-{
-	uint32_t ml; /*FIFO大小*/
-	uint32_t rp; /*读指针*/
-	uint32_t wp; /*写指针*/
-	uint8_t *buf;/*缓存数组*/
-}Fifo_Drv_Struct;
+extern uint8_t FifoBuf_Info[FIFOSIZE_INFO];	/*对应缓冲数组*/
+extern uint8_t FifoBuf_WifiRx[FIFOSIZE_WIFIRX];
+extern uint8_t FifoBuf_WifiTx[FIFOSIZE_WIFITX];
+extern uint8_t FifoBuf_ZigbRx[FIFOSIZE_ZIGBRX];
+extern uint8_t FifoBuf_ZigbTx[FIFOSIZE_ZIGBTX];
+
+extern uint8_t FifoBuf_Track[FIFOSIZE_ZIGBTX];		/*接收循迹*/
+extern uint8_t FifoBuf_Navig[FIFOSIZE_ZIGBTX]; 	/*接收navig-暂时不知道是啥*/
+extern uint8_t FifoBuf_HOST[FIFOSIZE_ZIGBTX];		/*接收主机*/
+extern uint8_t FifoBuf_Anything[FIFOSIZE_ZIGBTX];	/*接收任何信息*/
 
 
-/*全部FIFO初始化函数*/
-void CanP_FifoInit(void);
+
 
 
 

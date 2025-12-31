@@ -148,6 +148,7 @@ int main(void)
 		  MyCAN_Transmit(&TxMsgArray[index], TxData[index]);
 		  index++;
 		  if(index >6){index = 0;}
+		  HAL_Delay(1);
 	  }
 	  if (MyCAN_RxFlag)
 	  {
