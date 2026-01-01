@@ -87,31 +87,29 @@ int main(void)
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
 
+  /*测试发送结构体*/
   CAN_TxHeaderTypeDef TxMsgArray[] = {
   /*  StdId   ExtId        IDE          RTR        DLC*/
-  	{0x3C0, 0x00000000, CAN_ID_STD, CAN_RTR_DATA,   4,},
-  	{0x280, 0x00000000, CAN_ID_STD, CAN_RTR_DATA,   4,},
-  	{0x2A0, 0x00000000, CAN_ID_STD, CAN_RTR_DATA, 	4,},
-  	{0x0E0, 0x00000000, CAN_ID_STD, CAN_RTR_DATA,  	4,},
-	{0x100, 0x00000000, CAN_ID_STD, CAN_RTR_DATA,   4,},
-	{0x1E0, 0x00000000, CAN_ID_STD, CAN_RTR_DATA,   4,},
-	{0x1B3, 0x00000000, CAN_ID_STD, CAN_RTR_DATA,   4,}
+  	{0x3C0, 0x00000000, CAN_ID_STD, CAN_RTR_DATA,   8,},
+  	{0x280, 0x00000000, CAN_ID_STD, CAN_RTR_DATA,   8,},
+  	{0x2A0, 0x00000000, CAN_ID_STD, CAN_RTR_DATA, 	8,},
+  	{0x0E0, 0x00000000, CAN_ID_STD, CAN_RTR_DATA,  	8,},
+	{0x100, 0x00000000, CAN_ID_STD, CAN_RTR_DATA,   8,},
+	{0x1E0, 0x00000000, CAN_ID_STD, CAN_RTR_DATA,   8,},
+	{0x1B3, 0x00000000, CAN_ID_STD, CAN_RTR_DATA,   8,}
   };
 
-  uint8_t index=0;
-  uint8_t TxData[][4]={
-		  {0x11, 0x11, 0x11, 0x11},
-		  {0x22, 0x22, 0x22, 0x22},
-		  {0x33, 0x33, 0x33, 0x33},
-		  {0x44, 0x44, 0x44, 0x44},
-		  {0x55, 0x55, 0x55, 0x55},
-		  {0xAA, 0xAA, 0xAA, 0xAA},
-		  {0x22, 0x33, 0x44, 0x55}
+  uint8_t index=0;/*发送数组的索引*/
+  uint8_t TxData[][8]={ /*发送can数据数组 -测试*/
+		  {0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11},
+		  {0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22},
+		  {0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33},
+		  {0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44},
+		  {0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55},
+		  {0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA},
+		  {0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99}
 
   };
-
-
-
 
 
   /*键值*/
@@ -124,6 +122,15 @@ int main(void)
   /*OLED初始化*/
   OLED_Init();
   OLED_ShowNum(0, 0, error, 2, OLED_6X8);
+
+  OLED_ShowString(0, 0, "Info:", OLED_6X8);
+  OLED_ShowString(0, 9, "WifiRx:", OLED_6X8);
+  OLED_ShowString(0, 18, "ZigbRx:", OLED_6X8);
+  OLED_ShowString(0, 27, "Track:", OLED_6X8);
+  OLED_ShowString(0, 36, "Navig:", OLED_6X8);
+  OLED_ShowString(0, 45, "HOST", OLED_6X8);
+  OLED_ShowString(0, 54, "Anything", OLED_6X8);
+
   OLED_UpDate();
 
   /* USER CODE END 2 */
@@ -148,20 +155,82 @@ int main(void)
 		  MyCAN_Transmit(&TxMsgArray[index], TxData[index]);
 		  index++;
 		  if(index >6){index = 0;}
-		  HAL_Delay(1);
 	  }
-	  if (MyCAN_RxFlag)
-	  {
-		  MyCAN_RxFlag = 0;
-		  OLED_ShowString(0, 20, "ID:", OLED_6X8);
-		  OLED_ShowHexNum(20, 20, RxMsgArray.StdId, 8, OLED_6X8);
-		  OLED_ShowHexNum(0, 30,  RxData[0], 2, OLED_6X8);
-		  OLED_ShowHexNum(15, 30,  RxData[1], 2,  OLED_6X8);
-		  OLED_ShowHexNum(30, 30, RxData[2], 2,  OLED_6X8);
-		  OLED_ShowHexNum(45, 30, RxData[3], 2, OLED_6X8);
+	  CanRx_Loop();
 
-		  OLED_UpDate();
-	  }
+	  OLED_ShowHexNum(40, 0,  FifoBuf_Info[0], 2, OLED_6X8); //1
+	  OLED_ShowHexNum(52, 0,  FifoBuf_Info[1], 2,  OLED_6X8);
+	  OLED_ShowHexNum(64, 0,  FifoBuf_Info[2], 2,  OLED_6X8);
+	  OLED_ShowHexNum(76, 0,  FifoBuf_Info[3], 2, OLED_6X8);
+	  OLED_ShowHexNum(88, 0,  FifoBuf_Info[4], 2, OLED_6X8); //1
+	  OLED_ShowHexNum(100, 0,  FifoBuf_Info[5], 2,  OLED_6X8);
+	  OLED_ShowHexNum(112, 0,  FifoBuf_Info[6], 2,  OLED_6X8);
+	  OLED_ShowHexNum(124, 0,  FifoBuf_Info[7], 2, OLED_6X8);
+
+
+	  OLED_ShowHexNum(40, 9,  FifoBuf_WifiRx[0], 2, OLED_6X8); //2
+	  OLED_ShowHexNum(52, 9,  FifoBuf_WifiRx[1], 2,  OLED_6X8);
+	  OLED_ShowHexNum(64, 9,  FifoBuf_WifiRx[2], 2,  OLED_6X8);
+	  OLED_ShowHexNum(76, 9,  FifoBuf_WifiRx[3], 2, OLED_6X8);
+	  OLED_ShowHexNum(88, 9,  FifoBuf_WifiRx[4], 2, OLED_6X8); //2
+	  OLED_ShowHexNum(100, 9,  FifoBuf_WifiRx[5], 2,  OLED_6X8);
+	  OLED_ShowHexNum(112, 9,  FifoBuf_WifiRx[6], 2,  OLED_6X8);
+	  OLED_ShowHexNum(124, 9,  FifoBuf_WifiRx[7], 2, OLED_6X8);
+
+
+	  OLED_ShowHexNum(40, 18,  FifoBuf_ZigbRx[0], 2, OLED_6X8); //3
+	  OLED_ShowHexNum(52, 18,  FifoBuf_ZigbRx[1], 2,  OLED_6X8);
+	  OLED_ShowHexNum(64, 18,  FifoBuf_ZigbRx[2], 2,  OLED_6X8);
+	  OLED_ShowHexNum(76, 18,  FifoBuf_ZigbRx[3], 2, OLED_6X8);
+	  OLED_ShowHexNum(88, 18,  FifoBuf_ZigbRx[4], 2, OLED_6X8); //3
+	  OLED_ShowHexNum(100, 18,  FifoBuf_ZigbRx[5], 2,  OLED_6X8);
+	  OLED_ShowHexNum(112, 18,  FifoBuf_ZigbRx[6], 2,  OLED_6X8);
+	  OLED_ShowHexNum(124, 18,  FifoBuf_ZigbRx[7], 2, OLED_6X8);
+
+
+	  OLED_ShowHexNum(40, 27,  FifoBuf_Track[0], 2, OLED_6X8);//4
+	  OLED_ShowHexNum(52, 27,  FifoBuf_Track[1], 2,  OLED_6X8);
+	  OLED_ShowHexNum(64, 27,  FifoBuf_Track[2], 2,  OLED_6X8);
+	  OLED_ShowHexNum(76, 27,  FifoBuf_Track[3], 2, OLED_6X8);
+	  OLED_ShowHexNum(88, 27,  FifoBuf_Track[4], 2, OLED_6X8);//4
+	  OLED_ShowHexNum(100, 27,  FifoBuf_Track[5], 2,  OLED_6X8);
+	  OLED_ShowHexNum(112, 27,  FifoBuf_Track[6], 2,  OLED_6X8);
+	  OLED_ShowHexNum(124, 27,  FifoBuf_Track[7], 2, OLED_6X8);
+
+
+	  OLED_ShowHexNum(40, 36,  FifoBuf_Navig[0], 2, OLED_6X8);//5
+	  OLED_ShowHexNum(52, 36,  FifoBuf_Navig[1], 2,  OLED_6X8);
+	  OLED_ShowHexNum(64, 36,  FifoBuf_Navig[2], 2,  OLED_6X8);
+	  OLED_ShowHexNum(76, 36,  FifoBuf_Navig[3], 2, OLED_6X8);
+	  OLED_ShowHexNum(88, 36,  FifoBuf_Navig[4], 2, OLED_6X8);//5
+	  OLED_ShowHexNum(100, 36,  FifoBuf_Navig[5], 2,  OLED_6X8);
+	  OLED_ShowHexNum(112, 36,  FifoBuf_Navig[6], 2,  OLED_6X8);
+	  OLED_ShowHexNum(124, 36,  FifoBuf_Navig[7], 2, OLED_6X8);
+
+
+	  OLED_ShowHexNum(40, 45,  FifoBuf_HOST[0], 2, OLED_6X8);//6
+	  OLED_ShowHexNum(52, 45,  FifoBuf_HOST[1], 2,  OLED_6X8);
+	  OLED_ShowHexNum(64, 45,  FifoBuf_HOST[2], 2,  OLED_6X8);
+	  OLED_ShowHexNum(76, 45,  FifoBuf_HOST[3], 2, OLED_6X8);
+	  OLED_ShowHexNum(88, 45,  FifoBuf_HOST[4], 2, OLED_6X8);//6
+	  OLED_ShowHexNum(100, 45,  FifoBuf_HOST[5], 2,  OLED_6X8);
+	  OLED_ShowHexNum(112, 45,  FifoBuf_HOST[6], 2,  OLED_6X8);
+	  OLED_ShowHexNum(124, 45,  FifoBuf_HOST[7], 2, OLED_6X8);
+
+
+	  OLED_ShowHexNum(40, 54,  FifoBuf_Anything[0], 2, OLED_6X8);//7
+	  OLED_ShowHexNum(52, 54,  FifoBuf_Anything[1], 2,  OLED_6X8);
+	  OLED_ShowHexNum(64, 54,  FifoBuf_Anything[2], 2,  OLED_6X8);
+	  OLED_ShowHexNum(76, 54,  FifoBuf_Anything[3], 2, OLED_6X8);
+	  OLED_ShowHexNum(88, 54,  FifoBuf_Anything[4], 2, OLED_6X8);//7
+	  OLED_ShowHexNum(100, 54,  FifoBuf_Anything[5], 2,  OLED_6X8);
+	  OLED_ShowHexNum(112, 54,  FifoBuf_Anything[6], 2,  OLED_6X8);
+	  OLED_ShowHexNum(124, 54,  FifoBuf_Anything[7], 2, OLED_6X8);
+
+
+
+	  OLED_UpDate();
+
 
 
 

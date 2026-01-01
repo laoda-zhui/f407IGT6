@@ -31,19 +31,20 @@ uint8_t RxData[10]={0};
 /*CAN接收成功标志位 0-无数据 1-接收到数据*/
 uint8_t MyCAN_RxFlag = 0;
 
-/**************************************************************************
+/******************************************************************************
 CAN滤波器结构体数组 - 数组参考can.h
 成员:左边:ID 右边:MASK
-数组:1.显示模块 2.WiFi模块 3.Zigbee模块 4.寻迹模块 5.导航模块 6.主机模块
-**************************************************************************/
-Can_Filter_Struct SFilterArry[]={
+数组:1.显示模块 2.WiFi模块 3.Zigbee模块 4.寻迹模块 5.导航模块 6.主机模块 7.anything-留着接收从车等
+*******************************************************************************/
+static const Can_Filter_Struct SFilterArry[]={
 		{0x7800, 	0x7C00},	 /*1*/
 		{0x5000, 	0x7C00},	 /*2*/
 		{0x5400, 	0x7C00},	 /*3*/
 		{0x1C00, 	0x7C00},	 /*4*/
 		{0x2000, 	0x7C00},	 /*5*/
 		{0x3C00, 	0x7C00},	 /*6*/
-		//{0	   ,	0}
+		{0	   ,		 0},	 /*7*/
+		{0	   ,		 0}		 /*补位，无作用,使总数为偶数*/
 };
 
 
@@ -76,8 +77,8 @@ void MX_CAN1_Init(void)
   /* USER CODE END CAN1_Init 1 */
   hcan1.Instance = CAN1;
   hcan1.Init.Prescaler = 3;
-  hcan1.Init.Mode = CAN_MODE_LOOPBACK;
-  hcan1.Init.SyncJumpWidth = CAN_SJW_1TQ;
+  hcan1.Init.Mode = CAN_MODE_NORMAL;
+  hcan1.Init.SyncJumpWidth = CAN_SJW_2TQ;
   hcan1.Init.TimeSeg1 = CAN_BS1_10TQ;
   hcan1.Init.TimeSeg2 = CAN_BS2_3TQ;
   hcan1.Init.TimeTriggeredMode = DISABLE;
@@ -197,9 +198,11 @@ void HAL_CAN_MspDeInit(CAN_HandleTypeDef* canHandle)
 
 /* USER CODE BEGIN 1 */
 
+/**************************************************接收FIFO功能函数***************************************************************/
+
 /**************************************************************************
 函数功能：CAN发送函数
-入口参数：ID:发送设备ID Length:发送长度 Data:发送数据
+入口参数：TxMessage:发送结构体CAN_TxHeaderTypeDef Data:发送数据
 返回  值：无
 **************************************************************************/
 void MyCAN_Transmit(CAN_TxHeaderTypeDef	*TxMessage, uint8_t *Data)
@@ -211,9 +214,9 @@ void MyCAN_Transmit(CAN_TxHeaderTypeDef	*TxMessage, uint8_t *Data)
 }
 
 /**************************************************************************
-函数功能：CAN接收标志
-入口参数：0-未接收到数据，1-接收到数据
-返回  值：无
+函数功能：CAN查询接收标志
+入口参数：无
+返回  值：0-未接收到数据，1-接收到数据
 **************************************************************************/
 uint8_t MyCAN_ReceiveFlag()
 {
@@ -236,7 +239,7 @@ void MyCAN_Receive(CAN_RxHeaderTypeDef *RxMessage, uint8_t *Data)
 }
 
 /**************************************************************************
-函数功能：CAN-FIFO0回调中断函数-邮箱有数据
+函数功能：CAN-FIFO0邮箱有数据-回调中断函数
 入口参数：无
 返回  值：无
 **************************************************************************/

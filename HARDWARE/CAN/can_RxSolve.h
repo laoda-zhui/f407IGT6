@@ -24,7 +24,8 @@ extern uint8_t FifoBuf_Navig[FIFOSIZE_ZIGBTX]; 	/*接收navig-暂时不知道是
 extern uint8_t FifoBuf_HOST[FIFOSIZE_ZIGBTX];		/*接收主机*/
 extern uint8_t FifoBuf_Anything[FIFOSIZE_ZIGBTX];	/*接收任何信息*/
 
-
+/*刷新-接收到指定数组函数,并进行数据处理*/
+void CanRx_Loop(void);
 
 
 
