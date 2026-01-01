@@ -26,7 +26,7 @@
 CAN_RxHeaderTypeDef RxMsgArray;
 
 /*CAN接收缓冲数组*/
-uint8_t RxData[10]={0};
+uint8_t RxData[20]={0};
 
 /*CAN接收成功标志位 0-无数据 1-接收到数据*/
 uint8_t MyCAN_RxFlag = 0;
@@ -123,15 +123,11 @@ void MX_CAN1_Init(void)
   /*配置高速模式*/
   Hard_Can_SpeedMode(0);
 
-//  /**************************************************************************
-//   *  接收结构体输出化
-//   **************************************************************************/
-//  CanP_FifoInit();
 
   /**************************************************************************
-   *  发送结构体输出化
+   *对命令CAN_CMD_Tx结构体进行初始化
    **************************************************************************/
-  CanP_Cmd_Init();
+  Can_CmdStruct_Init();
 
 
   /* USER CODE END CAN1_Init 2 */
@@ -201,20 +197,31 @@ void HAL_CAN_MspDeInit(CAN_HandleTypeDef* canHandle)
 /**************************************************接收FIFO功能函数***************************************************************/
 
 /**************************************************************************
-函数功能：CAN发送函数
+函数功能：CAN-底层发送函数
 入口参数：TxMessage:发送结构体CAN_TxHeaderTypeDef Data:发送数据
-返回  值：无
+返回 值：HAL_OK:发送成功 HAL_TIMEOUT:发送超时
+注   意:这里使用超时判断为滴答定时器，注意中断优先级，在中断调用该函数需注意
 **************************************************************************/
-void MyCAN_Transmit(CAN_TxHeaderTypeDef	*TxMessage, uint8_t *Data)
+HAL_StatusTypeDef MyCAN_Transmit(CAN_TxHeaderTypeDef *TxMessage, uint8_t *Data)
 {
 	uint32_t Used_pTxMailbox;
+	uint32_t CurTime,timeout_ms;
 
-	HAL_CAN_AddTxMessage(&hcan1, TxMessage, Data, &Used_pTxMailbox);
+	CurTime = HAL_GetTick(); /*当前时间*/
+	timeout_ms = 9;		 	 /*等待超时时间*/
 
+	while(HAL_CAN_AddTxMessage(&hcan1, TxMessage, Data, &Used_pTxMailbox) != HAL_OK)
+	{
+		if( (HAL_GetTick() - CurTime) > timeout_ms)
+		{
+			return HAL_TIMEOUT;
+		}
+	}
+	return HAL_OK;
 }
 
 /**************************************************************************
-函数功能：CAN查询接收标志
+函数功能：CAN-底层查询接收标志
 入口参数：无
 返回  值：0-未接收到数据，1-接收到数据
 **************************************************************************/
@@ -229,7 +236,7 @@ uint8_t MyCAN_ReceiveFlag()
 
 
 /**************************************************************************
-函数功能：CAN接收函数
+函数功能：CAN-底层接收函数
 入口参数：RxMessage:CAN_RxHeaderTypeDef结构体 Data:接收数据
 返回  值：无
 **************************************************************************/

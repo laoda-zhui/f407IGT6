@@ -33,6 +33,7 @@ extern "C" {
 #include "can_Tx.h"
 #include "can_RxSolve.h"
 
+
 /* USER CODE END Includes */
 
 extern CAN_HandleTypeDef hcan1;
@@ -50,7 +51,7 @@ typedef struct _Can_Filter_Struct
 }Can_Filter_Struct;
 
 /*CAN接收缓冲数组*/
-extern uint8_t RxData[10];
+extern uint8_t RxData[20];
 
 /*CAN接收成功标志位 0-无数据 1-接收到数据*/
 extern uint8_t MyCAN_RxFlag;
@@ -65,7 +66,7 @@ void MX_CAN1_Init(void);
 
 
 /*CAN-底层发送函数*/
-void MyCAN_Transmit(CAN_TxHeaderTypeDef	*TxMessage, uint8_t *Data);
+HAL_StatusTypeDef MyCAN_Transmit(CAN_TxHeaderTypeDef *TxMessage, uint8_t *Data);
 
 /*CAN-底层接收函数*/
 void MyCAN_Receive(CAN_RxHeaderTypeDef *RxMessage, uint8_t *Data);

@@ -88,16 +88,16 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   /*测试发送结构体*/
-  CAN_TxHeaderTypeDef TxMsgArray[] = {
-  /*  StdId   ExtId        IDE          RTR        DLC*/
-  	{0x3C0, 0x00000000, CAN_ID_STD, CAN_RTR_DATA,   8,},
-  	{0x280, 0x00000000, CAN_ID_STD, CAN_RTR_DATA,   8,},
-  	{0x2A0, 0x00000000, CAN_ID_STD, CAN_RTR_DATA, 	8,},
-  	{0x0E0, 0x00000000, CAN_ID_STD, CAN_RTR_DATA,  	8,},
-	{0x100, 0x00000000, CAN_ID_STD, CAN_RTR_DATA,   8,},
-	{0x1E0, 0x00000000, CAN_ID_STD, CAN_RTR_DATA,   8,},
-	{0x1B3, 0x00000000, CAN_ID_STD, CAN_RTR_DATA,   8,}
-  };
+//  CAN_TxHeaderTypeDef TxMsgArray[] = {
+//  /*  StdId   ExtId        IDE          RTR        DLC*/
+//  	{0x3C0, 0x00000000, CAN_ID_STD, CAN_RTR_DATA,   8,},
+//  	{0x280, 0x00000000, CAN_ID_STD, CAN_RTR_DATA,   8,},
+//  	{0x2A0, 0x00000000, CAN_ID_STD, CAN_RTR_DATA, 	8,},
+//  	{0x0E0, 0x00000000, CAN_ID_STD, CAN_RTR_DATA,  	8,},
+//	{0x100, 0x00000000, CAN_ID_STD, CAN_RTR_DATA,   8,},
+//	{0x1E0, 0x00000000, CAN_ID_STD, CAN_RTR_DATA,   8,},
+//	{0x1B3, 0x00000000, CAN_ID_STD, CAN_RTR_DATA,   8,}
+//  };
 
   uint8_t index=0;/*发送数组的索引*/
   uint8_t TxData[][8]={ /*发送can数据数组 -测试*/
@@ -106,9 +106,11 @@ int main(void)
 		  {0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33},
 		  {0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44},
 		  {0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55},
-		  {0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA},
-		  {0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99}
-
+		  {0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66},
+		  {0x77, 0x77, 0x77, 0x77, 0x77, 0x77, 0x77, 0x77},
+		  {0x88, 0x88, 0x88, 0x88, 0x88, 0x88, 0x88, 0x88},
+		  {0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99},
+		  {0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA}
   };
 
 
@@ -152,9 +154,39 @@ int main(void)
 		  OLED_ShowNum(0, 10, index, 2, OLED_6X8);
 		  OLED_UpDate();
 		  KeyNum=0;
-		  MyCAN_Transmit(&TxMsgArray[index], TxData[index]);
+		  switch(index)
+		  {
+		  	  case 0:
+		  		CAN_TxtoWifi(TxData[index], 8);
+		  		break;
+		  	  case 1:
+		  		CAN_TxtoZigbee(TxData[index], 8);
+		  		break;
+		  	  case 2:
+		  		CAN_TxtoDisplay(TxData[index], 8);
+		  		break;
+		  	  case 3:
+		  		CAN_TxtoMotor(12, 34);
+		  		break;
+
+		  	  case 5:
+		  		CAN_TxtoNV(2);
+		  		break;
+		  	  case 6:
+		  		CAN_TxtoPower(45, 67);
+		  		break;
+		  	  case 7:
+		  		CAN_TxtoT0(8);
+		  		break;
+		  	  case 8:
+		  		CAN_TxtoT1(11, 11);
+		  		break;
+		  	  case 9:
+		  		CAN_TxtoT2(100);
+		  		break;
+		  }
 		  index++;
-		  if(index >6){index = 0;}
+		  if(index >9){index = 0;}
 	  }
 	  CanRx_Loop();
 

@@ -7,9 +7,7 @@
 /*对应缓冲数组 -- 大小参考can_RxSolve.h宏定义*/
 uint8_t FifoBuf_Info[FIFOSIZE_INFO] 		= {0}; 	/*0接收显示屏*/
 uint8_t FifoBuf_WifiRx[FIFOSIZE_WIFIRX] 	= {0}; 	/*1接收wifi*/
-uint8_t FifoBuf_WifiTx[FIFOSIZE_WIFITX] 	= {0};
 uint8_t FifoBuf_ZigbRx[FIFOSIZE_ZIGBRX] 	= {0}; 	/*2接收zigbee*/
-uint8_t FifoBuf_ZigbTx[FIFOSIZE_ZIGBTX] 	= {0};
 uint8_t FifoBuf_Track[FIFOSIZE_ZIGBTX] 	  	= {0};	/*3接收循迹*/
 uint8_t FifoBuf_Navig[FIFOSIZE_ZIGBTX] 	 	= {0}; 	/*4接收navig-暂时不知道是啥*/
 uint8_t FifoBuf_HOST[FIFOSIZE_ZIGBTX] 	  	= {0};	/*5接收主机*/
@@ -94,6 +92,7 @@ void CanRx_Loop(void)
 					CanHost_Mp2 = (FifoBuf_HOST[2]<<8) | FifoBuf_HOST[1];//c
 					CanHost_Mp3 = (FifoBuf_HOST[4]<<8) | FifoBuf_HOST[3];//d
 				}
+
 				/*陀螺仪数据*/
 				if(FifoBuf_HOST[0] == 0x21)
 				{

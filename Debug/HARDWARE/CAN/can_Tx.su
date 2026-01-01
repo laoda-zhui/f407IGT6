@@ -1,1 +1,11 @@
-../HARDWARE/CAN/can_Tx.c:25:6:CanP_Cmd_Init	16	static
+../HARDWARE/CAN/can_Tx.c:24:6:Can_CmdStruct_Init	16	static
+../HARDWARE/CAN/can_Tx.c:49:6:CAN_TxtoWifi	16	static
+../HARDWARE/CAN/can_Tx.c:67:6:CAN_TxtoZigbee	16	static
+../HARDWARE/CAN/can_Tx.c:85:6:CAN_TxtoDisplay	16	static
+../HARDWARE/CAN/can_Tx.c:102:6:CAN_TxtoMotor	24	static
+../HARDWARE/CAN/can_Tx.c:122:6:CAN_TxtoCNT	16	static
+../HARDWARE/CAN/can_Tx.c:142:6:CAN_TxtoNV	24	static
+../HARDWARE/CAN/can_Tx.c:161:6:CAN_TxtoPower	24	static
+../HARDWARE/CAN/can_Tx.c:181:6:CAN_TxtoT0	24	static
+../HARDWARE/CAN/can_Tx.c:201:6:CAN_TxtoT1	24	static
+../HARDWARE/CAN/can_Tx.c:221:6:CAN_TxtoT2	24	static
