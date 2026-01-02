@@ -6,15 +6,18 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
 ../HARDWARE/CAN/can_RxSolve.c \
-../HARDWARE/CAN/can_Tx.c 
+../HARDWARE/CAN/can_Tx.c \
+../HARDWARE/CAN/can_cmd.c 
 
 OBJS += \
 ./HARDWARE/CAN/can_RxSolve.o \
-./HARDWARE/CAN/can_Tx.o 
+./HARDWARE/CAN/can_Tx.o \
+./HARDWARE/CAN/can_cmd.o 
 
 C_DEPS += \
 ./HARDWARE/CAN/can_RxSolve.d \
-./HARDWARE/CAN/can_Tx.d 
+./HARDWARE/CAN/can_Tx.d \
+./HARDWARE/CAN/can_cmd.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
@@ -24,7 +27,7 @@ HARDWARE/CAN/%.o HARDWARE/CAN/%.su HARDWARE/CAN/%.cyclo: ../HARDWARE/CAN/%.c HAR
 clean: clean-HARDWARE-2f-CAN
 
 clean-HARDWARE-2f-CAN:
-	-$(RM) ./HARDWARE/CAN/can_RxSolve.cyclo ./HARDWARE/CAN/can_RxSolve.d ./HARDWARE/CAN/can_RxSolve.o ./HARDWARE/CAN/can_RxSolve.su ./HARDWARE/CAN/can_Tx.cyclo ./HARDWARE/CAN/can_Tx.d ./HARDWARE/CAN/can_Tx.o ./HARDWARE/CAN/can_Tx.su
+	-$(RM) ./HARDWARE/CAN/can_RxSolve.cyclo ./HARDWARE/CAN/can_RxSolve.d ./HARDWARE/CAN/can_RxSolve.o ./HARDWARE/CAN/can_RxSolve.su ./HARDWARE/CAN/can_Tx.cyclo ./HARDWARE/CAN/can_Tx.d ./HARDWARE/CAN/can_Tx.o ./HARDWARE/CAN/can_Tx.su ./HARDWARE/CAN/can_cmd.cyclo ./HARDWARE/CAN/can_cmd.d ./HARDWARE/CAN/can_cmd.o ./HARDWARE/CAN/can_cmd.su
 
 .PHONY: clean-HARDWARE-2f-CAN
 
