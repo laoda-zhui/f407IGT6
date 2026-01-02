@@ -7,11 +7,11 @@
 #include <stdint.h>
 #include <string.h>
 
-#define FIFOSIZE_INFO		20	/*对应缓冲数组大小*/
-#define FIFOSIZE_WIFIRX		20
-#define FIFOSIZE_WIFITX		20
-#define FIFOSIZE_ZIGBRX		20
-#define FIFOSIZE_ZIGBTX		20
+#define FIFOSIZE_INFO		10	/*对应缓冲数组大小*/
+#define FIFOSIZE_WIFIRX		10
+#define FIFOSIZE_WIFITX		10
+#define FIFOSIZE_ZIGBRX		10
+#define FIFOSIZE_ZIGBTX		10
 
 extern uint8_t FifoBuf_Info[FIFOSIZE_INFO];	/*对应缓冲数组*/
 extern uint8_t FifoBuf_WifiRx[FIFOSIZE_WIFIRX];

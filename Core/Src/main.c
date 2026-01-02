@@ -21,6 +21,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "oled_spi.h"
+#include "can_Tx.h"
+#include "can_RxSolve.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -139,7 +141,7 @@ int main(void)
 
 
   /*任务切片时间-ms*/
-  uint32_t ADC_TaskTime=300,ADC_LastTime=0;
+  uint32_t ADC_TaskTime=50,ADC_LastTime=0;
 
   /* USER CODE END 2 */
 
@@ -195,6 +197,7 @@ int main(void)
 		  if(index >9){index = 0;}
 	  }
 	  CanRx_Loop();
+	  CAN_TxLoop();
 
 	  if( (HAL_GetTick() - ADC_LastTime) > ADC_TaskTime)
 	  {
