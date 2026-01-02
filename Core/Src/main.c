@@ -13,6 +13,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "adc.h"
 #include "can.h"
 #include "spi.h"
 #include "gpio.h"
@@ -85,6 +86,7 @@ int main(void)
   MX_GPIO_Init();
   MX_CAN1_Init();
   MX_SPI1_Init();
+  MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
 
   /*测试发送结构体*/
@@ -189,75 +191,76 @@ int main(void)
 		  if(index >9){index = 0;}
 	  }
 	  CanRx_Loop();
+	  Power_TxandStart();
 
-	  OLED_ShowHexNum(40, 0,  FifoBuf_Info[0], 2, OLED_6X8); //1
-	  OLED_ShowHexNum(52, 0,  FifoBuf_Info[1], 2,  OLED_6X8);
-	  OLED_ShowHexNum(64, 0,  FifoBuf_Info[2], 2,  OLED_6X8);
-	  OLED_ShowHexNum(76, 0,  FifoBuf_Info[3], 2, OLED_6X8);
-	  OLED_ShowHexNum(88, 0,  FifoBuf_Info[4], 2, OLED_6X8); //1
-	  OLED_ShowHexNum(100, 0,  FifoBuf_Info[5], 2,  OLED_6X8);
-	  OLED_ShowHexNum(112, 0,  FifoBuf_Info[6], 2,  OLED_6X8);
-	  OLED_ShowHexNum(124, 0,  FifoBuf_Info[7], 2, OLED_6X8);
-
-
-	  OLED_ShowHexNum(40, 9,  FifoBuf_WifiRx[0], 2, OLED_6X8); //2
-	  OLED_ShowHexNum(52, 9,  FifoBuf_WifiRx[1], 2,  OLED_6X8);
-	  OLED_ShowHexNum(64, 9,  FifoBuf_WifiRx[2], 2,  OLED_6X8);
-	  OLED_ShowHexNum(76, 9,  FifoBuf_WifiRx[3], 2, OLED_6X8);
-	  OLED_ShowHexNum(88, 9,  FifoBuf_WifiRx[4], 2, OLED_6X8); //2
-	  OLED_ShowHexNum(100, 9,  FifoBuf_WifiRx[5], 2,  OLED_6X8);
-	  OLED_ShowHexNum(112, 9,  FifoBuf_WifiRx[6], 2,  OLED_6X8);
-	  OLED_ShowHexNum(124, 9,  FifoBuf_WifiRx[7], 2, OLED_6X8);
-
-
-	  OLED_ShowHexNum(40, 18,  FifoBuf_ZigbRx[0], 2, OLED_6X8); //3
-	  OLED_ShowHexNum(52, 18,  FifoBuf_ZigbRx[1], 2,  OLED_6X8);
-	  OLED_ShowHexNum(64, 18,  FifoBuf_ZigbRx[2], 2,  OLED_6X8);
-	  OLED_ShowHexNum(76, 18,  FifoBuf_ZigbRx[3], 2, OLED_6X8);
-	  OLED_ShowHexNum(88, 18,  FifoBuf_ZigbRx[4], 2, OLED_6X8); //3
-	  OLED_ShowHexNum(100, 18,  FifoBuf_ZigbRx[5], 2,  OLED_6X8);
-	  OLED_ShowHexNum(112, 18,  FifoBuf_ZigbRx[6], 2,  OLED_6X8);
-	  OLED_ShowHexNum(124, 18,  FifoBuf_ZigbRx[7], 2, OLED_6X8);
-
-
-	  OLED_ShowHexNum(40, 27,  FifoBuf_Track[0], 2, OLED_6X8);//4
-	  OLED_ShowHexNum(52, 27,  FifoBuf_Track[1], 2,  OLED_6X8);
-	  OLED_ShowHexNum(64, 27,  FifoBuf_Track[2], 2,  OLED_6X8);
-	  OLED_ShowHexNum(76, 27,  FifoBuf_Track[3], 2, OLED_6X8);
-	  OLED_ShowHexNum(88, 27,  FifoBuf_Track[4], 2, OLED_6X8);//4
-	  OLED_ShowHexNum(100, 27,  FifoBuf_Track[5], 2,  OLED_6X8);
-	  OLED_ShowHexNum(112, 27,  FifoBuf_Track[6], 2,  OLED_6X8);
-	  OLED_ShowHexNum(124, 27,  FifoBuf_Track[7], 2, OLED_6X8);
-
-
-	  OLED_ShowHexNum(40, 36,  FifoBuf_Navig[0], 2, OLED_6X8);//5
-	  OLED_ShowHexNum(52, 36,  FifoBuf_Navig[1], 2,  OLED_6X8);
-	  OLED_ShowHexNum(64, 36,  FifoBuf_Navig[2], 2,  OLED_6X8);
-	  OLED_ShowHexNum(76, 36,  FifoBuf_Navig[3], 2, OLED_6X8);
-	  OLED_ShowHexNum(88, 36,  FifoBuf_Navig[4], 2, OLED_6X8);//5
-	  OLED_ShowHexNum(100, 36,  FifoBuf_Navig[5], 2,  OLED_6X8);
-	  OLED_ShowHexNum(112, 36,  FifoBuf_Navig[6], 2,  OLED_6X8);
-	  OLED_ShowHexNum(124, 36,  FifoBuf_Navig[7], 2, OLED_6X8);
-
-
-	  OLED_ShowHexNum(40, 45,  FifoBuf_HOST[0], 2, OLED_6X8);//6
-	  OLED_ShowHexNum(52, 45,  FifoBuf_HOST[1], 2,  OLED_6X8);
-	  OLED_ShowHexNum(64, 45,  FifoBuf_HOST[2], 2,  OLED_6X8);
-	  OLED_ShowHexNum(76, 45,  FifoBuf_HOST[3], 2, OLED_6X8);
-	  OLED_ShowHexNum(88, 45,  FifoBuf_HOST[4], 2, OLED_6X8);//6
-	  OLED_ShowHexNum(100, 45,  FifoBuf_HOST[5], 2,  OLED_6X8);
-	  OLED_ShowHexNum(112, 45,  FifoBuf_HOST[6], 2,  OLED_6X8);
-	  OLED_ShowHexNum(124, 45,  FifoBuf_HOST[7], 2, OLED_6X8);
-
-
-	  OLED_ShowHexNum(40, 54,  FifoBuf_Anything[0], 2, OLED_6X8);//7
-	  OLED_ShowHexNum(52, 54,  FifoBuf_Anything[1], 2,  OLED_6X8);
-	  OLED_ShowHexNum(64, 54,  FifoBuf_Anything[2], 2,  OLED_6X8);
-	  OLED_ShowHexNum(76, 54,  FifoBuf_Anything[3], 2, OLED_6X8);
-	  OLED_ShowHexNum(88, 54,  FifoBuf_Anything[4], 2, OLED_6X8);//7
-	  OLED_ShowHexNum(100, 54,  FifoBuf_Anything[5], 2,  OLED_6X8);
-	  OLED_ShowHexNum(112, 54,  FifoBuf_Anything[6], 2,  OLED_6X8);
-	  OLED_ShowHexNum(124, 54,  FifoBuf_Anything[7], 2, OLED_6X8);
+//	  OLED_ShowHexNum(40, 0,  FifoBuf_Info[0], 2, OLED_6X8); //1
+//	  OLED_ShowHexNum(52, 0,  FifoBuf_Info[1], 2,  OLED_6X8);
+//	  OLED_ShowHexNum(64, 0,  FifoBuf_Info[2], 2,  OLED_6X8);
+//	  OLED_ShowHexNum(76, 0,  FifoBuf_Info[3], 2, OLED_6X8);
+//	  OLED_ShowHexNum(88, 0,  FifoBuf_Info[4], 2, OLED_6X8); //1
+//	  OLED_ShowHexNum(100, 0,  FifoBuf_Info[5], 2,  OLED_6X8);
+//	  OLED_ShowHexNum(112, 0,  FifoBuf_Info[6], 2,  OLED_6X8);
+//	  OLED_ShowHexNum(124, 0,  FifoBuf_Info[7], 2, OLED_6X8);
+//
+//
+//	  OLED_ShowHexNum(40, 9,  FifoBuf_WifiRx[0], 2, OLED_6X8); //2
+//	  OLED_ShowHexNum(52, 9,  FifoBuf_WifiRx[1], 2,  OLED_6X8);
+//	  OLED_ShowHexNum(64, 9,  FifoBuf_WifiRx[2], 2,  OLED_6X8);
+//	  OLED_ShowHexNum(76, 9,  FifoBuf_WifiRx[3], 2, OLED_6X8);
+//	  OLED_ShowHexNum(88, 9,  FifoBuf_WifiRx[4], 2, OLED_6X8); //2
+//	  OLED_ShowHexNum(100, 9,  FifoBuf_WifiRx[5], 2,  OLED_6X8);
+//	  OLED_ShowHexNum(112, 9,  FifoBuf_WifiRx[6], 2,  OLED_6X8);
+//	  OLED_ShowHexNum(124, 9,  FifoBuf_WifiRx[7], 2, OLED_6X8);
+//
+//
+//	  OLED_ShowHexNum(40, 18,  FifoBuf_ZigbRx[0], 2, OLED_6X8); //3
+//	  OLED_ShowHexNum(52, 18,  FifoBuf_ZigbRx[1], 2,  OLED_6X8);
+//	  OLED_ShowHexNum(64, 18,  FifoBuf_ZigbRx[2], 2,  OLED_6X8);
+//	  OLED_ShowHexNum(76, 18,  FifoBuf_ZigbRx[3], 2, OLED_6X8);
+//	  OLED_ShowHexNum(88, 18,  FifoBuf_ZigbRx[4], 2, OLED_6X8); //3
+//	  OLED_ShowHexNum(100, 18,  FifoBuf_ZigbRx[5], 2,  OLED_6X8);
+//	  OLED_ShowHexNum(112, 18,  FifoBuf_ZigbRx[6], 2,  OLED_6X8);
+//	  OLED_ShowHexNum(124, 18,  FifoBuf_ZigbRx[7], 2, OLED_6X8);
+//
+//
+//	  OLED_ShowHexNum(40, 27,  FifoBuf_Track[0], 2, OLED_6X8);//4
+//	  OLED_ShowHexNum(52, 27,  FifoBuf_Track[1], 2,  OLED_6X8);
+//	  OLED_ShowHexNum(64, 27,  FifoBuf_Track[2], 2,  OLED_6X8);
+//	  OLED_ShowHexNum(76, 27,  FifoBuf_Track[3], 2, OLED_6X8);
+//	  OLED_ShowHexNum(88, 27,  FifoBuf_Track[4], 2, OLED_6X8);//4
+//	  OLED_ShowHexNum(100, 27,  FifoBuf_Track[5], 2,  OLED_6X8);
+//	  OLED_ShowHexNum(112, 27,  FifoBuf_Track[6], 2,  OLED_6X8);
+//	  OLED_ShowHexNum(124, 27,  FifoBuf_Track[7], 2, OLED_6X8);
+//
+//
+//	  OLED_ShowHexNum(40, 36,  FifoBuf_Navig[0], 2, OLED_6X8);//5
+//	  OLED_ShowHexNum(52, 36,  FifoBuf_Navig[1], 2,  OLED_6X8);
+//	  OLED_ShowHexNum(64, 36,  FifoBuf_Navig[2], 2,  OLED_6X8);
+//	  OLED_ShowHexNum(76, 36,  FifoBuf_Navig[3], 2, OLED_6X8);
+//	  OLED_ShowHexNum(88, 36,  FifoBuf_Navig[4], 2, OLED_6X8);//5
+//	  OLED_ShowHexNum(100, 36,  FifoBuf_Navig[5], 2,  OLED_6X8);
+//	  OLED_ShowHexNum(112, 36,  FifoBuf_Navig[6], 2,  OLED_6X8);
+//	  OLED_ShowHexNum(124, 36,  FifoBuf_Navig[7], 2, OLED_6X8);
+//
+//
+//	  OLED_ShowHexNum(40, 45,  FifoBuf_HOST[0], 2, OLED_6X8);//6
+//	  OLED_ShowHexNum(52, 45,  FifoBuf_HOST[1], 2,  OLED_6X8);
+//	  OLED_ShowHexNum(64, 45,  FifoBuf_HOST[2], 2,  OLED_6X8);
+//	  OLED_ShowHexNum(76, 45,  FifoBuf_HOST[3], 2, OLED_6X8);
+//	  OLED_ShowHexNum(88, 45,  FifoBuf_HOST[4], 2, OLED_6X8);//6
+//	  OLED_ShowHexNum(100, 45,  FifoBuf_HOST[5], 2,  OLED_6X8);
+//	  OLED_ShowHexNum(112, 45,  FifoBuf_HOST[6], 2,  OLED_6X8);
+//	  OLED_ShowHexNum(124, 45,  FifoBuf_HOST[7], 2, OLED_6X8);
+//
+//
+//	  OLED_ShowHexNum(40, 54,  FifoBuf_Anything[0], 2, OLED_6X8);//7
+//	  OLED_ShowHexNum(52, 54,  FifoBuf_Anything[1], 2,  OLED_6X8);
+//	  OLED_ShowHexNum(64, 54,  FifoBuf_Anything[2], 2,  OLED_6X8);
+//	  OLED_ShowHexNum(76, 54,  FifoBuf_Anything[3], 2, OLED_6X8);
+//	  OLED_ShowHexNum(88, 54,  FifoBuf_Anything[4], 2, OLED_6X8);//7
+//	  OLED_ShowHexNum(100, 54,  FifoBuf_Anything[5], 2,  OLED_6X8);
+//	  OLED_ShowHexNum(112, 54,  FifoBuf_Anything[6], 2,  OLED_6X8);
+//	  OLED_ShowHexNum(124, 54,  FifoBuf_Anything[7], 2, OLED_6X8);
 
 
 

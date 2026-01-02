@@ -15,8 +15,8 @@
 /*引脚定义*/
 #define		OLED_SPI					&hspi1 		 /*OLED使用spi的句柄*/
 
-#define     OLED_DC_GPIO_Port			GPIOA		 /*OLED使用的dc命令/数据选择引脚(0-命令，1-数据)*/
-#define     OLED_DC_GPIO_PIN			GPIO_PIN_6
+#define     OLED_DC_GPIO_Port			GPIOC		 /*OLED使用的dc命令/数据选择引脚(0-命令，1-数据)*/
+#define     OLED_DC_GPIO_PIN			GPIO_PIN_5
 
 #define     OLED_CS_GPIO_Port			GPIOB		 /*OLED使用的cs片选引脚*/
 #define     OLED_CS_GPIO_PIN			GPIO_PIN_8
