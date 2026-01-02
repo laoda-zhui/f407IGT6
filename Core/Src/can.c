@@ -77,8 +77,8 @@ void MX_CAN1_Init(void)
   /* USER CODE END CAN1_Init 1 */
   hcan1.Instance = CAN1;
   hcan1.Init.Prescaler = 3;
-  hcan1.Init.Mode = CAN_MODE_NORMAL;
-  hcan1.Init.SyncJumpWidth = CAN_SJW_2TQ;
+  hcan1.Init.Mode = CAN_MODE_SILENT_LOOPBACK;
+  hcan1.Init.SyncJumpWidth = CAN_SJW_1TQ;
   hcan1.Init.TimeSeg1 = CAN_BS1_10TQ;
   hcan1.Init.TimeSeg2 = CAN_BS2_3TQ;
   hcan1.Init.TimeTriggeredMode = DISABLE;
@@ -205,17 +205,14 @@ void HAL_CAN_MspDeInit(CAN_HandleTypeDef* canHandle)
 HAL_StatusTypeDef MyCAN_Transmit(CAN_TxHeaderTypeDef *TxMessage, uint8_t *Data)
 {
 	uint32_t Used_pTxMailbox;
-	uint32_t CurTime,timeout_ms;
+	uint32_t Timeout=1000;		/*重试次数*/
 
-	CurTime = HAL_GetTick(); /*当前时间*/
-	timeout_ms = 9;		 	 /*等待超时时间*/
 
 	while(HAL_CAN_AddTxMessage(&hcan1, TxMessage, Data, &Used_pTxMailbox) != HAL_OK)
 	{
-		if( (HAL_GetTick() - CurTime) > timeout_ms)
-		{
-			return HAL_TIMEOUT;
-		}
+		Timeout--;
+		if(Timeout == 0){return HAL_TIMEOUT;}
+
 	}
 	return HAL_OK;
 }

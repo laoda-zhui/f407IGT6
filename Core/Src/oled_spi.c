@@ -734,7 +734,7 @@ void OLED_ShowImage(int16_t X, int16_t Y, uint8_t Width, uint8_t Height, const u
 				/*负数坐标在计算页地址和移位时需要加一个偏移*/
 				Page = Y / 8;
 				Shift = Y % 8;
-				if (Y < 0)
+  				if (Y < 0)
 				{
 					Page -= 1;
 					Shift += 8;
