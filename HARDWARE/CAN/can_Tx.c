@@ -97,17 +97,17 @@ void CAN_TxtoDisplay(uint8_t *Data, uint8_t len)
 /*3.Motor*/
 
 /**************************************************************************
-函数功能：CAN-发送电机转速
-入口参数：x1 左侧电机速度  x2 右侧电机转速
+函数功能：CAN-控制电机转速
+入口参数：x1 左侧2个电机速度  x2 右侧2个电机转速
 返回  值：无
 **************************************************************************/
 void CAN_TxtoMotor(int x1, int x2)
 {
 	uint8_t txbuf[4];
-	txbuf[0] = (x1>>8)&0xff;	/*不确定要不要移位*/
-	txbuf[1] = x1&0xff;
-	txbuf[2] = (x2>>8)&0xff;;
-	txbuf[3] = x2&0xff;
+	txbuf[0] = x1;	/*不确定要不要移位*/
+	txbuf[1] = x1;
+	txbuf[2] = x2;
+	txbuf[3] = x2;
 
 	memcpy(CanP_Cmd_SBuf[3].Data, txbuf, 4);
 	Can_Cmds[3].DLC = 4;
@@ -214,9 +214,9 @@ void CAN_TxtoT1(uint8_t addr, uint16_t ydata)
 }
 
 
-/*9.T2*/
+/*9.T2(暂未使用)*/
 /**************************************************************************
-函数功能：CAN-设置循迹板上传数据时间
+函数功能：CAN-设置循迹板上传数据时间(暂未使用)
 入口参数：TIME:上传时间间隔
 返回  值：无
 **************************************************************************/
@@ -229,6 +229,9 @@ void CAN_TxtoT2(uint8_t time)  // 设置循迹数据上传时间间隔
 	memcpy(CanP_Cmd_SBuf[9].Data, txbuf, 2);
 	Can_Cmds[9].DLC = 2;
 }
+
+
+/***************************************************以上为功能函数************************************************************/
 
 
 
@@ -244,14 +247,14 @@ uint8_t CAN_TxDataCheck(uint8_t *Data)
 
 
 /**************************************************************************
-函数功能：CAN-检测缓冲区数据并上传
+函数功能：CAN-检测缓冲区数据并上传(if的顺序控制优先级)
 入口参数：无
 返回  值：无
 **************************************************************************/
 void CAN_TxLoop(void)
 {
 	uint8_t Status = HAL_OK;
-	if(CAN_TxDataCheck(CanP_Cmd_SBuf[1].Data))
+	if(CAN_TxDataCheck(CanP_Cmd_SBuf[1].Data)) /*Zigbee 优先级:0*/
 	{
 		Status = MyCAN_Transmit(&Can_Cmds[1], CanP_Cmd_SBuf[1].Data);
 
@@ -259,70 +262,68 @@ void CAN_TxLoop(void)
 	}
 
 
-	if(CAN_TxDataCheck(CanP_Cmd_SBuf[0].Data))
+	if(CAN_TxDataCheck(CanP_Cmd_SBuf[0].Data)) /*Wifi 优先级:1*/
 	{
 		Status = MyCAN_Transmit(&Can_Cmds[0], CanP_Cmd_SBuf[0].Data);
 		if(Status == HAL_OK){memset(CanP_Cmd_SBuf[0].Data, 0, 8);}
 	}
 
+	if(CAN_TxDataCheck(CanP_Cmd_SBuf[3].Data)) /*电机 优先级:2*/
+	{
+		Status = MyCAN_Transmit(&Can_Cmds[3], CanP_Cmd_SBuf[3].Data);
+		if(Status == HAL_OK){memset(CanP_Cmd_SBuf[3].Data, 0, 8);}
+	}
 
-	if(CAN_TxDataCheck(CanP_Cmd_SBuf[9].Data))
+	if(CAN_TxDataCheck(CanP_Cmd_SBuf[9].Data)) /*T2 优先级:3*/
 	{
 		Status = MyCAN_Transmit(&Can_Cmds[9], CanP_Cmd_SBuf[9].Data);
 		if(Status == HAL_OK){memset(CanP_Cmd_SBuf[9].Data, 0, 8);}
 	}
 
 
-	if(CAN_TxDataCheck(CanP_Cmd_SBuf[7].Data))
+	if(CAN_TxDataCheck(CanP_Cmd_SBuf[7].Data)) /*T0 优先级:4*/
 	{
 		Status = MyCAN_Transmit(&Can_Cmds[7], CanP_Cmd_SBuf[7].Data);
 		if(Status == HAL_OK){memset(CanP_Cmd_SBuf[7].Data, 0, 8);}
 	}
 
 
-	if(CAN_TxDataCheck(CanP_Cmd_SBuf[8].Data))
+	if(CAN_TxDataCheck(CanP_Cmd_SBuf[8].Data)) /*T1 优先级:5*/
 	{
 		Status = MyCAN_Transmit(&Can_Cmds[8], CanP_Cmd_SBuf[8].Data);
 		if(Status == HAL_OK){memset(CanP_Cmd_SBuf[8].Data, 0, 8);}
 	}
 
 
-	if(CAN_TxDataCheck(CanP_Cmd_SBuf[5].Data))
+	if(CAN_TxDataCheck(CanP_Cmd_SBuf[5].Data)) /*NV 优先级:6*/
 	{
 		Status = MyCAN_Transmit(&Can_Cmds[5], CanP_Cmd_SBuf[5].Data);
 		if(Status == HAL_OK){memset(CanP_Cmd_SBuf[5].Data, 0, 8);}
 	}
 
 
-	if(CAN_TxDataCheck(CanP_Cmd_SBuf[4].Data))
+	if(CAN_TxDataCheck(CanP_Cmd_SBuf[4].Data)) /*CNT 优先级:7*/
 	{
 		Status = MyCAN_Transmit(&Can_Cmds[4], CanP_Cmd_SBuf[4].Data);
 		if(Status == HAL_OK){memset(CanP_Cmd_SBuf[4].Data, 0, 8);}
 	}
 
 
-	if(CAN_TxDataCheck(CanP_Cmd_SBuf[2].Data))
+	if(CAN_TxDataCheck(CanP_Cmd_SBuf[2].Data)) /*显示 优先级:8*/
 	{
 		Status = MyCAN_Transmit(&Can_Cmds[2], CanP_Cmd_SBuf[2].Data);
 		if(Status == HAL_OK){memset(CanP_Cmd_SBuf[2].Data, 0, 8);}
 	}
 
 
-	if(CAN_TxDataCheck(CanP_Cmd_SBuf[3].Data))
-	{
-		Status = MyCAN_Transmit(&Can_Cmds[3], CanP_Cmd_SBuf[3].Data);
-		if(Status == HAL_OK){memset(CanP_Cmd_SBuf[3].Data, 0, 8);}
-	}
-
-
-	if(CAN_TxDataCheck(CanP_Cmd_SBuf[6].Data))
+	if(CAN_TxDataCheck(CanP_Cmd_SBuf[6].Data)) /*Power 优先级:9*/
 	{
 		Status = MyCAN_Transmit(&Can_Cmds[6], CanP_Cmd_SBuf[6].Data);
 		if(Status == HAL_OK){memset(CanP_Cmd_SBuf[6].Data, 0, 8);}
 	}
 }
 
-/***************************************************以上为功能函数************************************************************/
+
 
 
 

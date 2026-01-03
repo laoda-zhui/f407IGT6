@@ -17,14 +17,14 @@ uint8_t FifoBuf_Anything[FIFOSIZE_ZIGBTX] 	= {0};	/*6接收任何信息*/
 uint8_t x1,x2; /*循迹拆分数据x1:循迹板后面8个灯状况 x2：循迹板后面7个灯状况(循迹板b档情况下x1有效)*/
 
 
-uint16_t Current_Navig;	/*猜测为当前航向角度*/
+uint16_t Current_Angle;	/*猜测为当前航向角度*/
 
 
-int16_t CanHost_Mp=0;		/*接受主机的数据*/
-int16_t CanHost_Mp1=0;
-int16_t CanHost_Mp2=0;
-int16_t CanHost_Mp3=0;
-
+/*接受的数据*/
+int16_t CanHost_Mp=0;	/*码盘值A*/
+int16_t CanHost_Mp1=0;	/*码盘值B*/
+int16_t CanHost_Mp2=0;	/*码盘值C*/
+int16_t CanHost_Mp3=0;	/*码盘值D*/
 
 float pitch=0;	/*pitch是围绕X轴旋转，也叫做俯仰角*/
 float yaw=0;	/*yaw是围绕Y轴旋转，也叫偏航角*/
@@ -74,8 +74,8 @@ void CanRx_Loop(void)
 			case 4:			/*Navig*/
 				memcpy(FifoBuf_Navig, RxData, RxMsgArray.DLC);
 
-				Current_Navig = (FifoBuf_Navig[0]<<8)|FifoBuf_Navig[1];	/*高位在前，低位在后*/
-				while(Current_Navig >= 3600){Current_Navig -= 3600;}
+				Current_Angle = (FifoBuf_Navig[0]<<8)|FifoBuf_Navig[1];	/*高位在前，低位在后*/
+				while(Current_Angle >= 3600){Current_Angle -= 3600;}
 
 				break;
 
@@ -83,14 +83,14 @@ void CanRx_Loop(void)
 				memcpy(FifoBuf_HOST, RxData, RxMsgArray.DLC);
 				if(FifoBuf_HOST[0] == 0x02)
 				{
-					CanHost_Mp  =  (FifoBuf_HOST[2]<<8) | FifoBuf_HOST[1];//a
-					CanHost_Mp1 = (FifoBuf_HOST[4]<<8) | FifoBuf_HOST[3];//b
+					CanHost_Mp  =  (FifoBuf_HOST[2]<<8) | FifoBuf_HOST[1];/*码盘值A*/
+					CanHost_Mp1 = (FifoBuf_HOST[4]<<8) | FifoBuf_HOST[3]; /*码盘值B*/
 
 				}
 				if(FifoBuf_HOST[0] == 0x04)
 				{
-					CanHost_Mp2 = (FifoBuf_HOST[2]<<8) | FifoBuf_HOST[1];//c
-					CanHost_Mp3 = (FifoBuf_HOST[4]<<8) | FifoBuf_HOST[3];//d
+					CanHost_Mp2 = (FifoBuf_HOST[2]<<8) | FifoBuf_HOST[1]; /*码盘值C*/
+					CanHost_Mp3 = (FifoBuf_HOST[4]<<8) | FifoBuf_HOST[3]; /*码盘值D*/
 				}
 
 				/*陀螺仪数据*/

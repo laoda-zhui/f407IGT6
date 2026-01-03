@@ -62,9 +62,6 @@ void MX_CAN1_Init(void);
 
 /* USER CODE BEGIN Prototypes */
 
-
-
-
 /*CAN-底层发送函数*/
 HAL_StatusTypeDef MyCAN_Transmit(CAN_TxHeaderTypeDef *TxMessage, uint8_t *Data);
 
@@ -74,6 +71,9 @@ uint8_t MyCAN_ReceiveFlag();
 
 /*GPIO配置外部CAN硬件的模式*/
 void Hard_Can_SpeedMode(uint8_t f);
+
+/*MyCan初始化*/
+void MyCan_Init(void);
 
 /* USER CODE END Prototypes */
 

@@ -9,5 +9,5 @@
 ../HARDWARE/CAN/can_Tx.c:183:6:CAN_TxtoT0	24	static
 ../HARDWARE/CAN/can_Tx.c:203:6:CAN_TxtoT1	24	static
 ../HARDWARE/CAN/can_Tx.c:223:6:CAN_TxtoT2	24	static
-../HARDWARE/CAN/can_Tx.c:240:9:CAN_TxDataCheck	16	static
-../HARDWARE/CAN/can_Tx.c:251:6:CAN_TxLoop	16	static
+../HARDWARE/CAN/can_Tx.c:243:9:CAN_TxDataCheck	16	static
+../HARDWARE/CAN/can_Tx.c:254:6:CAN_TxLoop	16	static

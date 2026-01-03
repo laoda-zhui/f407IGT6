@@ -6,3 +6,4 @@
 ../Core/Src/can.c:225:9:MyCAN_ReceiveFlag	8	static
 ../Core/Src/can.c:240:6:MyCAN_Receive	16	static
 ../Core/Src/can.c:250:6:HAL_CAN_RxFifo0MsgPendingCallback	16	static
+../Core/Src/can.c:263:6:MyCan_Init	8	static

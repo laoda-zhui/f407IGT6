@@ -77,8 +77,8 @@ void MX_CAN1_Init(void)
   /* USER CODE END CAN1_Init 1 */
   hcan1.Instance = CAN1;
   hcan1.Init.Prescaler = 3;
-  hcan1.Init.Mode = CAN_MODE_SILENT_LOOPBACK;
-  hcan1.Init.SyncJumpWidth = CAN_SJW_1TQ;
+  hcan1.Init.Mode = CAN_MODE_LOOPBACK;
+  hcan1.Init.SyncJumpWidth = CAN_SJW_2TQ;
   hcan1.Init.TimeSeg1 = CAN_BS1_10TQ;
   hcan1.Init.TimeSeg2 = CAN_BS2_3TQ;
   hcan1.Init.TimeTriggeredMode = DISABLE;
@@ -253,6 +253,17 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 	{
 		MyCAN_RxFlag = 1;	/*接收后标志位置1*/
 	}
+}
+
+/**************************************************************************
+函数功能：CAN-初始化(使能can通信中断,开启can通信)
+入口参数：无
+返回  值：无
+**************************************************************************/
+void MyCan_Init(void)
+{
+	  __HAL_CAN_ENABLE_IT(&hcan1,CAN_IT_RX_FIFO0_MSG_PENDING);
+	  HAL_CAN_Start(&hcan1);
 }
 
 /* USER CODE END 1 */

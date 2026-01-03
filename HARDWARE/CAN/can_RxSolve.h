@@ -27,7 +27,7 @@ extern uint8_t FifoBuf_Anything[FIFOSIZE_ZIGBTX];	/*接收任何信息*/
 /*刷新-接收到指定数组函数,并进行数据处理*/
 void CanRx_Loop(void);
 
-
-
+extern int16_t CanHost_Mp; /*码盘值A*/
+extern uint16_t Current_Angle;	/*猜测为当前航向角度*/
 
 #endif /* CAN_CAN_RXSOLVE_H_ */

@@ -29,6 +29,8 @@ HARDWARE/CAN/can_Tx.o: ../HARDWARE/CAN/can_Tx.c ../HARDWARE/CAN/can_Tx.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h \
+ ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h \
+ ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h \
  ../Core/Inc/can.h ../Core/Inc/main.h ../HARDWARE/CAN/can_Tx.h \
  ../HARDWARE/CAN/can_RxSolve.h
 ../HARDWARE/CAN/can_Tx.h:
@@ -63,6 +65,8 @@ HARDWARE/CAN/can_Tx.o: ../HARDWARE/CAN/can_Tx.c ../HARDWARE/CAN/can_Tx.h \
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h:
+../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h:
+../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h:
 ../Core/Inc/can.h:
 ../Core/Inc/main.h:
 ../HARDWARE/CAN/can_Tx.h:

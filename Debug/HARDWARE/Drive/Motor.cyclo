@@ -1,0 +1,13 @@
+../HARDWARE/Drive/Motor.c:48:6:Motor_Init	1
+../HARDWARE/Drive/Motor.c:61:6:Motor_GetAngle	1
+../HARDWARE/Drive/Motor.c:71:10:Motor_GetDifAngle	3
+../HARDWARE/Drive/Motor.c:89:6:Motor_Control	11
+../HARDWARE/Drive/Motor.c:122:6:Motor_GetEncoder	1
+../HARDWARE/Drive/Motor.c:132:10:Motor_GetDifcoder	3
+../HARDWARE/Drive/Motor.c:148:10:Motor_calculate_pulses	2
+../HARDWARE/Drive/Motor.c:177:6:Car_Go	2
+../HARDWARE/Drive/Motor.c:198:6:Car_Back	2
+../HARDWARE/Drive/Motor.c:220:6:Car_Left	2
+../HARDWARE/Drive/Motor.c:243:6:Car_Right	2
+../HARDWARE/Drive/Motor.c:267:6:Go_and_Back_Check	16
+../HARDWARE/Drive/Motor.c:316:6:TurnAngle_Check	5

@@ -16,6 +16,7 @@
 #include "adc.h"
 #include "can.h"
 #include "spi.h"
+#include "tim.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -23,6 +24,7 @@
 #include "oled_spi.h"
 #include "can_Tx.h"
 #include "can_RxSolve.h"
+#include "Motor.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -43,6 +45,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+
 
 /* USER CODE END PV */
 
@@ -89,6 +92,7 @@ int main(void)
   MX_CAN1_Init();
   MX_SPI1_Init();
   MX_ADC1_Init();
+  MX_TIM9_Init();
   /* USER CODE BEGIN 2 */
 
   /*测试发送结构体*/
@@ -122,12 +126,10 @@ int main(void)
   uint8_t KeyNum=0;
 
   /*启动CAN1*/
-  __HAL_CAN_ENABLE_IT(&hcan1,CAN_IT_RX_FIFO0_MSG_PENDING);
-  uint8_t error = HAL_CAN_Start(&hcan1);
+  MyCan_Init();
 
   /*OLED初始化*/
   OLED_Init();
-  OLED_ShowNum(0, 0, error, 2, OLED_6X8);
 
   OLED_ShowString(0, 0, "Info:", OLED_6X8);
   OLED_ShowString(0, 9, "WifiRx:", OLED_6X8);
@@ -141,7 +143,11 @@ int main(void)
 
 
   /*任务切片时间-ms*/
-  uint32_t ADC_TaskTime=50,ADC_LastTime=0;
+  uint32_t ADC_TaskTime=1000,ADC_LastTime=0;
+
+  /*电机初始化*/
+  Motor_Init();
+
 
   /* USER CODE END 2 */
 
@@ -149,6 +155,8 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+
+
 	  if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_15) == GPIO_PIN_RESET)
 	  {
 		 HAL_Delay(10);
@@ -176,7 +184,9 @@ int main(void)
 		  	  case 3:
 		  		CAN_TxtoMotor(12, 34);
 		  		break;
-
+		  	  case 4:
+		  		  Motor_Control(10,10);
+		  		  break;
 		  	  case 5:
 		  		CAN_TxtoNV(2);
 		  		break;

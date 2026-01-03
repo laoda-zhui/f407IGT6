@@ -1,0 +1,13 @@
+../HARDWARE/Drive/Motor.c:48:6:Motor_Init	8	static
+../HARDWARE/Drive/Motor.c:61:6:Motor_GetAngle	4	static
+../HARDWARE/Drive/Motor.c:71:10:Motor_GetDifAngle	16	static
+../HARDWARE/Drive/Motor.c:89:6:Motor_Control	16	static
+../HARDWARE/Drive/Motor.c:122:6:Motor_GetEncoder	4	static
+../HARDWARE/Drive/Motor.c:132:10:Motor_GetDifcoder	16	static
+../HARDWARE/Drive/Motor.c:148:10:Motor_calculate_pulses	48	static
+../HARDWARE/Drive/Motor.c:177:6:Car_Go	16	static
+../HARDWARE/Drive/Motor.c:198:6:Car_Back	16	static
+../HARDWARE/Drive/Motor.c:220:6:Car_Left	16	static
+../HARDWARE/Drive/Motor.c:243:6:Car_Right	16	static
+../HARDWARE/Drive/Motor.c:267:6:Go_and_Back_Check	24	static
+../HARDWARE/Drive/Motor.c:316:6:TurnAngle_Check	8	static
