@@ -21,7 +21,6 @@
 #include "can.h"
 
 /* USER CODE BEGIN 0 */
-
 /*CAN接收结构体*/
 CAN_RxHeaderTypeDef RxMsgArray;
 
@@ -31,21 +30,36 @@ uint8_t RxData[20]={0};
 /*CAN接收成功标志位 0-无数据 1-接收到数据*/
 uint8_t MyCAN_RxFlag = 0;
 
+uint8_t c,FilterNumber;
+
 /******************************************************************************
 CAN滤波器结构体数组 - 数组参考can.h
 成员:左边:ID 右边:MASK
-数组:1.显示模块 2.WiFi模块 3.Zigbee模块 4.寻迹模块 5.导航模块 6.主机模块 7.anything-留着接收从车等
+数组:0.显示模块 1.WiFi模块 2.Zigbee模块 3.寻迹模块 4.导航模块 5.主机模块 6.anything-留着接收从车等
 *******************************************************************************/
-static const Can_Filter_Struct SFilterArry[]={
-		{0x7800, 	0x7C00},	 /*1*/
-		{0x5000, 	0x7C00},	 /*2*/
-		{0x5400, 	0x7C00},	 /*3*/
-		{0x1C00, 	0x7C00},	 /*4*/
-		{0x2000, 	0x7C00},	 /*5*/
-		{0x3C00, 	0x7C00},	 /*6*/
-		{0	   ,		 0},	 /*7*/
-		{0	   ,		 0}		 /*补位，无作用,使总数为偶数*/
+Can_Filter_Struct SFilterArry[]=
+{
+
+	{CAN_SID_HL(ID_DISP,	ID_ZERO),CAN_SID_HL(ID_ALL,ID_ZERO)},	/*0*/
+	{CAN_SID_HL(ID_WIFI,	ID_ZERO),CAN_SID_HL(ID_ALL,ID_ZERO)},	/*1*/
+	{CAN_SID_HL(ID_ZIGBEE,	ID_ZERO),CAN_SID_HL(ID_ALL,ID_ZERO)},	/*2*/
+	{CAN_SID_HL(ID_TRACK,	ID_ZERO),CAN_SID_HL(ID_ALL,ID_ZERO)},	/*3*/
+	{CAN_SID_HL(ID_NAVIG,	ID_ZERO),CAN_SID_HL(ID_ALL,ID_ZERO)},	/*4*/
+	{CAN_SID_HL(ID_HOST,	ID_ZERO),CAN_SID_HL(ID_ALL,ID_ZERO)},	/*5*/
+	{0,0,}, /*6*/
+
 };
+
+
+static uint16_t CanDrv_Fiter_Create16bit(uint32_t s,uint32_t e,uint8_t RTR,uint8_t IDE)
+{
+    s &= 0x03ff;
+    RTR = (RTR)? 0x10:0;
+    IDE = (IDE)? 0x08:0;
+    e = (IDE)? (e>>15)&0x03:0;
+    return (uint16_t)(s<<5)|RTR|IDE|e;
+}
+
 
 
 /**************************************************************************
@@ -76,10 +90,10 @@ void MX_CAN1_Init(void)
 
   /* USER CODE END CAN1_Init 1 */
   hcan1.Instance = CAN1;
-  hcan1.Init.Prescaler = 3;
-  hcan1.Init.Mode = CAN_MODE_LOOPBACK;
+  hcan1.Init.Prescaler = 7;
+  hcan1.Init.Mode = CAN_MODE_NORMAL;
   hcan1.Init.SyncJumpWidth = CAN_SJW_2TQ;
-  hcan1.Init.TimeSeg1 = CAN_BS1_10TQ;
+  hcan1.Init.TimeSeg1 = CAN_BS1_2TQ;
   hcan1.Init.TimeSeg2 = CAN_BS2_3TQ;
   hcan1.Init.TimeTriggeredMode = DISABLE;
   hcan1.Init.AutoBusOff = ENABLE;
@@ -92,36 +106,6 @@ void MX_CAN1_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN CAN1_Init 2 */
-
-
-  /**************************************************************************
-   *  用户-配置和初始化滤波器
-   *  注意:SFilterArry结构体数组要为偶数倍(奇数倍麻烦不写)
-   **************************************************************************/
-  for(uint8_t i=0;i < (sizeof(SFilterArry)/sizeof(Can_Filter_Struct));i+=2)
-  {
-	  CAN_FilterTypeDef SFilterConfig;
-	  SFilterConfig.FilterBank = i/2;                     			/*使用过滤器组*/
-	  SFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK; 			/*使用掩码模式*/
-	  SFilterConfig.FilterScale = CAN_FILTERSCALE_16BIT; 			/*16位宽*/
-
-	  SFilterConfig.FilterIdLow = SFilterArry[i].sid_id;             /*验证码ID低16位*/
-	  SFilterConfig.FilterMaskIdLow = SFilterArry[i].sid_mask;       /*屏蔽码低16位 (0表示不关心该位)*/
-
-	  SFilterConfig.FilterIdHigh = SFilterArry[i+1].sid_id;          /*验证码ID高16位*/
-	  SFilterConfig.FilterMaskIdHigh = SFilterArry[i+1].sid_mask;      /*屏蔽码高16位 (0表示不关心该位)*/
-
-	  SFilterConfig.FilterFIFOAssignment = CAN_FILTER_FIFO0; 		 /*匹配的报文放入FIFO0*/
-	  SFilterConfig.FilterActivation = CAN_FILTER_ENABLE;          	 /*使能该过滤器*/
-	  if (HAL_CAN_ConfigFilter(&hcan1, &SFilterConfig) != HAL_OK)
-	  {
-	      Error_Handler();
-	  }
-
-  }
-
-  /*配置高速模式*/
-  Hard_Can_SpeedMode(0);
 
 
   /**************************************************************************
@@ -194,6 +178,59 @@ void HAL_CAN_MspDeInit(CAN_HandleTypeDef* canHandle)
 
 /* USER CODE BEGIN 1 */
 
+
+
+void Filter_Init(void)
+{
+	#define FXR1_LOW	CAN_FilterInitStructure.FilterIdLow
+	#define FXR1_HIG	CAN_FilterInitStructure.FilterIdHigh
+	#define FXR2_LOW	CAN_FilterInitStructure.FilterMaskIdLow
+	#define FXR2_HIG	CAN_FilterInitStructure.FilterMaskIdHigh
+
+	uint8_t len;
+	len = sizeof(SFilterArry)/sizeof(SFilterArry[0]);
+    FilterNumber = 0;
+    c = 0;
+
+    CAN_FilterTypeDef  CAN_FilterInitStructure;
+
+    CAN_FilterInitStructure.FilterFIFOAssignment = CAN_FILTER_FIFO0;
+	CAN_FilterInitStructure.FilterActivation = CAN_FILTER_ENABLE;
+
+
+    while(1)
+    {
+		CAN_FilterInitStructure.FilterMode	= CAN_FILTERMODE_IDMASK;
+		CAN_FilterInitStructure.FilterScale = CAN_FILTERSCALE_16BIT;
+		FXR1_LOW = CanDrv_Fiter_Create16bit(SFilterArry[c].sid_id,	 0,0,0);
+		FXR2_LOW = CanDrv_Fiter_Create16bit(SFilterArry[c].sid_mask, 0,0,0);
+		if(++c < len)
+		{
+			FXR1_HIG = CanDrv_Fiter_Create16bit(SFilterArry[c].sid_id,	0,0,0);
+			FXR2_HIG = CanDrv_Fiter_Create16bit(SFilterArry[c].sid_mask,0,0,0);
+		}
+
+		CAN_FilterInitStructure.FilterBank = FilterNumber;
+		HAL_CAN_ConfigFilter(&hcan1, &CAN_FilterInitStructure);
+
+		if(c < len)
+			c++;
+		else
+			break;
+
+		if(++FilterNumber >= 13)
+			break;
+
+    }
+}
+
+
+
+
+
+
+
+
 /**************************************************接收FIFO功能函数***************************************************************/
 
 /**************************************************************************
@@ -264,6 +301,9 @@ void MyCan_Init(void)
 {
 	  __HAL_CAN_ENABLE_IT(&hcan1,CAN_IT_RX_FIFO0_MSG_PENDING);
 	  HAL_CAN_Start(&hcan1);
+
+	  /*配置高速模式*/
+	  Hard_Can_SpeedMode(0);
 }
 
 /* USER CODE END 1 */

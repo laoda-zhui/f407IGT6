@@ -40,6 +40,22 @@ extern CAN_HandleTypeDef hcan1;
 
 /* USER CODE BEGIN Private defines */
 
+/*复制自商家的定义*/
+#define ID_MOTOR	0x01
+#define ID_TRACK	0x07
+#define ID_NAVIG	0x08
+#define ID_HOST		0x0f
+#define ID_WIFI		0x14
+#define ID_ZIGBEE	0x15
+#define ID_DISP		0x1e
+
+#define ID_ALL		0x3f
+#define ID_ZERO		0x00
+
+#define CAN_SID_HL(s,d)	((((uint16_t)s&0x3f)<<5)|(d&0x1f))
+
+
+
 /*CAN接收结构体*/
 extern CAN_RxHeaderTypeDef RxMsgArray;
 
@@ -74,6 +90,9 @@ void Hard_Can_SpeedMode(uint8_t f);
 
 /*MyCan初始化*/
 void MyCan_Init(void);
+
+void Filter_Init(void);
+
 
 /* USER CODE END Prototypes */
 

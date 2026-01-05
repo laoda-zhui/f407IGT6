@@ -31,7 +31,7 @@ extern "C" {
 /* USER CODE BEGIN Includes */
 #include "can.h"
 #include "can_Tx.h"
-#include "oled_spi.h"
+
 
 /* USER CODE END Includes */
 
@@ -47,6 +47,9 @@ void MX_ADC1_Init(void);
 
 /*电量检测函数*/
 void Power_TxandStart(void);
+
+
+
 
 /* USER CODE END Prototypes */
 

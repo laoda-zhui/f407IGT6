@@ -27,5 +27,7 @@ Core/Startup \
 Drivers/STM32F4xx_HAL_Driver/Src \
 HARDWARE/CAN \
 HARDWARE/Drive \
+HARDWARE/KEY \
+HARDWARE/LED \
 HARDWARE/Time_Interrupt \
 

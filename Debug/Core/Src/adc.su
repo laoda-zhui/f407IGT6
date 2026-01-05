@@ -1,5 +1,8 @@
-../Core/Src/adc.c:36:6:MX_ADC1_Init	24	static
-../Core/Src/adc.c:83:6:HAL_ADC_MspInit	48	static
-../Core/Src/adc.c:113:6:HAL_ADC_MspDeInit	16	static
-../Core/Src/adc.c:144:6:Power_TxandStart	16	static
-../Core/Src/adc.c:173:6:HAL_ADC_ConvCpltCallback	16	static
+../Core/Src/adc.c:35:6:Parameter_Init	4	static
+../Core/Src/adc.c:50:6:MX_ADC1_Init	24	static
+../Core/Src/adc.c:102:6:HAL_ADC_MspInit	48	static
+../Core/Src/adc.c:132:6:HAL_ADC_MspDeInit	16	static
+../Core/Src/adc.c:169:10:Smoothing_Filtering	24	static
+../Core/Src/adc.c:182:10:MLib_GetSub	16	static
+../Core/Src/adc.c:193:6:Power_TxandStart	16	static
+../Core/Src/adc.c:243:6:HAL_ADC_ConvCpltCallback	16	static

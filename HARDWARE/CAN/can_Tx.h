@@ -6,12 +6,17 @@
 #include "string.h"
 #include "stdio.h"
 
+#define	Can_TxMaxBuf	80	/*发送缓冲区最大空间 为8的倍数*/
+
 /*定义发送CAN通信id结构体*/
 typedef struct _CanP_Cmd_Struct
 {
 	uint32_t sid;/*标准Id*/
 	uint32_t eid;/*扩展Id*/
-	uint8_t  Data[8];
+	uint8_t  Data[Can_TxMaxBuf];/*发送数据缓冲区*/
+	uint16_t rp; /*读索引*/
+	uint16_t wp; /*写索引*/
+	uint8_t Flag;/*标志位*/
 }CanP_Cmd_Struct;
 
 
@@ -25,7 +30,7 @@ void Can_CmdStruct_Init(void);
 /*发送函数*/
 void CAN_TxtoWifi(uint8_t *Data, uint8_t len);
 void CAN_TxtoZigbee(uint8_t *Data, uint8_t len);
-void CAN_TxtoDisplay(uint8_t *Data, uint8_t len);
+void CAN_TxtoDisplay(char *Data, uint8_t len);
 void CAN_TxtoMotor(int x1, int x2);
 void CAN_TxtoCNT(void);
 void CAN_TxtoNV(uint16_t c);

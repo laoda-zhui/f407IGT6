@@ -12,8 +12,7 @@ uint16_t pulsesNeeded; 				// 单次运行的脉冲数总值，可与电机实�
 uint16_t oneCircle; 				// 单次转1圈的脉冲数总值
 
 
-uint16_t Pre_Encoder;		/*同步一次的码盘值*/
-uint16_t Pre_Angle;			/*同步一次的角度值*/
+int16_t Pre_Encoder;		/*同步一次的码盘值*/
 
 uint16_t Taget_Pulses=0; 	/*目标脉冲数*/
 
@@ -48,37 +47,12 @@ PID_t Turn_PID={
 void Motor_Init(void)
 {
 	HAL_TIM_Base_Start_IT(&htim9);	/*开启tim9中断*/
+	Motor_Control(0,0);
 }
 
 
 
 
-/**************************************************************************
-函数功能：同步一次当前的角度值
-入口参数：无
-返回  值：无
-**************************************************************************/
-void Motor_GetAngle(void)
-{
-    Pre_Angle = Current_Angle;
-}
-
-/**************************************************************************
-函数功能：获取角度差值
-入口参数：无
-返回  值：DifAngle-角度差值
-**************************************************************************/
-uint16_t Motor_GetDifAngle(void)
-{
-    uint16_t DifAngle;
-
-    if(Current_Angle > Pre_Angle){DifAngle = Current_Angle - Pre_Angle;}
-    else{DifAngle = Pre_Angle - Current_Angle;}
-
-    while(DifAngle >= 36000){DifAngle -= 36000;}
-
-    return DifAngle;
-}
 
 
 /**************************************************************************
@@ -88,26 +62,15 @@ uint16_t Motor_GetDifAngle(void)
 **************************************************************************/
 void Motor_Control(int L_Spend,int R_Spend)
 {
-    if(L_Spend>=0) 	/*限制速度参数*/
-    {
-        if(L_Spend>100)L_Spend=100;
-        if(L_Spend<5)L_Spend=5;
-    }
-    else
-    {
-        if(L_Spend<-100)L_Spend= -100;
-        if(L_Spend>-5)L_Spend= -5;
-    }
-    if(R_Spend>=0)
-    {
-        if(R_Spend>100)R_Spend=100;
-        if(R_Spend<5)R_Spend=5;
-    }
-    else
-    {
-        if(R_Spend<-100)R_Spend= -100;
-        if(R_Spend>-5)R_Spend= -5;
-    }
+	if(L_Spend > 120){L_Spend=120;}
+	if(L_Spend > 0 && L_Spend < 15){L_Spend = 15;}
+	if(L_Spend < -120){L_Spend=-120;}
+	if(L_Spend < 0 && L_Spend > -15){L_Spend = -15;}
+
+	if(R_Spend > 120){R_Spend=120;}
+	if(R_Spend > 0 && R_Spend < 15){R_Spend = 15;}
+	if(R_Spend < -120){R_Spend=-120;}
+	if(R_Spend < 0 && R_Spend > -15){R_Spend = -15;}
 
 
 	CAN_TxtoMotor(L_Spend, R_Spend);
@@ -119,7 +82,7 @@ void Motor_Control(int L_Spend,int R_Spend)
 入口参数：无
 返回  值：无
 **************************************************************************/
-void Motor_GetEncoder(void)
+void Motor_SyncEncoder(void)
 {
 	Pre_Encoder = CanHost_Mp;
 }
@@ -171,14 +134,15 @@ uint16_t Motor_calculate_pulses(double distance_cm)
 
 /**************************************************************************
 函数功能：控制小车前进
-入口参数：speed:速度(max=100)  temp:前进距离cm
+入口参数：speed:速度(max=120)  temp:前进距离cm
 返回  值：无
 **************************************************************************/
 void Car_Go(uint8_t speed, uint16_t temp)   // 主车前进 参数：速度/距离（厘米）
 {
+	Motor_SyncEncoder();      /*编码器同步一次*/
 	if(Go_Flag == 1){return;}
 
-	Motor_GetDifcoder();      /*编码器同步一次*/
+
 
     Stop_Flag = Task_Start;          // 运行状态标志位
     Go_Flag = 1;            // 前进标志位
@@ -192,15 +156,15 @@ void Car_Go(uint8_t speed, uint16_t temp)   // 主车前进 参数：速度/距�
 
 /**************************************************************************
 函数功能：控制小车后退
-入口参数：speed:速度(max=100)  temp:后退距离cm
+入口参数：speed:速度(max=120)  temp:后退距离cm
 返回  值：无
 **************************************************************************/
 void Car_Back(uint8_t speed, uint16_t temp) // 主车后退 参数：速度/距离（厘米）
 {
+	Motor_SyncEncoder();     /*编码器同步一次*/
 	if(Back_Flag == 1){return;}
 
 
-	Motor_GetDifcoder();     /*编码器同步一次*/
 
     Stop_Flag = Task_Start;          // 运行状态标志位
     Back_Flag = 1;          // 后退标志位
@@ -214,17 +178,17 @@ void Car_Back(uint8_t speed, uint16_t temp) // 主车后退 参数：速度/距�
 
 /**************************************************************************
 函数功能：控制小车左转
-入口参数：speed:速度(max=100) Angle:转弯角度
+入口参数：speed:速度(max=120) Angle:转弯角度
 返回  值：无
 **************************************************************************/
 void Car_Left(uint8_t speed, int16_t Angle)       // 主车左转 参数：速度
 {
+	Motor_SyncEncoder();     /*编码器同步一次*/
 	if(wheel_L_Flag == 1){return;}
 
 	PID_Clear(&Turn_PID);	/*清空一次转向pid*/
 
 	Turn_PID.Target = Angle;
-	Motor_GetAngle();	/*角度同步一次*/
 
     Stop_Flag = Task_Start;          // 运行状态标志位
     wheel_L_Flag = 1;       // 左转标志位
@@ -237,17 +201,17 @@ void Car_Left(uint8_t speed, int16_t Angle)       // 主车左转 参数：速�
 
 /**************************************************************************
 函数功能：控制小车右转
-入口参数：speed:速度(max=100) Angle:转弯角度
+入口参数：speed:速度(max=120) Angle:转弯角度
 返回  值：无
 **************************************************************************/
 void Car_Right(uint8_t speed, int16_t Angle)       // 主车右转 参数：速度
 {
+	Motor_SyncEncoder();     /*编码器同步一次*/
 	if(wheel_R_Flag == 1){return;}
 
 	PID_Clear(&Turn_PID);	/*清空一次转向pid*/
 
 	Turn_PID.Target = -Angle;
-	Motor_GetAngle();	/*角度同步一次*/
 
     Stop_Flag = Task_Start;          // 运行状态标志位
     wheel_R_Flag = 1;       // 右转标志位
@@ -319,16 +283,16 @@ void TurnAngle_Check(void)
 	{
 		PID_Update(&Turn_PID);
 
-		if(Pre_Angle <= Motor_GetDifAngle()) // 行驶距离大于等于需要行驶的码盘值/距离时，停车
-		{
-			Stop_Flag = Task_Complete;
-			Car_Spend_ing = 50;
-			Motor_Control(0,0);		// 停止
-		}
-		else
-		{
-			Motor_Control((int)(Car_Spend+Turn_PID.Out), (int)(Car_Spend-Turn_PID.Out));	/*我也不想写屎山*/
-		}
+//		if(Pre_Angle <= Motor_GetDifAngle()) // 行驶距离大于等于需要行驶的码盘值/距离时，停车
+//		{
+//			Stop_Flag = Task_Complete;
+//			Car_Spend_ing = 50;
+//			Motor_Control(0,0);		// 停止
+//		}
+//		else
+//		{
+//			Motor_Control((int)(Car_Spend+Turn_PID.Out), (int)(Car_Spend-Turn_PID.Out));	/*我也不想写屎山*/
+//		}
 	}
 
 }

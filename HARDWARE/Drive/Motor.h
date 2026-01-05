@@ -9,8 +9,8 @@
 
 /*任务状态*/
 enum Task_Flag{
-	Task_Start 	  = 	0x00,	/*小车启动*/
-	Task_Complete = 	0x01,	/*小车完成*/
+	Task_Start 	  = 	1,	/*小车启动*/
+	Task_Complete = 	2,	/*小车完成*/
 
 };
 
@@ -38,8 +38,9 @@ void Motor_Init(void);
 void Go_and_Back_Check(void);
 void TurnAngle_Check(void);
 
-
-
+uint16_t Motor_calculate_pulses(double distance_cm);
+uint16_t Motor_GetDifcoder(void);
+void Motor_SyncEncoder(void);
 
 
 #endif /* DRIVE_MOTOR_H_ */

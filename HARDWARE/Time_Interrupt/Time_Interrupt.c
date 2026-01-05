@@ -20,7 +20,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		Go_and_Back_Check();
 
 	}
-
+	if(htim == &htim10) /*Motor-TIM10中断 psc:168-1 arr:=20000-1 中断时间:20ms*/
+	{
+		KeyNum_Tick();
+	}
 
 }
 

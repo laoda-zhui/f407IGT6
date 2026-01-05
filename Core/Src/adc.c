@@ -22,11 +22,25 @@
 
 /* USER CODE BEGIN 0 */
 
+#define PWR_MAX  12000.0    // 12V
+#define PWR_MIN   9000.0    // 9V
+#define PWR_DV   (PWR_MAX - PWR_MIN)
 
-uint16_t ADC_Data=0;
-uint8_t ADC_BeginFlag=0, Power=0;
+uint16_t ADC_Data=0,ADC_DataPre=0,ADC_DataValue=0;
 
-float Pa = (3300*11*100/4095.0/3000.0), Pb = 300.0;
+uint8_t ADC_BeginFlag=0, Power=0, i=0;
+
+float Pa = 0, Pb = 0;
+
+void Parameter_Init(void) // 电量计算参数初始化
+{
+	 Pb =(float) (PWR_MIN / PWR_DV);
+	 Pb *= 100;
+
+	 Pa = (float)(3300*11)/4096 ;
+	 Pa = (float)((Pa *100) /PWR_DV);
+}
+
 
 /* USER CODE END 0 */
 
@@ -76,6 +90,11 @@ void MX_ADC1_Init(void)
   }
   /* USER CODE BEGIN ADC1_Init 2 */
 
+  Parameter_Init();
+
+
+
+
   /* USER CODE END ADC1_Init 2 */
 
 }
@@ -102,7 +121,7 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
     /* ADC1 interrupt Init */
-    HAL_NVIC_SetPriority(ADC_IRQn, 4, 0);
+    HAL_NVIC_SetPriority(ADC_IRQn, 13, 0);
     HAL_NVIC_EnableIRQ(ADC_IRQn);
   /* USER CODE BEGIN ADC1_MspInit 1 */
 
@@ -136,6 +155,36 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
 
 /* USER CODE BEGIN 1 */
 
+/*---------------------------------------------------
+函数名称: Filter()
+函数功能: 平滑滤波
+参数    : 带滤波样本
+返回值  ：滤波结果
+-----------------------------------------------------*/
+#define FILTER_N 10		     //定义数组长度为八位
+
+uint16_t filter_buf[FILTER_N+1];  //定义数组
+
+
+uint16_t Smoothing_Filtering(uint16_t value)
+{
+	int i;
+	uint16_t filter_sum=0;
+	filter_buf[FILTER_N] = value;		  //AD转换的值赋给数组的最后一个值
+	for(i=0;i<FILTER_N;i++)
+	{
+		filter_buf[i]=filter_buf[i+1];	  //所有的数据左移，数组第一个元素摒弃
+		filter_sum+=filter_buf[i];
+	}
+	return(uint16_t)(filter_sum/FILTER_N);		  //返回对数组里的元素求得的平均值
+}
+
+uint32_t MLib_GetSub(uint32_t a,uint32_t b)
+{
+	return (a > b)? a-b:b-a;
+}
+
+
 /**************************************************************************
 函数功能：启动检测电量并上传数据
 入口参数：无
@@ -147,21 +196,42 @@ void Power_TxandStart(void)
 	{
 		ADC_BeginFlag = 0;
 
-		ADC_Data = (Pa*ADC_Data); // 电量计算方法
-		if(ADC_Data < Pb)
+		ADC_Data = (uint16_t)(ADC_Data/10.0);
+		ADC_Data = Smoothing_Filtering(ADC_Data);
+		ADC_DataValue = MLib_GetSub(ADC_Data,ADC_DataPre);
+
+		if(ADC_DataPre == 0)
 		{
-			Power =0;
+			ADC_Data = (Pa * ADC_Data); // 电量计算方法
+			if(ADC_Data < Pb){Power =0;}
+			else
+			{
+			   Power = (uint8_t) ( ADC_Data - Pb);
+			   if( Power >100){Power =100;}
+			}
+
+			CAN_TxtoPower(1, Power);
 		}
-		else
+
+		ADC_DataPre = ADC_Data;
+
+		if(ADC_DataValue > 10)
 		{
-			Power = (uint8_t)(ADC_Data - Pb);
-			if(Power > 100){Power =100;}
+			ADC_Data = (Pa * ADC_Data); // 电量计算方法
+			if( ADC_Data < Pb ){Power =0;}
+			else
+			{
+				Power = (uint8_t)(ADC_Data - Pb);
+				if( Power >100){Power =100;}
+			}
+			CAN_TxtoPower(1, Power);
 		}
-		CAN_TxtoPower(1, Power);
 
 	}
 	HAL_ADC_Start_IT(&hadc1);
 }
+
+
 
 
 
@@ -174,8 +244,15 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
 	if(hadc == &hadc1)
 	{
-		ADC_Data = HAL_ADC_GetValue(hadc);
-		ADC_BeginFlag = 1;
+		ADC_Data += HAL_ADC_GetValue(hadc);
+		i++;
+		if(i >= 10)
+		{
+			i = 0;
+			ADC_BeginFlag = 1;
+		}
+
+
 	}
 
 }

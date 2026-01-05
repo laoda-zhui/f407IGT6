@@ -60,8 +60,22 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define CAN_Select_Pin GPIO_PIN_10
 #define CAN_Select_GPIO_Port GPIOF
-#define res_Pin GPIO_PIN_4
-#define res_GPIO_Port GPIOC
+#define LED1_Pin GPIO_PIN_12
+#define LED1_GPIO_Port GPIOH
+#define LED2_Pin GPIO_PIN_13
+#define LED2_GPIO_Port GPIOH
+#define LED3_Pin GPIO_PIN_14
+#define LED3_GPIO_Port GPIOH
+#define LED4_Pin GPIO_PIN_15
+#define LED4_GPIO_Port GPIOH
+#define KEY1_Pin GPIO_PIN_4
+#define KEY1_GPIO_Port GPIOI
+#define KEY2_Pin GPIO_PIN_5
+#define KEY2_GPIO_Port GPIOI
+#define KEY3_Pin GPIO_PIN_6
+#define KEY3_GPIO_Port GPIOI
+#define KEY4_Pin GPIO_PIN_7
+#define KEY4_GPIO_Port GPIOI
 
 /* USER CODE BEGIN Private defines */
 

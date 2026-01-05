@@ -21,14 +21,14 @@ uint16_t Current_Angle;	/*猜测为当前航向角度*/
 
 
 /*接受的数据*/
-int16_t CanHost_Mp=0;	/*码盘值A*/
-int16_t CanHost_Mp1=0;	/*码盘值B*/
-int16_t CanHost_Mp2=0;	/*码盘值C*/
-int16_t CanHost_Mp3=0;	/*码盘值D*/
+int16_t CanHost_Mp=0;	/*码盘值左*/
+int16_t CanHost_Mp1=0;	/*码盘值右*/
+int16_t CanHost_Mp2=0;	/*码盘值不使用*/
+int16_t CanHost_Mp3=0;	/*码盘值不使用*/
 
-float pitch=0;	/*pitch是围绕X轴旋转，也叫做俯仰角*/
-float yaw=0;	/*yaw是围绕Y轴旋转，也叫偏航角*/
-float roll=0;	/*roll是围绕Z轴旋转，也叫翻滚角*/
+float pitch=0;	/*pitch是围绕X轴旋转，也叫做俯仰角(不使用)	  如无功能扩展板则不使用*/
+float yaw=0;	/*yaw是围绕Y轴旋转，也叫偏航角	 (不使用)	  如无功能扩展板则不使用*/
+float roll=0;	/*roll是围绕Z轴旋转，也叫翻滚角	 (不使用)		  如无功能扩展板则不使用*/
 
 
 /*******************************************************以上为初始化*****************************************************************/

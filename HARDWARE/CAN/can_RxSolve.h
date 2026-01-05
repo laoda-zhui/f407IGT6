@@ -28,6 +28,18 @@ extern uint8_t FifoBuf_Anything[FIFOSIZE_ZIGBTX];	/*接收任何信息*/
 void CanRx_Loop(void);
 
 extern int16_t CanHost_Mp; /*码盘值A*/
+extern int16_t CanHost_Mp1;	/*码盘值B*/
+extern int16_t CanHost_Mp2;	/*码盘值C*/
+extern int16_t CanHost_Mp3;	/*码盘值D*/
+
 extern uint16_t Current_Angle;	/*猜测为当前航向角度*/
+
+extern float pitch;	/*pitch是围绕X轴旋转，也叫做俯仰角*/
+extern float yaw;	/*yaw是围绕Y轴旋转，也叫偏航角*/
+extern float roll;	/*roll是围绕Z轴旋转，也叫翻滚角*/
+
+
+extern uint8_t x1,x2; /*循迹拆分数据x1:循迹板后面8个灯状况 x2：循迹板后面7个灯状况(循迹板b档情况下x1有效)*/
+
 
 #endif /* CAN_CAN_RXSOLVE_H_ */

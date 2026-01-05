@@ -15,16 +15,16 @@
 #include "main.h"
 #include "adc.h"
 #include "can.h"
-#include "spi.h"
 #include "tim.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "oled_spi.h"
 #include "can_Tx.h"
 #include "can_RxSolve.h"
 #include "Motor.h"
+#include "LED.h"
+#include "KEY.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -90,12 +90,12 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_CAN1_Init();
-  MX_SPI1_Init();
   MX_ADC1_Init();
   MX_TIM9_Init();
+  MX_TIM10_Init();
   /* USER CODE BEGIN 2 */
 
-  /*测试发送结构体*/
+//  /*测试发送结构体*/
 //  CAN_TxHeaderTypeDef TxMsgArray[] = {
 //  /*  StdId   ExtId        IDE          RTR        DLC*/
 //  	{0x3C0, 0x00000000, CAN_ID_STD, CAN_RTR_DATA,   8,},
@@ -106,47 +106,37 @@ int main(void)
 //	{0x1E0, 0x00000000, CAN_ID_STD, CAN_RTR_DATA,   8,},
 //	{0x1B3, 0x00000000, CAN_ID_STD, CAN_RTR_DATA,   8,}
 //  };
+//
+//  uint8_t index=0;/*发送数组的索引*/
+//  uint8_t TxData[][8]={ /*发送can数据数组 -测试*/
+//		  {0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11},
+//		  {0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22},
+//		  {0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33},
+//		  {0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44},
+//		  {0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55},
+//		  {0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66},
+//		  {0x77, 0x77, 0x77, 0x77, 0x77, 0x77, 0x77, 0x77},
+//		  {0x88, 0x88, 0x88, 0x88, 0x88, 0x88, 0x88, 0x88},
+//		  {0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99},
+//		  {0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA}
+//  };
 
-  uint8_t index=0;/*发送数组的索引*/
-  uint8_t TxData[][8]={ /*发送can数据数组 -测试*/
-		  {0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11},
-		  {0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22},
-		  {0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33},
-		  {0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44},
-		  {0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55},
-		  {0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66},
-		  {0x77, 0x77, 0x77, 0x77, 0x77, 0x77, 0x77, 0x77},
-		  {0x88, 0x88, 0x88, 0x88, 0x88, 0x88, 0x88, 0x88},
-		  {0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99},
-		  {0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA}
-  };
 
-
-  /*键值*/
+  /*获取键值对函数初始化*/
+  Key_Init();
   uint8_t KeyNum=0;
 
   /*启动CAN1*/
   MyCan_Init();
-
-  /*OLED初始化*/
-  OLED_Init();
-
-  OLED_ShowString(0, 0, "Info:", OLED_6X8);
-  OLED_ShowString(0, 9, "WifiRx:", OLED_6X8);
-  OLED_ShowString(0, 18, "ZigbRx:", OLED_6X8);
-  OLED_ShowString(0, 27, "Track:", OLED_6X8);
-  OLED_ShowString(0, 36, "Navig:", OLED_6X8);
-  OLED_ShowString(0, 45, "HOST", OLED_6X8);
-  OLED_ShowString(0, 54, "Anything", OLED_6X8);
-
-  OLED_UpDate();
-
+  Filter_Init();
 
   /*任务切片时间-ms*/
-  uint32_t ADC_TaskTime=1000,ADC_LastTime=0;
+  uint32_t ADC_TaskTime=100,ADC_LastTime=0;
 
   /*电机初始化*/
   Motor_Init();
+
+  int16_t Data;
 
 
   /* USER CODE END 2 */
@@ -155,139 +145,54 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-
-
-	  if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_15) == GPIO_PIN_RESET)
+	  KeyNum = Key_GetNum();
+	  if(KeyNum)
 	  {
-		 HAL_Delay(10);
-		 while(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_15) == GPIO_PIN_RESET);
-		 HAL_Delay(10);
-		 KeyNum = 1;
-	  }
-
-	  if(KeyNum == 1)
-	  {
-		  OLED_ShowNum(0, 10, index, 2, OLED_6X8);
-		  OLED_UpDate();
-		  KeyNum=0;
-		  switch(index)
+		  if(KeyNum == 1)
 		  {
-		  	  case 0:
-		  		CAN_TxtoWifi(TxData[index], 8);
-		  		break;
-		  	  case 1:
-		  		CAN_TxtoZigbee(TxData[index], 8);
-		  		break;
-		  	  case 2:
-		  		CAN_TxtoDisplay(TxData[index], 8);
-		  		break;
-		  	  case 3:
-		  		CAN_TxtoMotor(12, 34);
-		  		break;
-		  	  case 4:
-		  		  Motor_Control(10,10);
-		  		  break;
-		  	  case 5:
-		  		CAN_TxtoNV(2);
-		  		break;
-		  	  case 6:
-		  		CAN_TxtoPower(45, 67);
-		  		break;
-		  	  case 7:
-		  		CAN_TxtoT0(8);
-		  		break;
-		  	  case 8:
-		  		CAN_TxtoT1(11, 11);
-		  		break;
-		  	  case 9:
-		  		CAN_TxtoT2(100);
-		  		break;
+			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_12);
+			  Motor_SyncEncoder();
+
+			  Motor_Control(0,0);
 		  }
-		  index++;
-		  if(index >9){index = 0;}
+		  if(KeyNum == 2)
+		  {
+			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_13);
+			  Motor_Control(0, 0);
+		  }
+		  if(KeyNum == 3)
+		  {
+			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_14);
+			  Car_Back(50, 50);
+			  if(Stop_Flag == Task_Complete)
+			  {
+				  Car_Go(50, 50);
+				  Back_Flag = 0;
+			  }
+
+		  }
+		  if(KeyNum == 4)
+		  {
+			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_15);
+			  Data = Motor_GetDifcoder();;
+			  char data1[8];
+			  sprintf(data1,"%d\n",Data);
+			  CAN_TxtoDisplay(data1, strlen(data1));
+
+		  }
 	  }
+
+
 	  CanRx_Loop();
 	  CAN_TxLoop();
 
-	  if( (HAL_GetTick() - ADC_LastTime) > ADC_TaskTime)
+	  if( (HAL_GetTick() - ADC_LastTime) > ADC_TaskTime) /*ADC_TaskTime-100ms 触发十次后 上传电量数据*/
 	  {
 		  Power_TxandStart();
 		  ADC_LastTime = HAL_GetTick();
 	  }
 
 
-	  OLED_ShowHexNum(40, 0,  FifoBuf_Info[0], 2, OLED_6X8); //1
-	  OLED_ShowHexNum(52, 0,  FifoBuf_Info[1], 2,  OLED_6X8);
-	  OLED_ShowHexNum(64, 0,  FifoBuf_Info[2], 2,  OLED_6X8);
-	  OLED_ShowHexNum(76, 0,  FifoBuf_Info[3], 2, OLED_6X8);
-	  OLED_ShowHexNum(88, 0,  FifoBuf_Info[4], 2, OLED_6X8); //1
-	  OLED_ShowHexNum(100, 0,  FifoBuf_Info[5], 2,  OLED_6X8);
-	  OLED_ShowHexNum(112, 0,  FifoBuf_Info[6], 2,  OLED_6X8);
-	  OLED_ShowHexNum(124, 0,  FifoBuf_Info[7], 2, OLED_6X8);
-
-
-	  OLED_ShowHexNum(40, 9,  FifoBuf_WifiRx[0], 2, OLED_6X8); //2
-	  OLED_ShowHexNum(52, 9,  FifoBuf_WifiRx[1], 2,  OLED_6X8);
-	  OLED_ShowHexNum(64, 9,  FifoBuf_WifiRx[2], 2,  OLED_6X8);
-	  OLED_ShowHexNum(76, 9,  FifoBuf_WifiRx[3], 2, OLED_6X8);
-	  OLED_ShowHexNum(88, 9,  FifoBuf_WifiRx[4], 2, OLED_6X8); //2
-	  OLED_ShowHexNum(100, 9,  FifoBuf_WifiRx[5], 2,  OLED_6X8);
-	  OLED_ShowHexNum(112, 9,  FifoBuf_WifiRx[6], 2,  OLED_6X8);
-	  OLED_ShowHexNum(124, 9,  FifoBuf_WifiRx[7], 2, OLED_6X8);
-
-
-	  OLED_ShowHexNum(40, 18,  FifoBuf_ZigbRx[0], 2, OLED_6X8); //3
-	  OLED_ShowHexNum(52, 18,  FifoBuf_ZigbRx[1], 2,  OLED_6X8);
-	  OLED_ShowHexNum(64, 18,  FifoBuf_ZigbRx[2], 2,  OLED_6X8);
-	  OLED_ShowHexNum(76, 18,  FifoBuf_ZigbRx[3], 2, OLED_6X8);
-	  OLED_ShowHexNum(88, 18,  FifoBuf_ZigbRx[4], 2, OLED_6X8); //3
-	  OLED_ShowHexNum(100, 18,  FifoBuf_ZigbRx[5], 2,  OLED_6X8);
-	  OLED_ShowHexNum(112, 18,  FifoBuf_ZigbRx[6], 2,  OLED_6X8);
-	  OLED_ShowHexNum(124, 18,  FifoBuf_ZigbRx[7], 2, OLED_6X8);
-
-
-	  OLED_ShowHexNum(40, 27,  FifoBuf_Track[0], 2, OLED_6X8);//4
-	  OLED_ShowHexNum(52, 27,  FifoBuf_Track[1], 2,  OLED_6X8);
-	  OLED_ShowHexNum(64, 27,  FifoBuf_Track[2], 2,  OLED_6X8);
-	  OLED_ShowHexNum(76, 27,  FifoBuf_Track[3], 2, OLED_6X8);
-	  OLED_ShowHexNum(88, 27,  FifoBuf_Track[4], 2, OLED_6X8);//4
-	  OLED_ShowHexNum(100, 27,  FifoBuf_Track[5], 2,  OLED_6X8);
-	  OLED_ShowHexNum(112, 27,  FifoBuf_Track[6], 2,  OLED_6X8);
-	  OLED_ShowHexNum(124, 27,  FifoBuf_Track[7], 2, OLED_6X8);
-
-
-	  OLED_ShowHexNum(40, 36,  FifoBuf_Navig[0], 2, OLED_6X8);//5
-	  OLED_ShowHexNum(52, 36,  FifoBuf_Navig[1], 2,  OLED_6X8);
-	  OLED_ShowHexNum(64, 36,  FifoBuf_Navig[2], 2,  OLED_6X8);
-	  OLED_ShowHexNum(76, 36,  FifoBuf_Navig[3], 2, OLED_6X8);
-	  OLED_ShowHexNum(88, 36,  FifoBuf_Navig[4], 2, OLED_6X8);//5
-	  OLED_ShowHexNum(100, 36,  FifoBuf_Navig[5], 2,  OLED_6X8);
-	  OLED_ShowHexNum(112, 36,  FifoBuf_Navig[6], 2,  OLED_6X8);
-	  OLED_ShowHexNum(124, 36,  FifoBuf_Navig[7], 2, OLED_6X8);
-
-
-	  OLED_ShowHexNum(40, 45,  FifoBuf_HOST[0], 2, OLED_6X8);//6
-	  OLED_ShowHexNum(52, 45,  FifoBuf_HOST[1], 2,  OLED_6X8);
-	  OLED_ShowHexNum(64, 45,  FifoBuf_HOST[2], 2,  OLED_6X8);
-	  OLED_ShowHexNum(76, 45,  FifoBuf_HOST[3], 2, OLED_6X8);
-	  OLED_ShowHexNum(88, 45,  FifoBuf_HOST[4], 2, OLED_6X8);//6
-	  OLED_ShowHexNum(100, 45,  FifoBuf_HOST[5], 2,  OLED_6X8);
-	  OLED_ShowHexNum(112, 45,  FifoBuf_HOST[6], 2,  OLED_6X8);
-	  OLED_ShowHexNum(124, 45,  FifoBuf_HOST[7], 2, OLED_6X8);
-
-
-	  OLED_ShowHexNum(40, 54,  FifoBuf_Anything[0], 2, OLED_6X8);//7
-	  OLED_ShowHexNum(52, 54,  FifoBuf_Anything[1], 2,  OLED_6X8);
-	  OLED_ShowHexNum(64, 54,  FifoBuf_Anything[2], 2,  OLED_6X8);
-	  OLED_ShowHexNum(76, 54,  FifoBuf_Anything[3], 2, OLED_6X8);
-	  OLED_ShowHexNum(88, 54,  FifoBuf_Anything[4], 2, OLED_6X8);//7
-	  OLED_ShowHexNum(100, 54,  FifoBuf_Anything[5], 2,  OLED_6X8);
-	  OLED_ShowHexNum(112, 54,  FifoBuf_Anything[6], 2,  OLED_6X8);
-	  OLED_ShowHexNum(124, 54,  FifoBuf_Anything[7], 2, OLED_6X8);
-
-
-
-	  OLED_UpDate();
 
 
 
@@ -321,8 +226,8 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLM = 4;
-  RCC_OscInitStruct.PLL.PLLN = 168;
+  RCC_OscInitStruct.PLL.PLLM = 25;
+  RCC_OscInitStruct.PLL.PLLN = 336;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
   RCC_OscInitStruct.PLL.PLLQ = 4;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
