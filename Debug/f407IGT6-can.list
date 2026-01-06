@@ -31,25 +31,25 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY
  13 .debug_info   00014905  00000000  00000000  00008340  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_abbrev 00003bcf  00000000  00000000  0001cc45  2**0
+ 14 .debug_abbrev 00003be0  00000000  00000000  0001cc45  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_loclists 00008be6  00000000  00000000  00020814  2**0
+ 15 .debug_loclists 00008be6  00000000  00000000  00020825  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_aranges 00000ee8  00000000  00000000  00029400  2**3
+ 16 .debug_aranges 00000ee8  00000000  00000000  00029410  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_rnglists 00001057  00000000  00000000  0002a2e8  2**0
+ 17 .debug_rnglists 00001057  00000000  00000000  0002a2f8  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_macro  000252f8  00000000  00000000  0002b33f  2**0
+ 18 .debug_macro  000252f8  00000000  00000000  0002b34f  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .debug_line   000192a6  00000000  00000000  00050637  2**0
+ 19 .debug_line   000192a6  00000000  00000000  00050647  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 20 .debug_str    000db3ad  00000000  00000000  000698dd  2**0
+ 20 .debug_str    000db3ad  00000000  00000000  000698ed  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .comment      00000043  00000000  00000000  00144c8a  2**0
+ 21 .comment      00000043  00000000  00000000  00144c9a  2**0
                   CONTENTS, READONLY
- 22 .debug_frame  000036e8  00000000  00000000  00144cd0  2**2
+ 22 .debug_frame  000036e8  00000000  00000000  00144ce0  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 23 .debug_line_str 0000006f  00000000  00000000  001483b8  2**0
+ 23 .debug_line_str 0000006f  00000000  00000000  001483c8  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -1718,18 +1718,18 @@ void MX_CAN1_Init(void)
   hcan1.Instance = CAN1;
  80011d6:	480f      	ldr	r0, [pc, #60]	@ (8001214 <MX_CAN1_Init+0x40>)
  80011d8:	4c0f      	ldr	r4, [pc, #60]	@ (8001218 <MX_CAN1_Init+0x44>)
-  hcan1.Init.Prescaler = 7;
- 80011da:	2107      	movs	r1, #7
+  hcan1.Init.Prescaler = 3;
+ 80011da:	2103      	movs	r1, #3
   hcan1.Init.Mode = CAN_MODE_NORMAL;
  80011dc:	2200      	movs	r2, #0
   hcan1.Init.SyncJumpWidth = CAN_SJW_2TQ;
  80011de:	f04f 7380 	mov.w	r3, #16777216	@ 0x1000000
-  hcan1.Init.Prescaler = 7;
+  hcan1.Init.Prescaler = 3;
  80011e2:	e9c0 4100 	strd	r4, r1, [r0]
   hcan1.Init.SyncJumpWidth = CAN_SJW_2TQ;
  80011e6:	e9c0 2302 	strd	r2, r3, [r0, #8]
-  hcan1.Init.TimeSeg1 = CAN_BS1_2TQ;
- 80011ea:	f44f 3480 	mov.w	r4, #65536	@ 0x10000
+  hcan1.Init.TimeSeg1 = CAN_BS1_10TQ;
+ 80011ea:	f44f 2410 	mov.w	r4, #589824	@ 0x90000
   hcan1.Init.TimeSeg2 = CAN_BS2_3TQ;
  80011ee:	f44f 1100 	mov.w	r1, #2097152	@ 0x200000
   hcan1.Init.TimeTriggeredMode = DISABLE;

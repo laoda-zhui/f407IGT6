@@ -159,9 +159,6 @@ uint8_t Can_BufRead(CanP_Cmd_Struct *CanBuf,uint8_t *Data)
 
 }
 
-
-
-
 /***************************************************以上为缓冲区操作************************************************************/
 
 
@@ -376,7 +373,7 @@ void CAN_TxtoT2(uint8_t time)  // 设置循迹数据上传时间间隔
 
 
 
-
+/***********************************刷新判断是否有数据*****************************************************/
 
 static uint8_t retry_data_zigbee[8],retry_data_Wifi[8],retry_data_Dis[8];  // 重发数据缓冲区
 static uint8_t retry_size_zigbee = 0, retry_size_Wifi = 0, retry_size_Dis = 0; // 重发数据大小

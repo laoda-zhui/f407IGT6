@@ -6271,7 +6271,7 @@ LOAD C:/AppData/STM32CubeIDE_1.19.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mc
  .debug_info    0x000139a2      0x8c5 ./HARDWARE/KEY/KEY.o
  .debug_info    0x00014267      0x69e ./HARDWARE/Time_Interrupt/Time_Interrupt.o
 
-.debug_abbrev   0x00000000     0x3bcf
+.debug_abbrev   0x00000000     0x3be0
  .debug_abbrev  0x00000000      0x341 ./Core/Src/adc.o
  .debug_abbrev  0x00000341      0x398 ./Core/Src/can.o
  .debug_abbrev  0x000006d9      0x16f ./Core/Src/gpio.o
@@ -6293,11 +6293,11 @@ LOAD C:/AppData/STM32CubeIDE_1.19.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mc
  .debug_abbrev  0x00002864      0x38f ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.o
  .debug_abbrev  0x00002bf3      0x363 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.o
  .debug_abbrev  0x00002f56      0x143 ./HARDWARE/CAN/can_RxSolve.o
- .debug_abbrev  0x00003099      0x30f ./HARDWARE/CAN/can_Tx.o
- .debug_abbrev  0x000033a8      0x396 ./HARDWARE/Drive/Motor.o
- .debug_abbrev  0x0000373e       0xc0 ./HARDWARE/Drive/PID.o
- .debug_abbrev  0x000037fe      0x243 ./HARDWARE/KEY/KEY.o
- .debug_abbrev  0x00003a41      0x18e ./HARDWARE/Time_Interrupt/Time_Interrupt.o
+ .debug_abbrev  0x00003099      0x320 ./HARDWARE/CAN/can_Tx.o
+ .debug_abbrev  0x000033b9      0x396 ./HARDWARE/Drive/Motor.o
+ .debug_abbrev  0x0000374f       0xc0 ./HARDWARE/Drive/PID.o
+ .debug_abbrev  0x0000380f      0x243 ./HARDWARE/KEY/KEY.o
+ .debug_abbrev  0x00003a52      0x18e ./HARDWARE/Time_Interrupt/Time_Interrupt.o
 
 .debug_loclists
                 0x00000000     0x8be6
