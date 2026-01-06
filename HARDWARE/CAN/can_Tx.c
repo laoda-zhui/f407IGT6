@@ -1,35 +1,60 @@
 #include "can_Tx.h"
 
-/**************************************************接收初始化***************************************************************/
+/*
+ * Wifi zigbee	display 采用80字节环形缓冲区 读写同时进行
+ * 剩下采用命令采用 写入即发(buf=8字节)
+ * */
 
+/**************************************************接收初始化***************************************************************/
+#define	Can_TxMaxBuf	80	/*发送缓冲区最大空间 wifi zigbee display*/
+#define Can_CmdMaxBuf	8	/*剩下命令缓冲区最大空间*/
+
+/*创建发送CAN结构体buf缓冲区数组*/
+uint8_t Can_WifiBuf[Can_TxMaxBuf] = {0};
+uint8_t Can_ZigbeeBuf[Can_TxMaxBuf] = {0};
+uint8_t Can_DisplayBuf[Can_TxMaxBuf] = {0};
+
+uint8_t Can_MotorBuf[Can_CmdMaxBuf] = {0};
+uint8_t Can_CNTBuf[Can_CmdMaxBuf] = {0};
+uint8_t Can_NVBuf[Can_CmdMaxBuf] = {0};
+uint8_t Can_PowerBuf[Can_CmdMaxBuf] = {0};
+uint8_t Can_T0Buf[Can_CmdMaxBuf] = {0};
+uint8_t Can_T1Buf[Can_CmdMaxBuf] = {0};
+uint8_t Can_T2Buf[Can_CmdMaxBuf] = {0};
 
 
 /*创建发送CAN结构体数组*/
 CanP_Cmd_Struct CanP_Cmd_SBuf[10]={
-		/*       StdId            				 ExtId		 	 索引   名称	 */
-		{.sid =CAN_SID_HL(ID_WIFI,0), 		 .eid = 0x00000000},/*0   WiFi	 */
-		{.sid =CAN_SID_HL(ID_ZIGBEE,0), 	 .eid = 0x00000000},/*1   Zigbee */
-		{.sid =CAN_SID_HL(ID_DISP,0), 		 .eid = 0x00000000},/*2   Display*/
-		{.sid =CAN_SID_HL(ID_MOTOR,0), 		 .eid = 0x00000000},/*3   Motor	 */
-		{.sid =CAN_SID_HL(ID_HOST,0), 		 .eid = 0x00000000},/*4   CNT	 */
-		{.sid =CAN_SID_HL(ID_NAVIG,ID_NAVIG),.eid = 0x00000000},/*5   NV	 */
-		{.sid =CAN_SID_HL(ID_HOST,0), 		 .eid = 0x00000000},/*6   Power	 */
-		{.sid =CAN_SID_HL(ID_TRACK,ID_HOST), .eid = 0x00000000},/*7   T0	 */
-		{.sid =CAN_SID_HL(ID_TRACK,ID_HOST), .eid = 0x00000000},/*8   T1	 */
-		{.sid =CAN_SID_HL(ID_TRACK,ID_HOST), .eid = 0x00000000},/*9   T2	 */
+		/*       StdId            				    ExtId		 	 	Data			 索引   名称	 */
+		{.sid =CAN_SID_HL(ID_WIFI,0), 		 .eid = 0x00000000,	.Data = Can_WifiBuf}   ,/*0   WiFi	 */
+		{.sid =CAN_SID_HL(ID_ZIGBEE,0), 	 .eid = 0x00000000,	.Data = Can_ZigbeeBuf} ,/*1   Zigbee */
+		{.sid =CAN_SID_HL(ID_DISP,0), 		 .eid = 0x00000000,	.Data = Can_DisplayBuf},/*2   Display*/
+		{.sid =CAN_SID_HL(ID_MOTOR,0), 		 .eid = 0x00000000,	.Data = Can_MotorBuf}  ,/*3   Motor	 */
+		{.sid =CAN_SID_HL(ID_HOST,0), 		 .eid = 0x00000000,	.Data = Can_CNTBuf}	   ,/*4   CNT	 */
+		{.sid =CAN_SID_HL(ID_NAVIG,ID_NAVIG),.eid = 0x00000000,	.Data = Can_NVBuf}	   ,/*5   NV	 */
+		{.sid =CAN_SID_HL(ID_HOST,0), 		 .eid = 0x00000000,	.Data = Can_PowerBuf}  ,/*6   Power	 */
+		{.sid =CAN_SID_HL(ID_TRACK,ID_HOST), .eid = 0x00000000,	.Data = Can_T0Buf}	   ,/*7   T0	 */
+		{.sid =CAN_SID_HL(ID_TRACK,ID_HOST), .eid = 0x00000000,	.Data = Can_T1Buf}	   ,/*8   T1	 */
+		{.sid =CAN_SID_HL(ID_TRACK,ID_HOST), .eid = 0x00000000,	.Data = Can_T2Buf}	   ,/*9   T2	 */
 };
 
 
 /*创建所有CAN命令发送结构体*/
 CAN_TxHeaderTypeDef Can_Cmds[10];
 
+
+
+/**************************************************************************
+函数功能：CAN-结构体初始化
+入口参数：无
+返回  值：无
+**************************************************************************/
 void Can_CmdStruct_Init(void)
 {
 	for(uint8_t i=0;i < (sizeof(CanP_Cmd_SBuf)/sizeof(CanP_Cmd_Struct));i++)
 	{
-		memset(CanP_Cmd_SBuf[i].Data, 0, 8);		/*清空cmd结构体的缓冲数组数据*/
 		CanP_Cmd_SBuf[i].Flag = 0;					/*清空cmd结构体的标志位*/
-		CanP_Cmd_SBuf[i].rp = 0;					/*读索引复位*/
+		CanP_Cmd_SBuf[i].rp = Can_TxMaxBuf-1;					/*读索引复位*/
 		CanP_Cmd_SBuf[i].wp = 0;					/*写索引复位*/
 
 		Can_Cmds[i].StdId = CanP_Cmd_SBuf[i].sid;	/*标准id*/
@@ -46,33 +71,98 @@ void Can_CmdStruct_Init(void)
 
 
 /**************************************************缓冲区操作***************************************************************/
-void Can_BufWrite(CanP_Cmd_Struct *CanBuf, uint8_t *Data)
+
+/**************************************************************************
+函数功能：CAN-写入缓冲区
+入口参数：CanBuf:对应缓冲区结构体  Data:发送指令数组 len:写入字节大小(别超过Can_TxMaxBuf最大值)
+返回  值：无
+**************************************************************************/
+void Can_BufWrite(CanP_Cmd_Struct *CanBuf, uint8_t *Data, uint8_t len)
 {
-	if(CanBuf == NULL){return;}
+	if(CanBuf == _NULL){return;}
 	if(Data == NULL){return;}
 
-   // 检查是否需要回绕
-	if (fifo->w_idx + CAN_FRAME_SIZE > fifo->size) {
-	uint16_t first_part = fifo->size - fifo->w_idx;
-	uint16_t second_part = CAN_FRAME_SIZE - first_part;
+    if(CanBuf->wp >= Can_TxMaxBuf){CanBuf->wp = 0;}
 
-	memcpy(&fifo->buf[fifo->w_idx], data, first_part);
-	memcpy(fifo->buf, &data[first_part], second_part);
-	fifo->w_idx = second_part;
-	} else {
-		memcpy(&fifo->buf[fifo->w_idx], data, CAN_FRAME_SIZE);
-		fifo->w_idx += CAN_FRAME_SIZE;
+
+   // 检查是否需要回绕
+	if (CanBuf->wp + len > Can_TxMaxBuf)
+	{
+		/*回绕处理*/
+		uint16_t first_part = Can_TxMaxBuf - CanBuf->wp;
+		uint16_t second_part = len - first_part;
+
+		memcpy(&CanBuf->Data[CanBuf->wp], &Data[0], first_part);
+		memcpy(&CanBuf->Data[0], &Data[first_part], second_part);
+		CanBuf->wp = second_part;
+	}
+	else
+	{
+		memcpy(&CanBuf->Data[CanBuf->wp], Data, len);
+		CanBuf->wp += len;
 	}
 
-	memcpy(&CanBuf->Data[0], Data, 8);
+}
+
+/**************************************************************************
+函数功能：CAN-检查是否能读取缓冲区
+入口参数：CanBuf:对应缓冲区结构体
+返回  值：0-不可读 1-可读
+**************************************************************************/
+uint8_t Can_CheckReadEn(CanP_Cmd_Struct *p)
+{
+	if(p == _NULL){return 0;}
+
+	uint8_t EN = 0;
+
+	if(p->rp == Can_TxMaxBuf-1)
+	{
+		if(p->wp != 0)
+			EN = 1;
+	}
+	else if(p->wp != (p->rp+1))
+		EN = 1;
+
+	return EN;
+}
 
 
+
+/**************************************************************************
+函数功能：CAN-读取指定字节的缓冲区
+入口参数：CanBuf:对应缓冲区结构体
+返回  值：RT:返回为真正可读取的字节数
+**************************************************************************/
+uint8_t Can_BufRead(CanP_Cmd_Struct *CanBuf,uint8_t *Data)
+{
+	uint8_t Rt = 0;
+
+	// 循环最多8次（固定读8字节）
+	for (uint8_t i = 0; i < 8; i++)
+	{
+		// 检查是否还有数据（使用您提供的检查函数）
+		if (Can_CheckReadEn(CanBuf) == 0)
+		{
+			break;  // 无数据可读，退出循环
+		}
+
+		if(++CanBuf->rp >= Can_TxMaxBuf)
+		{
+			CanBuf->rp = 0;
+		}
+		Data[i] = CanBuf->Data[CanBuf->rp];
+
+		Rt++;  // 计数
+	}
+
+	return Rt;  // 返回实际读取字节数
 
 }
 
 
 
 
+/***************************************************以上为缓冲区操作************************************************************/
 
 
 
@@ -88,13 +178,11 @@ void Can_BufWrite(CanP_Cmd_Struct *CanBuf, uint8_t *Data)
 **************************************************************************/
 void CAN_TxtoWifi(uint8_t *Data, uint8_t len)
 {
-	if(len>8){return;}
+	if(len>Can_TxMaxBuf){return;}
 	if(Data == NULL){return;}
 
-	memcpy(CanP_Cmd_SBuf[0].Data, Data, len);
-	Can_Cmds[0].DLC = len;
+	Can_BufWrite(&CanP_Cmd_SBuf[0], Data, len);
 
-	CanP_Cmd_SBuf[0].Flag = 1;
 }
 
 
@@ -108,13 +196,11 @@ void CAN_TxtoWifi(uint8_t *Data, uint8_t len)
 **************************************************************************/
 void CAN_TxtoZigbee(uint8_t *Data, uint8_t len)
 {
-	if(len>8){return;}
+	if(len>Can_TxMaxBuf){return;}
 	if(Data == NULL){return;}
 
-	memcpy(CanP_Cmd_SBuf[1].Data, Data, len);
-	Can_Cmds[1].DLC = len;
+	Can_BufWrite(&CanP_Cmd_SBuf[1], Data, len);
 
-	CanP_Cmd_SBuf[1].Flag = 1;
 }
 
 
@@ -128,13 +214,11 @@ void CAN_TxtoZigbee(uint8_t *Data, uint8_t len)
 **************************************************************************/
 void CAN_TxtoDisplay(char *Data, uint8_t len)
 {
-	if(len>8){return;}
+	if(len>Can_TxMaxBuf){return;}
 	if(Data == NULL){return;}
 
-	memcpy(CanP_Cmd_SBuf[2].Data, Data, len);
-	Can_Cmds[2].DLC = len;
+	Can_BufWrite(&CanP_Cmd_SBuf[2], (uint8_t *)Data, len);
 
-	CanP_Cmd_SBuf[2].Flag = 1;
 }
 
 
@@ -290,44 +374,85 @@ void CAN_TxtoT2(uint8_t time)  // 设置循迹数据上传时间间隔
 
 
 
+
+
+
+
+static uint8_t retry_data_zigbee[8],retry_data_Wifi[8],retry_data_Dis[8];  // 重发数据缓冲区
+static uint8_t retry_size_zigbee = 0, retry_size_Wifi = 0, retry_size_Dis = 0; // 重发数据大小
 /**************************************************************************
-函数功能：CAN-检测缓冲区数据是否为空
-入口参数：data:缓冲区数组
-返回  值：0-空 1-存在数据
-**************************************************************************/
-uint8_t CAN_TxDataCheck(uint8_t *Data)
-{
-
-	return(!!(Data[0] | Data[1] | Data[2] | Data[3] | Data[4] | Data[5] | Data[6] | Data[7]));
-}
-
-
-/**************************************************************************
-函数功能：CAN-检测缓冲区数据并上传(if的顺序控制优先级)
+函数功能：CAN-检测缓冲区数据并上传(if的顺序控制优先级)s
 入口参数：无
 返回  值：无
 **************************************************************************/
 void CAN_TxLoop(void)
 {
-	uint8_t Status;
-	if(CanP_Cmd_SBuf[1].Flag == 1) /*Zigbee 优先级:0*/
+	uint8_t Status,Txsizeof1,Txsizeof2,Txsizeof3;
+	uint8_t TxDataBuf_Zigbee[8],TxDataBuf_Wifi[8],TxDataBuf_Dis[8];
+
+
+
+	/***********重新发送区***********/
+	if(retry_size_zigbee)
 	{
-		Status = MyCAN_Transmit(&Can_Cmds[1], CanP_Cmd_SBuf[1].Data);
+		Can_Cmds[1].DLC = retry_size_zigbee;
+		Status = MyCAN_Transmit(&Can_Cmds[1], retry_data_zigbee);
+
 		if(Status == HAL_OK)
 		{
-			memset(CanP_Cmd_SBuf[1].Data, 0, 8);
-			CanP_Cmd_SBuf[1].Flag = 0;
+			retry_size_zigbee = 0;
+			memset(retry_data_zigbee,0,8);
+		}
+	}
+	if(retry_size_Wifi)
+	{
+		Can_Cmds[0].DLC = retry_size_Wifi;
+		Status = MyCAN_Transmit(&Can_Cmds[0], retry_data_Wifi);
+
+		if(Status == HAL_OK)
+		{
+			retry_size_Wifi = 0;
+			memset(retry_data_Wifi,0,8);
+		}
+	}
+	if(retry_size_Dis)
+	{
+		Can_Cmds[2].DLC = retry_size_Dis;
+		Status = MyCAN_Transmit(&Can_Cmds[2], retry_data_Dis);
+
+		if(Status == HAL_OK)
+		{
+			retry_size_Dis = 0;
+			memset(retry_data_Dis,0,8);
 		}
 	}
 
 
-	if(CanP_Cmd_SBuf[0].Flag == 1) /*Wifi 优先级:1*/
+
+	/*************正常发送区***********/
+	Txsizeof1 = Can_BufRead(&CanP_Cmd_SBuf[1], TxDataBuf_Zigbee);
+	if(Txsizeof1) /*Zigbee 优先级:0*/
 	{
-		Status = MyCAN_Transmit(&Can_Cmds[0], CanP_Cmd_SBuf[0].Data);
-		if(Status == HAL_OK)
+		Can_Cmds[1].DLC = Txsizeof1;
+		Status = MyCAN_Transmit(&Can_Cmds[1], TxDataBuf_Zigbee);
+
+		if(Status != HAL_OK)/*发送失败*/
 		{
-			memset(CanP_Cmd_SBuf[0].Data, 0, 8);
-			CanP_Cmd_SBuf[0].Flag = 0;
+			retry_size_zigbee = Txsizeof1;
+			memcpy(retry_data_zigbee, TxDataBuf_Zigbee, Txsizeof1);
+		}
+	}
+
+	Txsizeof2 = Can_BufRead(&CanP_Cmd_SBuf[0], TxDataBuf_Wifi);
+	if(Txsizeof2) /*Wifi 优先级:1*/
+	{
+		Can_Cmds[0].DLC = Txsizeof2;
+		Status = MyCAN_Transmit(&Can_Cmds[0], TxDataBuf_Wifi);
+
+		if(Status != HAL_OK)/*发送失败*/
+		{
+			retry_size_Wifi = Txsizeof2;
+			memcpy(retry_data_Wifi, TxDataBuf_Wifi, Txsizeof2);
 		}
 	}
 
@@ -377,10 +502,11 @@ void CAN_TxLoop(void)
 	if(CanP_Cmd_SBuf[5].Flag == 1) /*NV 优先级:6*/
 	{
 		Status = MyCAN_Transmit(&Can_Cmds[5], CanP_Cmd_SBuf[5].Data);
+
 		if(Status == HAL_OK)
 		{
 			memset(CanP_Cmd_SBuf[5].Data, 0, 8);
-			CanP_Cmd_SBuf[7].Flag = 0;
+			CanP_Cmd_SBuf[5].Flag = 0;
 		}
 
 	}
@@ -389,20 +515,25 @@ void CAN_TxLoop(void)
 	if(CanP_Cmd_SBuf[4].Flag == 1) /*CNT 优先级:7*/
 	{
 		Status = MyCAN_Transmit(&Can_Cmds[4], CanP_Cmd_SBuf[4].Data);
+
 		if(Status == HAL_OK)
 		{
 			memset(CanP_Cmd_SBuf[4].Data, 0, 8);
+			CanP_Cmd_SBuf[4].Flag = 0;
 		}
 	}
 
-
-	if(CanP_Cmd_SBuf[2].Flag == 1) /*显示 优先级:8*/
+	Txsizeof3 = Can_BufRead(&CanP_Cmd_SBuf[2], TxDataBuf_Dis);
+	if(Txsizeof3) /*显示 优先级:8*/
 	{
-		Status = MyCAN_Transmit(&Can_Cmds[2], CanP_Cmd_SBuf[2].Data);
-		if(Status == HAL_OK)
+		Can_Cmds[2].DLC = Txsizeof3;
+
+		Status = MyCAN_Transmit(&Can_Cmds[2], TxDataBuf_Dis);
+
+		if(Status != HAL_OK)/*发送失败*/
 		{
-			memset(CanP_Cmd_SBuf[2].Data, 0, 8);
-			CanP_Cmd_SBuf[2].Flag = 0;
+			retry_size_Dis = Txsizeof3;
+			memcpy(retry_data_Dis, TxDataBuf_Dis, Txsizeof3);
 		}
 	}
 
@@ -410,6 +541,7 @@ void CAN_TxLoop(void)
 	if(CanP_Cmd_SBuf[6].Flag == 1) /*Power 优先级:9*/
 	{
 		Status = MyCAN_Transmit(&Can_Cmds[6], CanP_Cmd_SBuf[6].Data);
+
 		if(Status == HAL_OK)
 		{
 			memset(CanP_Cmd_SBuf[6].Data, 0, 8);

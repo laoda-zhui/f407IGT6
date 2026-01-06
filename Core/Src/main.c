@@ -136,8 +136,6 @@ int main(void)
   /*电机初始化*/
   Motor_Init();
 
-  int16_t Data;
-
 
   /* USER CODE END 2 */
 
@@ -151,14 +149,12 @@ int main(void)
 		  if(KeyNum == 1)
 		  {
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_12);
-			  Motor_SyncEncoder();
 
-			  Motor_Control(0,0);
 		  }
 		  if(KeyNum == 2)
 		  {
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_13);
-			  Motor_Control(0, 0);
+
 		  }
 		  if(KeyNum == 3)
 		  {
@@ -166,7 +162,6 @@ int main(void)
 			  Car_Back(50, 50);
 			  if(Stop_Flag == Task_Complete)
 			  {
-				  Car_Go(50, 50);
 				  Back_Flag = 0;
 			  }
 
@@ -174,9 +169,8 @@ int main(void)
 		  if(KeyNum == 4)
 		  {
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_15);
-			  Data = Motor_GetDifcoder();;
-			  char data1[8];
-			  sprintf(data1,"%d\n",Data);
+			  char data1[]="Hello World\r\n";
+
 			  CAN_TxtoDisplay(data1, strlen(data1));
 
 		  }
