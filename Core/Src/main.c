@@ -166,6 +166,8 @@ int main(void)
 
 	  Go_and_Back_Check();
 	  TurnAngle_Check();
+	  Track_Check();
+
 	  CanRx_Loop();
 	  CAN_TxLoop();
 
