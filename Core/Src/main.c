@@ -25,6 +25,7 @@
 #include "Motor.h"
 #include "LED.h"
 #include "KEY.h"
+#include "PID.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -95,33 +96,6 @@ int main(void)
   MX_TIM10_Init();
   /* USER CODE BEGIN 2 */
 
-//  /*测试发送结构体*/
-//  CAN_TxHeaderTypeDef TxMsgArray[] = {
-//  /*  StdId   ExtId        IDE          RTR        DLC*/
-//  	{0x3C0, 0x00000000, CAN_ID_STD, CAN_RTR_DATA,   8,},
-//  	{0x280, 0x00000000, CAN_ID_STD, CAN_RTR_DATA,   8,},
-//  	{0x2A0, 0x00000000, CAN_ID_STD, CAN_RTR_DATA, 	8,},
-//  	{0x0E0, 0x00000000, CAN_ID_STD, CAN_RTR_DATA,  	8,},
-//	{0x100, 0x00000000, CAN_ID_STD, CAN_RTR_DATA,   8,},
-//	{0x1E0, 0x00000000, CAN_ID_STD, CAN_RTR_DATA,   8,},
-//	{0x1B3, 0x00000000, CAN_ID_STD, CAN_RTR_DATA,   8,}
-//  };
-//
-//  uint8_t index=0;/*发送数组的索引*/
-//  uint8_t TxData[][8]={ /*发送can数据数组 -测试*/
-//		  {0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11},
-//		  {0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22},
-//		  {0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33},
-//		  {0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44},
-//		  {0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55},
-//		  {0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66},
-//		  {0x77, 0x77, 0x77, 0x77, 0x77, 0x77, 0x77, 0x77},
-//		  {0x88, 0x88, 0x88, 0x88, 0x88, 0x88, 0x88, 0x88},
-//		  {0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99},
-//		  {0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA}
-//  };
-
-
   /*获取键值对函数初始化*/
   Key_Init();
   uint8_t KeyNum=0;
@@ -136,7 +110,7 @@ int main(void)
   /*电机初始化*/
   Motor_Init();
 
-
+  float data;
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -149,34 +123,49 @@ int main(void)
 		  if(KeyNum == 1)
 		  {
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_12);
-
+			  char Txdata1[100];
+			  data = Stop_Flag;
+			  sprintf(Txdata1,"%.2f\n\r",data);
+			  CAN_TxtoDisplay(Txdata1, strlen(Txdata1));
+			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_15);
 		  }
 		  if(KeyNum == 2)
 		  {
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_13);
+			  char Txdata1[100];
+			  data = Motor_GetLRDifcoder();
+			  sprintf(Txdata1,"%.2f\n\r",data);
+			  CAN_TxtoDisplay(Txdata1, strlen(Txdata1));
 
 		  }
 		  if(KeyNum == 3)
 		  {
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_14);
-			  Car_Back(50, 50);
+			  Car_Left(50, 56.25);
 			  if(Stop_Flag == Task_Complete)
 			  {
-				  Back_Flag = 0;
+				  wheel_L_Flag = 0;
 			  }
 
 		  }
 		  if(KeyNum == 4)
 		  {
+			  char Txdata1[100];
+			  data = Turn_PID.Actual;
+			  sprintf(Txdata1,"%.2f\n\r",data);
+			  CAN_TxtoDisplay(Txdata1, strlen(Txdata1));
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_15);
-			  char data1[]="Hello World\r\n";
 
-			  CAN_TxtoDisplay(data1, strlen(data1));
 
 		  }
 	  }
+//	  char Txdata1[100];
+//	  data = Motor_GetLRDifcoder();
+//	  sprintf(Txdata1,"%.2f\n\r",data);
+//	  CAN_TxtoDisplay(Txdata1, strlen(Txdata1));
 
-
+	  Go_and_Back_Check();
+	  TurnAngle_Check();
 	  CanRx_Loop();
 	  CAN_TxLoop();
 

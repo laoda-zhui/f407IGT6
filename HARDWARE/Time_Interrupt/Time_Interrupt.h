@@ -7,4 +7,16 @@
 #include "tim.h"
 #include "KEY.h"
 
+
+extern uint8_t TurnCheckFlag;			/*转弯刷新标志位*/
+extern uint8_t Go_and_Back_CheckFlag;	/*前进后退刷新标志位*/
+extern uint8_t Track_CheckFlag;	/*前进后退刷新标志位*/
+
+
+
+
+
+
+
+
 #endif /* TIME_INTERRUPT_TIME_INTERRUPT_H_ */

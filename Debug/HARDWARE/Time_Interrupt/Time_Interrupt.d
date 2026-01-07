@@ -34,7 +34,8 @@ HARDWARE/Time_Interrupt/Time_Interrupt.o: \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h \
  ../HARDWARE/Drive/Motor.h ../HARDWARE/CAN/can_RxSolve.h \
  ../Core/Inc/can.h ../Core/Inc/main.h ../HARDWARE/CAN/can_Tx.h \
- ../Core/Inc/tim.h ../HARDWARE/Drive/PID.h ../HARDWARE/KEY/KEY.h
+ ../Core/Inc/tim.h ../HARDWARE/Drive/PID.h \
+ ../HARDWARE/Time_Interrupt/Time_Interrupt.h ../HARDWARE/KEY/KEY.h
 ../HARDWARE/Time_Interrupt/Time_Interrupt.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
@@ -75,4 +76,5 @@ HARDWARE/Time_Interrupt/Time_Interrupt.o: \
 ../HARDWARE/CAN/can_Tx.h:
 ../Core/Inc/tim.h:
 ../HARDWARE/Drive/PID.h:
+../HARDWARE/Time_Interrupt/Time_Interrupt.h:
 ../HARDWARE/KEY/KEY.h:
