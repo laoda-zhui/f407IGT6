@@ -1,5 +1,5 @@
 ################################################################################
-# Automatically-generated file. Do not edit!
+# 自动生成的文件。不要编辑！
 # Toolchain: GNU Tools for STM32 (13.3.rel1)
 ################################################################################
 
@@ -20,14 +20,21 @@ S_DEPS :=
 S_UPPER_DEPS := 
 C_DEPS := 
 
-# Every subdirectory with source files must be described here
+# 此处必须描述包含源文件的每个子目录
 SUBDIRS := \
 Core/Src \
 Core/Startup \
 Drivers/STM32F4xx_HAL_Driver/Src \
 HARDWARE/CAN \
+HARDWARE/Core_Board/BEEP \
+HARDWARE/Core_Board/KEY \
+HARDWARE/Core_Board/LED \
+HARDWARE/Delay \
 HARDWARE/Drive \
-HARDWARE/KEY \
-HARDWARE/LED \
+HARDWARE/Task_Board/BEEP \
+HARDWARE/Task_Board/Infrared \
+HARDWARE/Task_Board/Ultrasonic \
+HARDWARE/Task_Board/WheelLED \
+HARDWARE/Task_Board/bh1750 \
 HARDWARE/Time_Interrupt \
 

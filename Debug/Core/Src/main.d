@@ -26,15 +26,23 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ex.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ramfunc.h \
+ ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_i2c.h \
+ ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_i2c_ex.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h \
  ../Core/Inc/adc.h ../Core/Inc/main.h ../Core/Inc/can.h \
  ../HARDWARE/CAN/can_Tx.h ../Core/Inc/can.h ../HARDWARE/CAN/can_RxSolve.h \
- ../Core/Inc/tim.h ../Core/Inc/gpio.h ../HARDWARE/Drive/Motor.h \
- ../HARDWARE/Drive/PID.h ../HARDWARE/Time_Interrupt/Time_Interrupt.h \
- ../HARDWARE/KEY/KEY.h ../HARDWARE/LED/LED.h ../HARDWARE/Drive/PID.h
+ ../Core/Inc/i2c.h ../Core/Inc/tim.h ../Core/Inc/gpio.h \
+ ../HARDWARE/Drive/Motor.h ../HARDWARE/Drive/PID.h \
+ ../HARDWARE/Time_Interrupt/Time_Interrupt.h \
+ ../HARDWARE/Time_Interrupt/../Core_Board/KEY/KEY.h \
+ ../HARDWARE/Drive/PID.h ../HARDWARE/Core_Board/BEEP/Beep.h \
+ ../HARDWARE/Delay/Delay.h ../HARDWARE/Core_Board/KEY/KEY.h \
+ ../HARDWARE/Core_Board/LED/LED.h \
+ ../HARDWARE/Task_Board/Infrared/infrared.h \
+ ../HARDWARE/Task_Board/Ultrasonic/Ultrasonic.h ../Core/Inc/TIM.h
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:
@@ -63,6 +71,8 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ex.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ramfunc.h:
+../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_i2c.h:
+../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_i2c_ex.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h:
@@ -73,11 +83,18 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../HARDWARE/CAN/can_Tx.h:
 ../Core/Inc/can.h:
 ../HARDWARE/CAN/can_RxSolve.h:
+../Core/Inc/i2c.h:
 ../Core/Inc/tim.h:
 ../Core/Inc/gpio.h:
 ../HARDWARE/Drive/Motor.h:
 ../HARDWARE/Drive/PID.h:
 ../HARDWARE/Time_Interrupt/Time_Interrupt.h:
-../HARDWARE/KEY/KEY.h:
-../HARDWARE/LED/LED.h:
+../HARDWARE/Time_Interrupt/../Core_Board/KEY/KEY.h:
 ../HARDWARE/Drive/PID.h:
+../HARDWARE/Core_Board/BEEP/Beep.h:
+../HARDWARE/Delay/Delay.h:
+../HARDWARE/Core_Board/KEY/KEY.h:
+../HARDWARE/Core_Board/LED/LED.h:
+../HARDWARE/Task_Board/Infrared/infrared.h:
+../HARDWARE/Task_Board/Ultrasonic/Ultrasonic.h:
+../Core/Inc/TIM.h:

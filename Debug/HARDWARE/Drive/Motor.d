@@ -27,6 +27,8 @@ HARDWARE/Drive/Motor.o: ../HARDWARE/Drive/Motor.c \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ex.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ramfunc.h \
+ ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_i2c.h \
+ ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_i2c_ex.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h \
@@ -34,7 +36,7 @@ HARDWARE/Drive/Motor.o: ../HARDWARE/Drive/Motor.c \
  ../HARDWARE/CAN/can_RxSolve.h ../Core/Inc/can.h ../Core/Inc/main.h \
  ../HARDWARE/CAN/can_Tx.h ../Core/Inc/tim.h ../HARDWARE/Drive/PID.h \
  ../HARDWARE/Time_Interrupt/Time_Interrupt.h ../HARDWARE/Drive/Motor.h \
- ../HARDWARE/KEY/KEY.h
+ ../HARDWARE/Time_Interrupt/../Core_Board/KEY/KEY.h
 ../HARDWARE/Drive/Motor.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
@@ -64,6 +66,8 @@ HARDWARE/Drive/Motor.o: ../HARDWARE/Drive/Motor.c \
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ex.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ramfunc.h:
+../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_i2c.h:
+../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_i2c_ex.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h:
@@ -76,4 +80,4 @@ HARDWARE/Drive/Motor.o: ../HARDWARE/Drive/Motor.c \
 ../HARDWARE/Drive/PID.h:
 ../HARDWARE/Time_Interrupt/Time_Interrupt.h:
 ../HARDWARE/Drive/Motor.h:
-../HARDWARE/KEY/KEY.h:
+../HARDWARE/Time_Interrupt/../Core_Board/KEY/KEY.h:

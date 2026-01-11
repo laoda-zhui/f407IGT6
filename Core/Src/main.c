@@ -15,6 +15,7 @@
 #include "main.h"
 #include "adc.h"
 #include "can.h"
+#include "i2c.h"
 #include "tim.h"
 #include "gpio.h"
 
@@ -23,9 +24,13 @@
 #include "can_Tx.h"
 #include "can_RxSolve.h"
 #include "Motor.h"
-#include "LED.h"
-#include "KEY.h"
 #include "PID.h"
+#include "Beep.h"
+#include "Delay.h"
+#include "KEY.h"
+#include "LED.h"
+#include "infrared.h"
+#include "Ultrasonic.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -58,6 +63,36 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+
+/**************************************************************************
+函数功能：硬件初始化
+入口参数：无
+返回  值：无
+**************************************************************************/
+void Hardware_Init(void)
+{
+	/*Delay初始化*/
+	My_Delay_Init();
+
+	/*获取键值对函数初始化*/
+	Key_Init();
+
+	/*启动CAN1*/
+	MyCan_Init();
+	Filter_Init();
+
+	/*电机初始化*/
+	Motor_Init();
+
+	/*超声波初始化*/
+	Ultrasonic_Init();
+
+	/*红外管初始化*/
+	Infrared_Init();
+}
+
+
 
 /* USER CODE END 0 */
 
@@ -94,21 +129,19 @@ int main(void)
   MX_ADC1_Init();
   MX_TIM9_Init();
   MX_TIM10_Init();
+  MX_TIM3_Init();
+  MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
 
-  /*获取键值对函数初始化*/
-  Key_Init();
-  uint8_t KeyNum=0;
+  /*硬件初始化*/
+  Hardware_Init();
 
-  /*启动CAN1*/
-  MyCan_Init();
-  Filter_Init();
+  /*键值对变量*/
+  uint8_t KeyNum=0;
 
   /*任务切片时间-ms*/
   uint32_t ADC_TaskTime=100,ADC_LastTime=0;
 
-  /*电机初始化*/
-  Motor_Init();
 
   float data;
   /* USER CODE END 2 */
@@ -122,15 +155,22 @@ int main(void)
 	  {
 		  if(KeyNum == 1)
 		  {
+			  Beep_Set(1);
+			  HAL_Delay(100);
+			  Beep_Set(0);
+
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_12);
 			  char Txdata1[100];
 			  data = Stop_Flag;
 			  sprintf(Txdata1,"%.2f\n\r",data);
 			  CAN_TxtoDisplay(Txdata1, strlen(Txdata1));
-			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_15);
 		  }
 		  if(KeyNum == 2)
 		  {
+			  Beep_Set(1);
+			  HAL_Delay(100);
+			  Beep_Set(0);
+
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_13);
 			  char Txdata1[100];
 			  data = Motor_GetLRDifcoder();
@@ -140,6 +180,10 @@ int main(void)
 		  }
 		  if(KeyNum == 3)
 		  {
+			  Beep_Set(1);
+			  HAL_Delay(100);
+			  Beep_Set(0);
+
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_14);
 			  Car_Left(50, 56.25);
 			  if(Stop_Flag == Task_Complete)
@@ -150,6 +194,10 @@ int main(void)
 		  }
 		  if(KeyNum == 4)
 		  {
+			  Beep_Set(1);
+			  HAL_Delay(100);
+			  Beep_Set(0);
+
 			  char Txdata1[100];
 			  data = Turn_PID.Actual;
 			  sprintf(Txdata1,"%.2f\n\r",data);

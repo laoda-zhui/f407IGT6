@@ -214,7 +214,7 @@ void Power_TxandStart(void)
 		}
 
 		ADC_DataPre = ADC_Data;
-
+		ADC_Data = 0;
 		if(ADC_DataValue > 10)
 		{
 			ADC_Data = (Pa * ADC_Data); // 电量计算方法

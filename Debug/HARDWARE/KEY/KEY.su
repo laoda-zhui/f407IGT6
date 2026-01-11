@@ -1,4 +1,0 @@
-../HARDWARE/KEY/KEY.c:10:7:Key_Init	0	static
-../HARDWARE/KEY/KEY.c:22:9:Key_GetNum	0	static
-../HARDWARE/KEY/KEY.c:34:9:KeyNum_GetState	8	static
-../HARDWARE/KEY/KEY.c:60:6:KeyNum_Tick	16	static

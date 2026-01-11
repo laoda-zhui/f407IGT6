@@ -5,7 +5,8 @@
 #include "main.h"
 #include "Motor.h"
 #include "tim.h"
-#include "KEY.h"
+
+#include "../Core_Board/KEY/KEY.h"
 
 
 extern uint8_t TurnCheckFlag;			/*转弯刷新标志位*/

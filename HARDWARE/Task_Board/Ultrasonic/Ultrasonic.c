@@ -1,0 +1,79 @@
+#include "Ultrasonic.h"
+
+
+/*超声波距离-cm			1us中断计次， 65535*1us*340m/s /2.0 = 11m 极限11.14m  */
+float Distance=0;
+
+/**************************************************************************
+函数功能：超声波初始化
+入口参数：无
+返回  值：无
+**************************************************************************/
+void Ultrasonic_Init()
+{
+	HAL_TIM_Base_Start(&htim3);
+	HAL_TIM_IC_Start(&htim3, TIM_CHANNEL_1);
+	HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_2);
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_SET);
+}
+
+
+/**************************************************************************
+函数功能：启动一次超声波
+入口参数：无
+返回  值：无
+**************************************************************************/
+void Ultrasonic_Start()
+{
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_RESET);
+	My_Delayus(10);
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_SET);
+}
+
+
+/**************************************************************************
+函数功能：超声波输入捕获中断
+入口参数：无
+返回  值：无
+**************************************************************************/
+void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
+{
+	if(htim == &htim3)
+	{
+		if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2)
+		{
+			uint32_t DownEdge;
+
+			DownEdge = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2);
+			Distance = DownEdge* 0.017f;
+		}
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

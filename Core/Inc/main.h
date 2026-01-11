@@ -58,8 +58,14 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define Task_Beep_Pin GPIO_PIN_13
+#define Task_Beep_GPIO_Port GPIOC
 #define CAN_Select_Pin GPIO_PIN_10
 #define CAN_Select_GPIO_Port GPIOF
+#define WheelLED_L_Pin GPIO_PIN_10
+#define WheelLED_L_GPIO_Port GPIOH
+#define WheelLED_R_Pin GPIO_PIN_11
+#define WheelLED_R_GPIO_Port GPIOH
 #define LED1_Pin GPIO_PIN_12
 #define LED1_GPIO_Port GPIOH
 #define LED2_Pin GPIO_PIN_13
@@ -68,6 +74,8 @@ void Error_Handler(void);
 #define LED3_GPIO_Port GPIOH
 #define LED4_Pin GPIO_PIN_15
 #define LED4_GPIO_Port GPIOH
+#define Trig_Pin GPIO_PIN_15
+#define Trig_GPIO_Port GPIOA
 #define KEY1_Pin GPIO_PIN_4
 #define KEY1_GPIO_Port GPIOI
 #define KEY2_Pin GPIO_PIN_5
