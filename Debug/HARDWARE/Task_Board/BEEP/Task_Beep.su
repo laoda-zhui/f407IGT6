@@ -1,2 +1,2 @@
-../HARDWARE/Task_Board/BEEP/Task_Beep.c:13:6:TaskBeep_StartTask	16	static
-../HARDWARE/Task_Board/BEEP/Task_Beep.c:32:6:TaskBeep_Set	0	static
+../HARDWARE/Task_Board/BEEP/Task_Beep.c:13:6:TaskBeep_StartTask	8	static
+../HARDWARE/Task_Board/BEEP/Task_Beep.c:32:6:TaskBeep_Set	8	static

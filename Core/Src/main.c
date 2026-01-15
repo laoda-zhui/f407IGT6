@@ -31,6 +31,10 @@
 #include "LED.h"
 #include "infrared.h"
 #include "Ultrasonic.h"
+#include "bh1750.h"
+#include "WheelLED.h"
+#include "Task_Beep.h"
+#include "can_cmd.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -52,6 +56,7 @@
 
 /* USER CODE BEGIN PV */
 
+uint8_t TestData[8]={0x56,0x03,0x9f,0x01,0x02,0x03,0x04,0xBB};
 
 /* USER CODE END PV */
 
@@ -72,9 +77,6 @@ void SystemClock_Config(void);
 **************************************************************************/
 void Hardware_Init(void)
 {
-	/*Delay初始化*/
-	My_Delay_Init();
-
 	/*获取键值对函数初始化*/
 	Key_Init();
 
@@ -82,14 +84,22 @@ void Hardware_Init(void)
 	MyCan_Init();
 	Filter_Init();
 
-	/*电机初始化*/
-	Motor_Init();
-
 	/*超声波初始化*/
 	Ultrasonic_Init();
 
 	/*红外管初始化*/
 	Infrared_Init();
+
+	/*BH1750初始化*/
+	BH1750_Init();	/*没电会初始化失败*/
+
+	/*Delay初始化*/
+	My_Delay_Init();
+
+
+	/*电机初始化*/
+	Motor_Init();
+
 }
 
 
@@ -140,8 +150,17 @@ int main(void)
   uint8_t KeyNum=0;
 
   /*任务切片时间-ms*/
-  uint32_t ADC_TaskTime=100,ADC_LastTime=0;
+  uint32_t ADC_TaskTime=100,ADC_LastTime=0;/*ADC切片*/
 
+  uint32_t BH1750_TaskTime=180,BH1750_LastTime=0;/*BH1750任务时间*/
+  uint8_t BH1750_StartFlag=1;	/*BH1750开启标志位 0-关闭 1-开启*/
+
+  uint32_t Ultrasonic_TaskTime=100,Ultrasonic_LastTime=0;/*超声波任务时间*/
+  uint8_t Ultrasonic_StartFlag=0;	/*超声波开启标志位 0-关闭 1-开启*/
+
+
+  /*光照值Lux 0-65535*/
+  uint16_t Lux=0,LuxTemp=0;
 
   float data;
   /* USER CODE END 2 */
@@ -150,6 +169,8 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+
+	  /*按键*/
 	  KeyNum = Key_GetNum();
 	  if(KeyNum)
 	  {
@@ -158,11 +179,10 @@ int main(void)
 			  Beep_Set(1);
 			  HAL_Delay(100);
 			  Beep_Set(0);
-
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_12);
+
 			  char Txdata1[100];
-			  data = Stop_Flag;
-			  sprintf(Txdata1,"%.2f\n\r",data);
+			  sprintf(Txdata1,"%d\n\r",Lux);
 			  CAN_TxtoDisplay(Txdata1, strlen(Txdata1));
 		  }
 		  if(KeyNum == 2)
@@ -170,12 +190,13 @@ int main(void)
 			  Beep_Set(1);
 			  HAL_Delay(100);
 			  Beep_Set(0);
-
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_13);
-			  char Txdata1[100];
-			  data = Motor_GetLRDifcoder();
-			  sprintf(Txdata1,"%.2f\n\r",data);
-			  CAN_TxtoDisplay(Txdata1, strlen(Txdata1));
+
+
+			  char Txdata2[50];
+			  data = Distance;
+			  sprintf(Txdata2,"%.2f\n\r",data);
+			  CAN_TxtoDisplay(Txdata2, strlen(Txdata2));
 
 		  }
 		  if(KeyNum == 3)
@@ -183,13 +204,11 @@ int main(void)
 			  Beep_Set(1);
 			  HAL_Delay(100);
 			  Beep_Set(0);
-
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_14);
-			  Car_Left(50, 56.25);
-			  if(Stop_Flag == Task_Complete)
-			  {
-				  wheel_L_Flag = 0;
-			  }
+
+			  CAN_TxtoZigbee(Gate_Open, 8);
+
+
 
 		  }
 		  if(KeyNum == 4)
@@ -197,21 +216,19 @@ int main(void)
 			  Beep_Set(1);
 			  HAL_Delay(100);
 			  Beep_Set(0);
-
-			  char Txdata1[100];
-			  data = Turn_PID.Actual;
-			  sprintf(Txdata1,"%.2f\n\r",data);
-			  CAN_TxtoDisplay(Txdata1, strlen(Txdata1));
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_15);
+
 
 
 		  }
 	  }
+
 //	  char Txdata1[100];
 //	  data = Motor_GetLRDifcoder();
 //	  sprintf(Txdata1,"%.2f\n\r",data);
 //	  CAN_TxtoDisplay(Txdata1, strlen(Txdata1));
 
+	  /*刷新*/
 	  Go_and_Back_Check();
 	  TurnAngle_Check();
 	  Track_Check();
@@ -219,14 +236,30 @@ int main(void)
 	  CanRx_Loop();
 	  CAN_TxLoop();
 
-	  if( (HAL_GetTick() - ADC_LastTime) > ADC_TaskTime) /*ADC_TaskTime-100ms 触发十次后 上传电量数据*/
+
+	  /******************************任务切片******************************/
+	  /*ADC_TaskTime-100ms 触发十次后 上传电量数据*/
+	  if( (HAL_GetTick() - ADC_LastTime) > ADC_TaskTime)
 	  {
 		  Power_TxandStart();
 		  ADC_LastTime = HAL_GetTick();
 	  }
-
-
-
+	  /*BH1750-180ms,获取光照值lux*/
+	  if( ((HAL_GetTick() - BH1750_LastTime) > BH1750_TaskTime) && BH1750_StartFlag == 1)
+	  {
+		  LuxTemp = BH1750_GetLux();
+		  if(LuxTemp)
+		  {
+			  Lux = LuxTemp;
+		  }
+		  BH1750_LastTime = HAL_GetTick();
+	  }
+	  /*BH1750-180ms,获取光照值lux*/
+	  if( ((HAL_GetTick() - Ultrasonic_LastTime) > Ultrasonic_TaskTime) && Ultrasonic_StartFlag == 1)
+	  {
+		  Ultrasonic_Start();
+		  Ultrasonic_LastTime = HAL_GetTick();
+	  }
 
 
 

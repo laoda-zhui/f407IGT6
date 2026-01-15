@@ -42,7 +42,10 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../HARDWARE/Delay/Delay.h ../HARDWARE/Core_Board/KEY/KEY.h \
  ../HARDWARE/Core_Board/LED/LED.h \
  ../HARDWARE/Task_Board/Infrared/infrared.h \
- ../HARDWARE/Task_Board/Ultrasonic/Ultrasonic.h ../Core/Inc/TIM.h
+ ../HARDWARE/Task_Board/Ultrasonic/Ultrasonic.h ../Core/Inc/TIM.h \
+ ../HARDWARE/Task_Board/bh1750/bh1750.h \
+ ../HARDWARE/Task_Board/WheelLED/WheelLED.h \
+ ../HARDWARE/Task_Board/BEEP/Task_Beep.h ../HARDWARE/CAN/can_cmd.h
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:
@@ -98,3 +101,7 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../HARDWARE/Task_Board/Infrared/infrared.h:
 ../HARDWARE/Task_Board/Ultrasonic/Ultrasonic.h:
 ../Core/Inc/TIM.h:
+../HARDWARE/Task_Board/bh1750/bh1750.h:
+../HARDWARE/Task_Board/WheelLED/WheelLED.h:
+../HARDWARE/Task_Board/BEEP/Task_Beep.h:
+../HARDWARE/CAN/can_cmd.h:

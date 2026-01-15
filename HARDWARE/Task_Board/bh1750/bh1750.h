@@ -6,7 +6,8 @@
 #include "i2c.h"
 
 
-
+uint16_t BH1750_GetLux(void);
+void BH1750_Init(void);
 
 
 

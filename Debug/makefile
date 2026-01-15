@@ -1,5 +1,5 @@
 ################################################################################
-# 自动生成的文件。不要编辑！
+# Automatically-generated file. Do not edit!
 # Toolchain: GNU Tools for STM32 (13.3.rel1)
 ################################################################################
 
@@ -7,7 +7,7 @@
 
 RM := rm -rf
 
-# 此处定义了参与生成的所有源
+# All of the sources participating in the build are defined here
 -include sources.mk
 -include HARDWARE/Time_Interrupt/subdir.mk
 -include HARDWARE/Task_Board/bh1750/subdir.mk
@@ -51,7 +51,7 @@ BUILD_ARTIFACT_EXTENSION := elf
 BUILD_ARTIFACT_PREFIX :=
 BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME)$(if $(BUILD_ARTIFACT_EXTENSION),.$(BUILD_ARTIFACT_EXTENSION),)
 
-# 将这些工具调用的输入和输出添加到构建变量 
+# Add inputs and outputs from these tool invocations to the build variables 
 EXECUTABLES += \
 f407IGT6-can.elf \
 
@@ -65,29 +65,29 @@ OBJDUMP_LIST += \
 f407IGT6-can.list \
 
 
-# 所有目标
+# All Target
 all: main-build
 
-# 主构建目标
+# Main-build Target
 main-build: f407IGT6-can.elf secondary-outputs
 
-# 工具调用
+# Tool invocations
 f407IGT6-can.elf f407IGT6-can.map: $(OBJS) $(USER_OBJS) C:\Users\zhui\AppData\Roaming\32\workspace\f407igt6_Car\f407IGT6\STM32F407IGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	arm-none-eabi-gcc -o "f407IGT6-can.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\zhui\AppData\Roaming\32\workspace\f407igt6_Car\f407IGT6\STM32F407IGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="f407IGT6-can.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
-	@echo '已结束构建目标： $@'
+	@echo 'Finished building target: $@'
 	@echo ' '
 
 default.size.stdout: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	arm-none-eabi-size  $(EXECUTABLES)
-	@echo '已结束构建： $@'
+	@echo 'Finished building: $@'
 	@echo ' '
 
 f407IGT6-can.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "f407IGT6-can.list"
-	@echo '已结束构建： $@'
+	@echo 'Finished building: $@'
 	@echo ' '
 
-# 其他目标
+# Other Targets
 clean:
 	-$(RM) default.size.stdout f407IGT6-can.elf f407IGT6-can.list f407IGT6-can.map
 	-@echo ' '

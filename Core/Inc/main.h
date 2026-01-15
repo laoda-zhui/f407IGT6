@@ -76,6 +76,8 @@ void Error_Handler(void);
 #define LED4_GPIO_Port GPIOH
 #define Trig_Pin GPIO_PIN_15
 #define Trig_GPIO_Port GPIOA
+#define I2C1_ADDR_Pin GPIO_PIN_15
+#define I2C1_ADDR_GPIO_Port GPIOG
 #define KEY1_Pin GPIO_PIN_4
 #define KEY1_GPIO_Port GPIOI
 #define KEY2_Pin GPIO_PIN_5

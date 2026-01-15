@@ -13,24 +13,24 @@
 **************************************************************************/
 uint8_t My_Delay_Init(void)
 {
-    // 1. 使能DWT的跟踪功能（访问DWT寄存器的前提）
+    // 1. 启用 TRC (Trace)
     CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
 
-    // 2. 清除周期计数器
-    DWT->CYCCNT = 0;
+    // 2. 【关键修正】解锁 DWT (STM32F4/F7 必需)
+    *(volatile uint32_t *)0xE0001FB0 = 0xC5ACCE55;
 
-    // 3. 使能周期计数器
+    // 3. 清零并使能
+    DWT->CYCCNT = 0;
     DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
 
-    // 4. 验证DWT计数器是否已成功启用（可选但推荐）
-    // 简单测试：延时几个周期后查看计数器是否增长
+    // 4. 简单测试
     uint32_t start = DWT->CYCCNT;
-    volatile uint32_t test_counter = 0;
-    for(uint32_t i = 0; i < 100; i++) {
-        test_counter++; // 防止循环被优化
-    }
+    HAL_Delay(1);
 
-    return (DWT->CYCCNT > start); // 如果计数器增长，说明初始化成功
+    // 如果计数器没动，说明初始化失败，返回 0
+    if(DWT->CYCCNT == start) return 0;
+
+    return 1;
 }
 
 

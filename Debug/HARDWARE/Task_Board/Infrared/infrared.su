@@ -1,6 +1,6 @@
-../HARDWARE/Task_Board/Infrared/infrared.c:10:6:Infrared_Init	0	static
+../HARDWARE/Task_Board/Infrared/infrared.c:10:6:Infrared_Init	8	static
 ../HARDWARE/Task_Board/Infrared/infrared.c:21:6:Infrared_Start	8	static
 ../HARDWARE/Task_Board/Infrared/infrared.c:36:6:Infrared_Stop	8	static
-../HARDWARE/Task_Board/Infrared/infrared.c:51:6:Infrared_SendBit	8	static
+../HARDWARE/Task_Board/Infrared/infrared.c:51:6:Infrared_SendBit	16	static
 ../HARDWARE/Task_Board/Infrared/infrared.c:72:6:Infrared_SendByte	16	static
-../HARDWARE/Task_Board/Infrared/infrared.c:88:6:Infrared_SendpData	24	static
+../HARDWARE/Task_Board/Infrared/infrared.c:88:6:Infrared_SendpData	16	static

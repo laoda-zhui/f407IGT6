@@ -214,7 +214,6 @@ void Power_TxandStart(void)
 		}
 
 		ADC_DataPre = ADC_Data;
-		ADC_Data = 0;
 		if(ADC_DataValue > 10)
 		{
 			ADC_Data = (Pa * ADC_Data); // 电量计算方法
@@ -226,7 +225,7 @@ void Power_TxandStart(void)
 			}
 			CAN_TxtoPower(1, Power);
 		}
-
+		ADC_Data = 0;
 	}
 	HAL_ADC_Start_IT(&hadc1);
 }
@@ -242,7 +241,7 @@ void Power_TxandStart(void)
 **************************************************************************/
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
-	if(hadc == &hadc1)
+	if((hadc == &hadc1) && ADC_BeginFlag==0)
 	{
 		ADC_Data += HAL_ADC_GetValue(hadc);
 		i++;

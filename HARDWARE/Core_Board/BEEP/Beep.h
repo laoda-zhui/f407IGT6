@@ -5,7 +5,7 @@
 
 
 
-void Beep_Set(uint8_t sw);
+void Beep_Set(GPIO_PinState sw);
 void Beep_StartTask(uint32_t Time);
 
 

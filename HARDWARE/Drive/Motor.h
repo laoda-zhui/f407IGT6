@@ -8,22 +8,29 @@
 #include "PID.h"
 #include "Time_Interrupt.h"
 
-/*任务状态*/
-enum Task_Flag{
-	Task_Start 	  = 	1,	/*小车启动*/
-	Task_Complete = 	2,	/*小车完成*/
-
-};
 
 /*测试记得删*/
 extern PID_t Turn_PID;
+extern PID_t PID_TurnTrack;
+
+/*任务执行状态*/
+typedef enum{
+	Task_Start 	  = 	1,	/*小车启动*/
+	Task_Complete = 	2,	/*小车完成*/
+}Task_Flag;
+extern Task_Flag Stop_Flag;
 
 
-/*任务状态标志位*/
-extern uint16_t Stop_Flag;	/*停止标志位*/
-extern uint8_t Go_Flag;		/*前进标志位*/
-extern uint8_t Back_Flag;	/*后退标志位*/
-extern uint8_t wheel_L_Flag, wheel_R_Flag;
+/*小车执行状态-行进标志位*/
+typedef enum{
+	Go_Flag 	  = 0,	/*小车前进*/
+	Back_Flag,			/*小车后退*/
+	wheel_L_Flag,		/*小车左转*/
+	wheel_R_Flag,		/*小车右转*/
+	Track_Flag			/*小车循迹*/
+
+}Car_Flag;
+extern Car_Flag CarFlag;
 
 
 
@@ -33,16 +40,19 @@ void Car_Go(uint8_t speed, uint16_t temp);
 void Car_Back(uint8_t speed, uint16_t temp);
 void Car_Left(uint8_t speed, double Angle);
 void Car_Right(uint8_t speed, double Angle);
-
+void Car_Track(uint8_t speed);
 
 
 /*电机初始化函数*/
 void Motor_Init(void);
 
+
 /*路况刷新*/
 void Go_and_Back_Check(void);
 void TurnAngle_Check(void);
 void Track_Check(void);
+
+
 
 /*编码器功能函数*/
 uint16_t Motor_calculate_pulses(double distance_cm);

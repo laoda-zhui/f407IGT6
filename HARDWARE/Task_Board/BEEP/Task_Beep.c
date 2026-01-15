@@ -26,15 +26,14 @@ void TaskBeep_StartTask(uint32_t Time)
 
 /**************************************************************************
 函数功能：TaskBeep-蜂鸣器设置开启/关闭
-入口参数：sw：1-开启 0-关闭
+入口参数：sw：GPIO_PIN_SET-开启 GPIO_PIN_RESET-关闭
 返回  值：无
 **************************************************************************/
-void TaskBeep_Set(uint8_t sw)
+void TaskBeep_Set(GPIO_PinState sw)
 {
 	uint8_t output = (sw == GPIO_PIN_SET) ? GPIO_PIN_RESET : GPIO_PIN_SET;
 
 	HAL_GPIO_WritePin(TASKBEEP_GPIO_Port, TASKBEEP_Pin, output);
-
 }
 
 

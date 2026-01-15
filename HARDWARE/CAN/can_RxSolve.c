@@ -51,16 +51,16 @@ void CanRx_Loop(void)
 
 		switch(RxMsgArray.FilterMatchIndex)		//判断消息邮箱索引
 		{
+			case 2:			/*zigbee rx*/
+				memcpy(FifoBuf_ZigbRx, RxData, RxMsgArray.DLC);
+				break;
+
 			case 0:			/*disp*/
 				memcpy(FifoBuf_Info, RxData, RxMsgArray.DLC);
 				break;
 
 			case 1:			/*wifi rx*/
 				memcpy(FifoBuf_WifiRx, RxData, RxMsgArray.DLC);
-				break;
-
-			case 2:			/*zigbee rx*/
-				memcpy(FifoBuf_ZigbRx, RxData, RxMsgArray.DLC);
 				break;
 
 			case 3:			/*Track*/

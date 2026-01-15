@@ -6,9 +6,13 @@
 #include "Delay.h"
 #include "TIM.h"
 
+/*测量数据*/
 extern float Distance;
 
+/*初始化*/
 void Ultrasonic_Init();
+
+/*启动函数*/
 void Ultrasonic_Start();
 
 

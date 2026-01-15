@@ -29,7 +29,7 @@ void Beep_StartTask(uint32_t Time)
 入口参数：sw：1-开启 0-关闭
 返回  值：无
 **************************************************************************/
-void Beep_Set(uint8_t sw)
+void Beep_Set(GPIO_PinState sw)
 {
 	HAL_GPIO_WritePin(BEEP_GPIO_Port, BEEP_Pin, (GPIO_PinState)sw);
 }

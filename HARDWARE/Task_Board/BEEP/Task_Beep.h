@@ -5,7 +5,7 @@
 #include "main.h"
 
 void TaskBeep_StartTask(uint32_t Time);
-void TaskBeep_Set(uint8_t sw);
+void TaskBeep_Set(GPIO_PinState sw);
 
 
 #endif /* TASK_BOARD_BEEP_TASK_BEEP_H_ */

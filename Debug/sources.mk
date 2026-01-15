@@ -1,5 +1,5 @@
 ################################################################################
-# 自动生成的文件。不要编辑！
+# Automatically-generated file. Do not edit!
 # Toolchain: GNU Tools for STM32 (13.3.rel1)
 ################################################################################
 
@@ -20,7 +20,7 @@ S_DEPS :=
 S_UPPER_DEPS := 
 C_DEPS := 
 
-# 此处必须描述包含源文件的每个子目录
+# Every subdirectory with source files must be described here
 SUBDIRS := \
 Core/Src \
 Core/Startup \
