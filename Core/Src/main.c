@@ -73,7 +73,6 @@ void SystemClock_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-
 /**************************************************************************
 函数功能：硬件初始化
 入口参数：无
@@ -162,7 +161,7 @@ int main(void)
   uint32_t ADC_TaskTime=100,ADC_LastTime=0;/*ADC切片*/
 
   uint32_t BH1750_TaskTime=180,BH1750_LastTime=0;/*BH1750任务时间*/
-  uint8_t BH1750_StartFlag=0;	/*BH1750开启标志位 0-关闭 1-开启*/
+  uint8_t BH1750_StartFlag=1;	/*BH1750开启标志位 0-关闭 1-开启*/
 
   uint32_t Ultrasonic_TaskTime=100,Ultrasonic_LastTime=0;/*超声波任务时间*/
   uint8_t Ultrasonic_StartFlag=0;	/*超声波开启标志位 0-关闭 1-开启*/

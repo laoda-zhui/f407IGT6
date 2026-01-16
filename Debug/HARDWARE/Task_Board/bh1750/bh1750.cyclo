@@ -1,3 +1,4 @@
 ../HARDWARE/Task_Board/bh1750/bh1750.c:17:9:BH1750_WriteCommand	1
 ../HARDWARE/Task_Board/bh1750/bh1750.c:31:10:BH1750_GetLux	2
 ../HARDWARE/Task_Board/bh1750/bh1750.c:52:6:BH1750_Init	5
+../HARDWARE/Task_Board/bh1750/bh1750.c:86:6:I2C_ForceReset	2

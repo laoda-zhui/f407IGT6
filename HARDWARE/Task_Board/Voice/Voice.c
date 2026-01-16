@@ -55,7 +55,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 uint8_t Voice_ASR(void)
 {
 	uint32_t TimeStart=0;
-	uint32_t TimeOut=1000; /*1000ms超时检测*/
+	uint32_t TimeOut=8000; /*8s超时检测*/
 
 	uint8_t Frame[5];		// 保存发送命令的数组
 	uint8_t Voice_Flag_2 = 1;

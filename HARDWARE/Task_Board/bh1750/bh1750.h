@@ -9,6 +9,8 @@
 uint16_t BH1750_GetLux(void);
 void BH1750_Init(void);
 
+void I2C_ForceReset(void);
+
 extern uint8_t BH1750_InitFlag;
 
 
