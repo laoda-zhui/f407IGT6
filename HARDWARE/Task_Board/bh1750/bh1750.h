@@ -9,7 +9,7 @@
 uint16_t BH1750_GetLux(void);
 void BH1750_Init(void);
 
-
+extern uint8_t BH1750_InitFlag;
 
 
 #endif /* TASK_BOARD_BH1750_BH1750_H_ */

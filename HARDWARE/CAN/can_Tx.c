@@ -5,9 +5,10 @@
  * 剩下采用命令采用 写入即发(buf=8字节)
  * */
 
+
 /**************************************************接收初始化***************************************************************/
 #define	Can_TxMaxBuf	80	/*发送缓冲区最大空间 wifi zigbee display*/
-#define Can_CmdMaxBuf	8	/*剩下命令缓冲区最大空间*/
+#define Can_CmdMaxBuf	10	/*剩下命令缓冲区最大空间*/
 
 /*创建发送CAN结构体buf缓冲区数组*/
 uint8_t Can_WifiBuf[Can_TxMaxBuf] = {0};

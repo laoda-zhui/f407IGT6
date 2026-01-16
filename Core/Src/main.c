@@ -15,8 +15,10 @@
 #include "main.h"
 #include "adc.h"
 #include "can.h"
+#include "dma.h"
 #include "i2c.h"
 #include "tim.h"
+#include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -35,6 +37,8 @@
 #include "WheelLED.h"
 #include "Task_Beep.h"
 #include "can_cmd.h"
+#include "Voice.h"
+#include "Photoresistance.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -90,9 +94,6 @@ void Hardware_Init(void)
 	/*红外管初始化*/
 	Infrared_Init();
 
-	/*BH1750初始化*/
-	BH1750_Init();	/*没电会初始化失败*/
-
 	/*Delay初始化*/
 	My_Delay_Init();
 
@@ -100,6 +101,11 @@ void Hardware_Init(void)
 	/*电机初始化*/
 	Motor_Init();
 
+	/*BH1750初始化*/
+	BH1750_Init();	/*没电会初始化失败,瞬间上电也会初始化失败(需要复位)*/
+
+	/*小创语音助手初始化*/
+	Voice_Init();
 }
 
 
@@ -135,12 +141,15 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_CAN1_Init();
   MX_ADC1_Init();
   MX_TIM9_Init();
   MX_TIM10_Init();
   MX_TIM3_Init();
   MX_I2C1_Init();
+  MX_USART6_UART_Init();
+  MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
 
   /*硬件初始化*/
@@ -153,7 +162,7 @@ int main(void)
   uint32_t ADC_TaskTime=100,ADC_LastTime=0;/*ADC切片*/
 
   uint32_t BH1750_TaskTime=180,BH1750_LastTime=0;/*BH1750任务时间*/
-  uint8_t BH1750_StartFlag=1;	/*BH1750开启标志位 0-关闭 1-开启*/
+  uint8_t BH1750_StartFlag=0;	/*BH1750开启标志位 0-关闭 1-开启*/
 
   uint32_t Ultrasonic_TaskTime=100,Ultrasonic_LastTime=0;/*超声波任务时间*/
   uint8_t Ultrasonic_StartFlag=0;	/*超声波开启标志位 0-关闭 1-开启*/
@@ -162,7 +171,10 @@ int main(void)
   /*光照值Lux 0-65535*/
   uint16_t Lux=0,LuxTemp=0;
 
+  /*测试变量-记得删*/
   float data;
+  uint8_t Command = 1;
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -206,10 +218,10 @@ int main(void)
 			  Beep_Set(0);
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_14);
 
-			  CAN_TxtoZigbee(Gate_Open, 8);
 
-
-
+			  Voice_SendCommand(Command);
+			  Command++;
+			  if(Command>=6){Command=1;}
 		  }
 		  if(KeyNum == 4)
 		  {
@@ -218,15 +230,14 @@ int main(void)
 			  Beep_Set(0);
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_15);
 
-
-
+			  uint8_t i;
+			  i = Phsis_GetValue();
+			  char Txdata2[50];
+			  sprintf(Txdata2,"%d\n\r",i);
+			  CAN_TxtoDisplay(Txdata2, strlen(Txdata2));
 		  }
 	  }
 
-//	  char Txdata1[100];
-//	  data = Motor_GetLRDifcoder();
-//	  sprintf(Txdata1,"%.2f\n\r",data);
-//	  CAN_TxtoDisplay(Txdata1, strlen(Txdata1));
 
 	  /*刷新*/
 	  Go_and_Back_Check();

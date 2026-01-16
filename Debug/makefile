@@ -12,7 +12,9 @@ RM := rm -rf
 -include HARDWARE/Time_Interrupt/subdir.mk
 -include HARDWARE/Task_Board/bh1750/subdir.mk
 -include HARDWARE/Task_Board/WheelLED/subdir.mk
+-include HARDWARE/Task_Board/Voice/subdir.mk
 -include HARDWARE/Task_Board/Ultrasonic/subdir.mk
+-include HARDWARE/Task_Board/Photoresistance/subdir.mk
 -include HARDWARE/Task_Board/Infrared/subdir.mk
 -include HARDWARE/Task_Board/BEEP/subdir.mk
 -include HARDWARE/Drive/subdir.mk

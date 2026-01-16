@@ -62,12 +62,16 @@ void Error_Handler(void);
 #define Task_Beep_GPIO_Port GPIOC
 #define CAN_Select_Pin GPIO_PIN_10
 #define CAN_Select_GPIO_Port GPIOF
+#define Core_BEEP_Pin GPIO_PIN_5
+#define Core_BEEP_GPIO_Port GPIOH
 #define WheelLED_L_Pin GPIO_PIN_10
 #define WheelLED_L_GPIO_Port GPIOH
 #define WheelLED_R_Pin GPIO_PIN_11
 #define WheelLED_R_GPIO_Port GPIOH
 #define LED1_Pin GPIO_PIN_12
 #define LED1_GPIO_Port GPIOH
+#define Phsis_Pin GPIO_PIN_8
+#define Phsis_GPIO_Port GPIOG
 #define LED2_Pin GPIO_PIN_13
 #define LED2_GPIO_Port GPIOH
 #define LED3_Pin GPIO_PIN_14

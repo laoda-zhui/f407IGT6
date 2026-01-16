@@ -33,7 +33,9 @@ HARDWARE/Delay \
 HARDWARE/Drive \
 HARDWARE/Task_Board/BEEP \
 HARDWARE/Task_Board/Infrared \
+HARDWARE/Task_Board/Photoresistance \
 HARDWARE/Task_Board/Ultrasonic \
+HARDWARE/Task_Board/Voice \
 HARDWARE/Task_Board/WheelLED \
 HARDWARE/Task_Board/bh1750 \
 HARDWARE/Time_Interrupt \

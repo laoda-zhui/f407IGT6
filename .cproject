@@ -48,7 +48,9 @@
 									<listOptionValue builtIn="false" value="../Core/Inc"/>
 									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/Infrared"/>
 									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/WheelLED"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/Photoresistance"/>
 									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/bh1750"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/Voice"/>
 									<listOptionValue builtIn="false" value="../HARDWARE/Delay"/>
 									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/Ultrasonic"/>
 									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/BEEP"/>

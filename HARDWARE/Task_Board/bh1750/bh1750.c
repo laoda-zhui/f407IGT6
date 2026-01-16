@@ -33,8 +33,6 @@ uint16_t BH1750_GetLux(void)
 	uint8_t Buf[2];
 	uint16_t Lux=0;
 
-
-
 	if(HAL_I2C_Master_Receive(&hi2c1, BH1750Address, Buf, 2, 50) == HAL_OK)
 	{
 		Lux = (Buf[0]<<8)+Buf[1];
@@ -53,6 +51,8 @@ uint16_t BH1750_GetLux(void)
 **************************************************************************/
 void BH1750_Init(void)
 {
+	HAL_Delay(50);
+
 	uint8_t Status;
 	uint16_t TimeOut=0;
 
@@ -63,8 +63,9 @@ void BH1750_Init(void)
 	while(Status != HAL_OK)
 	{
 		TimeOut++;
-		if(TimeOut >50){break;}
+		if(TimeOut >10){break;}
 		Status = BH1750_WriteCommand(0x01);
+		HAL_Delay(10);
 	}
 	TimeOut = 0;
 
@@ -72,8 +73,9 @@ void BH1750_Init(void)
 	while(Status != HAL_OK)
 	{
 		TimeOut++;
-		if(TimeOut >50){break;}
+		if(TimeOut >10){break;}
 		Status = BH1750_WriteCommand(0x10);
+		HAL_Delay(10);
 	}
 
 }

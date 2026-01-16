@@ -11,7 +11,6 @@ float Distance=0;
 **************************************************************************/
 void Ultrasonic_Init()
 {
-    HAL_TIM_Base_Stop(&htim3);
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_SET);
 }
 

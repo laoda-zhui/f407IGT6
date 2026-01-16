@@ -60,7 +60,7 @@ void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(CAN_Select_GPIO_Port, CAN_Select_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOH, GPIO_PIN_5|LED1_Pin|LED2_Pin|LED3_Pin
+  HAL_GPIO_WritePin(GPIOH, Core_BEEP_Pin|LED1_Pin|LED2_Pin|LED3_Pin
                           |LED4_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
@@ -89,9 +89,9 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
   HAL_GPIO_Init(CAN_Select_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PH5 WheelLED_L_Pin WheelLED_R_Pin LED1_Pin
+  /*Configure GPIO pins : Core_BEEP_Pin WheelLED_L_Pin WheelLED_R_Pin LED1_Pin
                            LED2_Pin LED3_Pin LED4_Pin */
-  GPIO_InitStruct.Pin = GPIO_PIN_5|WheelLED_L_Pin|WheelLED_R_Pin|LED1_Pin
+  GPIO_InitStruct.Pin = Core_BEEP_Pin|WheelLED_L_Pin|WheelLED_R_Pin|LED1_Pin
                           |LED2_Pin|LED3_Pin|LED4_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
@@ -104,6 +104,12 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
   HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : Phsis_Pin */
+  GPIO_InitStruct.Pin = Phsis_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(Phsis_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : Trig_Pin */
   GPIO_InitStruct.Pin = Trig_Pin;
