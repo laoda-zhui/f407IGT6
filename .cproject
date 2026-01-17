@@ -51,11 +51,13 @@
 									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/Photoresistance"/>
 									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/bh1750"/>
 									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/Voice"/>
+									<listOptionValue builtIn="false" value="../Task/Task1"/>
 									<listOptionValue builtIn="false" value="../HARDWARE/Delay"/>
 									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/Ultrasonic"/>
 									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/BEEP"/>
 									<listOptionValue builtIn="false" value="../HARDWARE/Core_Board/LED"/>
 									<listOptionValue builtIn="false" value="../HARDWARE/Core_Board/BEEP"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/Core_Board/RFID_RC522"/>
 									<listOptionValue builtIn="false" value="../HARDWARE/Time_Interrupt"/>
 									<listOptionValue builtIn="false" value="../HARDWARE/Core_Board/KEY"/>
 									<listOptionValue builtIn="false" value="../HARDWARE/Drive"/>
@@ -92,6 +94,7 @@
 					<sourceEntries>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Core"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="HARDWARE"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Task"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers"/>
 					</sourceEntries>
 				</configuration>
@@ -169,6 +172,7 @@
 					<sourceEntries>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Core"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="HARDWARE"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Task"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers"/>
 					</sourceEntries>
 				</configuration>

@@ -39,6 +39,8 @@
 #include "can_cmd.h"
 #include "Voice.h"
 #include "Photoresistance.h"
+#include "RC522.h"
+#include "Task.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -60,7 +62,9 @@
 
 /* USER CODE BEGIN PV */
 
+uint16_t Lux=0;
 uint8_t TestData[8]={0x56,0x03,0x9f,0x01,0x02,0x03,0x04,0xBB};
+uint8_t Start_Flag=0;/*小车任务开启标志位*/
 
 /* USER CODE END PV */
 
@@ -96,7 +100,6 @@ void Hardware_Init(void)
 	/*Delay初始化*/
 	My_Delay_Init();
 
-
 	/*电机初始化*/
 	Motor_Init();
 
@@ -105,6 +108,10 @@ void Hardware_Init(void)
 
 	/*小创语音助手初始化*/
 	Voice_Init();
+
+	/*RF读卡器初始化*/
+	InitRC522();
+
 }
 
 
@@ -166,13 +173,14 @@ int main(void)
   uint32_t Ultrasonic_TaskTime=100,Ultrasonic_LastTime=0;/*超声波任务时间*/
   uint8_t Ultrasonic_StartFlag=0;	/*超声波开启标志位 0-关闭 1-开启*/
 
+  uint32_t RC522_TaskTime=500,RC522_LastTime=0;/*RFID读卡器初始化检测任务时间*/
+
 
   /*光照值Lux 0-65535*/
-  uint16_t Lux=0,LuxTemp=0;
+  uint16_t LuxTemp=0;
 
   /*测试变量-记得删*/
   float data;
-  uint8_t Command = 1;
 
   /* USER CODE END 2 */
 
@@ -180,7 +188,6 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-
 	  /*按键*/
 	  KeyNum = Key_GetNum();
 	  if(KeyNum)
@@ -192,9 +199,8 @@ int main(void)
 			  Beep_Set(0);
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_12);
 
-			  char Txdata1[100];
-			  sprintf(Txdata1,"%d\n\r",Lux);
-			  CAN_TxtoDisplay(Txdata1, strlen(Txdata1));
+			  Start_Flag = 1;
+
 		  }
 		  if(KeyNum == 2)
 		  {
@@ -204,10 +210,7 @@ int main(void)
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_13);
 
 
-			  char Txdata2[50];
-			  data = Distance;
-			  sprintf(Txdata2,"%.2f\n\r",data);
-			  CAN_TxtoDisplay(Txdata2, strlen(Txdata2));
+			  Car_MPRight(50, 85);
 
 		  }
 		  if(KeyNum == 3)
@@ -216,11 +219,10 @@ int main(void)
 			  HAL_Delay(100);
 			  Beep_Set(0);
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_14);
+			  char Txdata1[100];
+			  sprintf(Txdata1,"%d\n\r",Lux);
+			  CAN_TxtoDisplay(Txdata1, strlen(Txdata1));
 
-
-			  Voice_SendCommand(Command);
-			  Command++;
-			  if(Command>=6){Command=1;}
 		  }
 		  if(KeyNum == 4)
 		  {
@@ -237,24 +239,40 @@ int main(void)
 		  }
 	  }
 
+	  /*开启任务*/
+	  if(Start_Flag == 1)
+	  {
+		  Task1_Start();
+
+	  }
+
 
 	  /*刷新*/
+	  Track_Check();
 	  Go_and_Back_Check();
 	  TurnAngle_Check();
-	  Track_Check();
+	  TurnAngle_NewCheck();
 
 	  CanRx_Loop();
 	  CAN_TxLoop();
 
 
 	  /******************************任务切片******************************/
-	  /*ADC_TaskTime-100ms 触发十次后 上传电量数据*/
-	  if( (HAL_GetTick() - ADC_LastTime) > ADC_TaskTime)
+	  /*1.ADC_TaskTime-100ms 触发十次后 上传电量数据*/
+	  if((HAL_GetTick() - ADC_LastTime) > ADC_TaskTime)
 	  {
 		  Power_TxandStart();
 		  ADC_LastTime = HAL_GetTick();
 	  }
-	  /*BH1750-180ms,获取光照值lux*/
+
+	  /*2.超声波-100ms,获取距离dis*/
+	  if( ((HAL_GetTick() - Ultrasonic_LastTime) > Ultrasonic_TaskTime) && Ultrasonic_StartFlag == 1)
+	  {
+		  Ultrasonic_Start();
+		  Ultrasonic_LastTime = HAL_GetTick();
+	  }
+
+	  /*3.BH1750-180ms,获取光照值lux*/
 	  if( ((HAL_GetTick() - BH1750_LastTime) > BH1750_TaskTime) && BH1750_StartFlag == 1)
 	  {
 		  LuxTemp = BH1750_GetLux();
@@ -264,13 +282,22 @@ int main(void)
 		  }
 		  BH1750_LastTime = HAL_GetTick();
 	  }
-	  /*BH1750-180ms,获取光照值lux*/
-	  if( ((HAL_GetTick() - Ultrasonic_LastTime) > Ultrasonic_TaskTime) && Ultrasonic_StartFlag == 1)
+	  /*4.RFID_RC522初始化检测-500ms*/
+	  if((HAL_GetTick() - RC522_LastTime) > RC522_TaskTime)
 	  {
-		  Ultrasonic_Start();
-		  Ultrasonic_LastTime = HAL_GetTick();
-	  }
+		  if (RC522_GetLinkFlag() == 0)
+		  {
+			  InitRC522();
+			  Beep_Set(1);
+		  }
+		  else
+		  {
+			  Beep_Set(0);
+			  RC522_LinkTest();
+		  }
 
+		  RC522_LastTime = HAL_GetTick();
+	  }
 
 
 

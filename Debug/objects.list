@@ -39,6 +39,7 @@
 "./HARDWARE/Core_Board/BEEP/Beep.o"
 "./HARDWARE/Core_Board/KEY/KEY.o"
 "./HARDWARE/Core_Board/LED/LED.o"
+"./HARDWARE/Core_Board/RFID_RC522/RC522.o"
 "./HARDWARE/Delay/Delay.o"
 "./HARDWARE/Drive/Motor.o"
 "./HARDWARE/Drive/PID.o"
@@ -50,3 +51,4 @@
 "./HARDWARE/Task_Board/WheelLED/WheelLED.o"
 "./HARDWARE/Task_Board/bh1750/bh1750.o"
 "./HARDWARE/Time_Interrupt/Time_Interrupt.o"
+"./Task/Task1/Task.o"

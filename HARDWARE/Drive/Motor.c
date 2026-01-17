@@ -23,9 +23,11 @@ int16_t Pre_REncoder;		/*同步一次的码盘值*/
 uint16_t Taget_Pulses=0; 	/*目标脉冲数*/
 int16_t Taget_AnglePulse=0; /*目标转向脉冲数*/
 
-int Car_Spend=0;			/*小车全局速度*/
-double Car_Spend_ing =50; 	/*小车实际行进速度*/
+int Car_Speed=0;			/*小车全局速度*/
+int Car_LSpeed=0,Car_RSpeed=0;
+double Car_Speed_ing =20; 	/*小车实际行进速度*/
 
+uint32_t Turn_StartTime=0;  /*转弯检测时间*/
 
 /*小车任务状态-行进标志位*/
 Car_Flag CarFlag;
@@ -34,15 +36,7 @@ Task_Flag Stop_Flag;
 
 
 
-/*转向pid结构体*/
-PID_t Turn_PID={
-		.Kp = 2.0,
-		.Ki = 0.0,
-		.Kd = 0.2,
-		.OutMin = -120,
-		.OutMax = 120
 
-};
 
 
 
@@ -210,11 +204,13 @@ uint16_t Motor_calculate_pulses(double distance_cm)
 void Car_Go(uint8_t speed, uint16_t temp)   // 主车前进 参数：速度/距离（厘米）
 {
 	Motor_SyncLeftEncoder();      /*编码器同步一次*/
-    Stop_Flag = Task_Start;          // 运行状态标志位
-    CarFlag = Go_Flag;            // 前进标志位
+	Motor_SyncRightEncoder();
 
     Taget_Pulses = Motor_calculate_pulses(temp);         // 距离转换为码盘值
-    Car_Spend = speed;      // 速度值
+
+    Car_Speed = speed;      // 速度值
+    Stop_Flag = Task_Start;          // 运行状态标志位
+    CarFlag = Go_Flag;            // 前进标志位
 
 }
 
@@ -228,64 +224,104 @@ void Car_Go(uint8_t speed, uint16_t temp)   // 主车前进 参数：速度/距�
 void Car_Back(uint8_t speed, uint16_t temp) // 主车后退 参数：速度/距离（厘米）
 {
 	Motor_SyncLeftEncoder();     /*编码器同步一次*/
+	Motor_SyncRightEncoder();
 
+
+    Taget_Pulses = Motor_calculate_pulses(temp);         // 距离转换为码盘值
+    Car_Speed = speed;      // 速度值
     Stop_Flag = Task_Start;          // 运行状态标志位
     CarFlag = Back_Flag;          // 后退标志位
 
-    Taget_Pulses = Motor_calculate_pulses(temp);         // 距离转换为码盘值
-    Car_Spend = speed;      // 速度值
-
 }
 
 
 
 /**************************************************************************
-函数功能：控制小车左转
+函数功能：根据码盘差值控制小车左转 - 打滑不建议使用
 入口参数：speed:速度(max=120) Angle:转弯角度
 返回  值：无
 **************************************************************************/
-void Car_Left(uint8_t speed, double Angle)       // 主车左转 参数：角度参考值
+void Car_MPLeft(int speed, double Angle)       // 主车左转 参数：角度参考值
 {
-	Motor_SyncLeftEncoder();     /*左编码器同步一次*/							/*参考： 左转角度			真实值
+	Motor_SyncLeftEncoder();     /*左编码器同步一次*/							/*参考： 左转角度			真实值  速度(30情况下)
 																				90°				87
 																				45°				48
 
-	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	*/
+	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 		  */
 	Motor_SyncRightEncoder();    /*右编码器同步一次*/
 
 	PID_Clear(&Turn_PID);	/*清空一次转向pid*/
-	Taget_AnglePulse = Motor_calculate_pulses(Angle*(M_PI/180.0)*WHEEL_BASE_CM/2.0);
+	Taget_AnglePulse = Motor_calculate_pulses(Angle*(M_PI/180.0)*WHEEL_BASE_CM/1.5);
 	Turn_PID.Target = (float)Taget_AnglePulse;
     Stop_Flag = Task_Start;          // 运行状态标志位
     CarFlag = wheel_L_Flag;       // 左转标志位
-    Car_Spend = speed;      // 速度值
+    Car_Speed = speed;      // 速度值
 
 }
 
 
-
 /**************************************************************************
-函数功能：控制小车右转
+函数功能：根据码盘差控制小车右转 - 打滑不建议使用
 入口参数：speed:速度(max=120) Angle:转弯角度
 返回  值：无
 **************************************************************************/
-void Car_Right(uint8_t speed, double Angle)       // 主车右转 参数：角度参考值
+void Car_MPRight(int speed, double Angle)       // 主车右转 参数：角度参考值
 {
 	Motor_SyncLeftEncoder();     /*左编码器同步一次*/
-	Motor_SyncRightEncoder();    /*右编码器同步一次*/						/*参考： 右转角度			真实值
+	Motor_SyncRightEncoder();    /*右编码器同步一次*/						/*参考： 右转角度			真实值	速度(30情况下)
 																			90°				85
 																			45°				45
 
 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	*/
 
 	PID_Clear(&Turn_PID);	/*清空一次转向pid*/
-	Taget_AnglePulse = Motor_calculate_pulses(Angle*(M_PI/180.0)*WHEEL_BASE_CM/2.0);
+	Taget_AnglePulse = Motor_calculate_pulses(Angle*(M_PI/180.0)*WHEEL_BASE_CM/1.5);
 	Turn_PID.Target = (float)Taget_AnglePulse;
     Stop_Flag = Task_Start;          // 运行状态标志位
     CarFlag = wheel_R_Flag;       // 右转标志位
 
-    Car_Spend = speed;      // 速度值
+    Car_Speed = speed;      // 速度值
 }
+
+
+/**************************************************************************
+函数功能：根据码盘差值控制小车左转
+入口参数：speed:速度(max=120)
+返回  值：无
+**************************************************************************/
+void Car_Left(int Lspeed, int Rspeed)       // 主车左转 参数：角度参考值
+{
+	Turn_StartTime = HAL_GetTick();
+
+    Stop_Flag = Task_Start;          // 运行状态标志位
+    CarFlag = TurnLeft_Flag;       // 左转标志位
+
+    Car_LSpeed = Lspeed;      // 速度值
+    Car_RSpeed = Rspeed;
+
+
+
+}
+
+
+
+/**************************************************************************
+函数功能：根据码盘差控制小车右转
+入口参数：speed:速度(max=120)
+返回  值：无
+**************************************************************************/
+void Car_Right(int Lspeed, int Rspeed)       // 主车右转 参数：角度参考值
+{
+	Turn_StartTime = HAL_GetTick();
+    Stop_Flag = Task_Start;          // 运行状态标志位
+    CarFlag = TurnRight_Flag;       // 右转标志位
+
+    Car_LSpeed = Lspeed;      // 速度值
+    Car_RSpeed = Rspeed;
+}
+
+
+
 
 /**************************************************************************
 函数功能：控制小车开始循迹
@@ -294,10 +330,9 @@ void Car_Right(uint8_t speed, double Angle)       // 主车右转 参数：角�
 **************************************************************************/
 void Car_Track(uint8_t speed)   // 主车循迹 参数：速度
 {
-
     Stop_Flag = Task_Start;          // 运行状态标志位
     CarFlag = Track_Flag;         // 循迹标志位
-    Car_Spend = speed;      // 速度值
+    Car_Speed = speed;      // 速度值
 }
 
 
@@ -319,46 +354,55 @@ void Go_and_Back_Check(void)
 	{
 		Go_and_Back_CheckFlag = 0;
 
-		if(Car_Spend_ing < Car_Spend && Motor_GetLDifcoder() <= 0.2 * Taget_Pulses)
+		if(Car_Speed_ing < Car_Speed && Motor_GetLDifcoder() <= 0.2 * Taget_Pulses)
 		{ // 起步阶段，缓慢加速，保护电机同时也能增强视觉效果
-			Car_Spend_ing += 0.2; // 通过循环，缓慢加速
+			Car_Speed_ing += 0.2; // 通过循环，缓慢加速
 		}
-		else if(Car_Spend_ing > Car_Spend)
+		else if(Car_Speed_ing > Car_Speed)
 		{
-			Car_Spend_ing -= 0.2; // 当多次控制速度不一致时，用于调节速度
+			Car_Speed_ing -= 0.2; // 当多次控制速度不一致时，用于调节速度
 		}
 
 		// 达到行驶路程的一定阶段，开始减速，防止车辆因惯性导致距离产生误差，加入车轮单圈转动距离以及车辆速度与的动态计算，同时增加最低限速，防止电机抖动
-		if(Motor_GetLDifcoder() >= 0.6 * Taget_Pulses && 0.5 * Taget_Pulses < oneCircle * 2 * (Car_Spend / 100.00))
+		if(Motor_GetLDifcoder() >= 0.6 * Taget_Pulses && 0.5 * Taget_Pulses < oneCircle * 2 * (Car_Speed / 100.00))
 		{
-			Car_Spend_ing = Car_Spend_ing <= 15 ? 15 : Car_Spend_ing - 1;
+			Car_Speed_ing = Car_Speed_ing <= 15 ? 15 : Car_Speed_ing - 1;
 		}
-		else if(Motor_GetLDifcoder() >= 0.6 * Taget_Pulses && (Taget_Pulses - Motor_GetLDifcoder()) <= oneCircle * 2 * (Car_Spend / 100.00))
+		else if(Motor_GetLDifcoder() >= 0.6 * Taget_Pulses && (Taget_Pulses - Motor_GetLDifcoder()) <= oneCircle * 2 * (Car_Speed / 100.00))
 		{
-			Car_Spend_ing = Car_Spend_ing <= 15 ? 15 : Car_Spend_ing - 1;
+			Car_Speed_ing = Car_Speed_ing <= 15 ? 15 : Car_Speed_ing - 1;
 		}
 		if(Taget_Pulses <= Motor_GetLDifcoder()) // 行驶距离大于等于需要行驶的码盘值/距离时，停车
 		{
 			Stop_Flag = Task_Complete;
-			Car_Spend_ing = 50;
+			Car_Speed_ing = 20;
 			Motor_Control(0,0);		// 停止
+			return;
 		}
 		else
 		{
 			if(CarFlag == Go_Flag)
 			{
-				Motor_Control((int)Car_Spend_ing,(int)Car_Spend_ing); // 没有前进到指定距离时，继续行驶
+				Motor_Control((int)Car_Speed_ing,(int)Car_Speed_ing); // 没有前进到指定距离时，继续行驶
 			}
 			else if(CarFlag == Back_Flag)
 			{
-				Motor_Control(-(int)Car_Spend_ing,-(int)Car_Spend_ing); // 没有后退到指定距离时，继续行驶
+				Motor_Control(-(int)Car_Speed_ing,-(int)Car_Speed_ing); // 没有后退到指定距离时，继续行驶
 			}
 		}
 	}
 }
 
 
+/*转向pid结构体*/
+PID_t Turn_PID={
+		.Kp = 0.5,
+		.Ki = 0.0,
+		.Kd = 0.0,
+		.OutMin = -120,
+		.OutMax = 120
 
+};
 /**************************************************************************
 函数功能：转弯角度检查
 入口参数：无
@@ -377,18 +421,19 @@ void TurnAngle_Check(void)
 		if(Motor_GetLRDifcoder() > Taget_AnglePulse)	/*达到目标*/
 		{
 			Stop_Flag = Task_Complete;
-			Car_Spend_ing = 50;
+			Car_Speed_ing = 50;
 			Motor_Control(0,0);		// 停止
+			return;
 		}
 		else
 		{
 			if(CarFlag == wheel_L_Flag)
 			{
-				Motor_Control((Car_Spend - (int)Turn_PID.Out),(Car_Spend + (int)Turn_PID.Out)); // 没有前进到指定距离时，继续行驶
+				Motor_Control((Car_Speed - (int)Turn_PID.Out),(Car_Speed + (int)Turn_PID.Out)); // 没有前进到指定距离时，继续行驶
 			}
 			else if(CarFlag == wheel_R_Flag)
 			{
-				Motor_Control((Car_Spend + (int)Turn_PID.Out),(Car_Spend - (int)Turn_PID.Out)); // 没有后退到指定距离时，继续行驶
+				Motor_Control((Car_Speed + (int)Turn_PID.Out),(Car_Speed - (int)Turn_PID.Out)); // 没有后退到指定距离时，继续行驶
 			}
 		}
 
@@ -397,13 +442,45 @@ void TurnAngle_Check(void)
 
 }
 
+/**************************************************************************
+函数功能：转弯角度检查-新
+入口参数：无
+返回  值：无
+**************************************************************************/
+void TurnAngle_NewCheck(void)
+{
+	if((CarFlag == TurnLeft_Flag || CarFlag == TurnRight_Flag) &&  (Stop_Flag == Task_Start) && (TurnCheckFlag==1))/*左*/
+	{
+		TurnCheckFlag = 0;
+		Motor_Control(Car_LSpeed, Car_RSpeed);
 
+		uint32_t runTime = HAL_GetTick() - Turn_StartTime;
+
+		if(runTime < 500){return;} /*小于500ms检测黑线*/
+		if (runTime > 4000)/*大于4s说明脱线了*/
+		{
+			Motor_Control(0,0);
+			Stop_Flag = Task_Complete;
+			return;
+		}
+
+		if( (x1 & 0x18) != 0x18 )
+		{
+			if (x1 != 0x00)
+			{
+				Stop_Flag = Task_Complete;
+				Motor_Control(0,0);
+			}
+		}
+
+	}
+}
 
 
 
 /****************************PID结构体**********************************/
 PID_t PID_TurnTrack={
-		.Kp = 12.0,
+		.Kp = 19.0,
 		.Ki = 0.0,
 		.Kd = 1.0,
 
@@ -421,7 +498,7 @@ PID_t PID_TurnTrack={
 **************************************************************************/
 void Track_Check(void) 	/*这里选择取循迹的后面八个-x1，右边到左右依次增大，第n个等于2的(n-1)次方*/
 {
-	static int8_t err=0; /*误差*/
+	static int8_t err; /*误差*/
 
 	if((CarFlag == Track_Flag) && (Stop_Flag == Task_Start) && (Track_CheckFlag == 1))
 	{
@@ -460,7 +537,7 @@ void Track_Check(void) 	/*这里选择取循迹的后面八个-x1，右边到左
 			{
 				err = 0;
 				uint8_t count;
-				if(count > 2000)
+				if(count > 1000)
 				{
 					count=0;
 					Motor_Control(0,0);
@@ -479,7 +556,7 @@ void Track_Check(void) 	/*这里选择取循迹的后面八个-x1，右边到左
 
 		PID_TurnTrack.Actual = err;
 		PIDSpeed_Update(&PID_TurnTrack);
-		Motor_Control( (Car_Spend - PID_TurnTrack.Out),  (Car_Spend + PID_TurnTrack.Out) );
+		Motor_Control( (Car_Speed - PID_TurnTrack.Out),  (Car_Speed + PID_TurnTrack.Out) );
 
 	}
 

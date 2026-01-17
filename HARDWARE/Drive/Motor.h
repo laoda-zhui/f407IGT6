@@ -27,7 +27,9 @@ typedef enum{
 	Back_Flag,			/*小车后退*/
 	wheel_L_Flag,		/*小车左转*/
 	wheel_R_Flag,		/*小车右转*/
-	Track_Flag			/*小车循迹*/
+	Track_Flag,			/*小车循迹*/
+	TurnLeft_Flag,		/*新小车左转*/
+	TurnRight_Flag,		/*新小车右转*/
 
 }Car_Flag;
 extern Car_Flag CarFlag;
@@ -38,10 +40,11 @@ extern Car_Flag CarFlag;
 void Motor_Control(int L_Spend,int R_Spend);
 void Car_Go(uint8_t speed, uint16_t temp);
 void Car_Back(uint8_t speed, uint16_t temp);
-void Car_Left(uint8_t speed, double Angle);
-void Car_Right(uint8_t speed, double Angle);
+void Car_MPLeft(int speed, double Angle) ;
+void Car_MPRight(int speed, double Angle);
 void Car_Track(uint8_t speed);
-
+void Car_Left(int Lspeed, int Rspeed);
+void Car_Right(int Lspeed, int Rspeed);
 
 /*电机初始化函数*/
 void Motor_Init(void);
@@ -51,7 +54,7 @@ void Motor_Init(void);
 void Go_and_Back_Check(void);
 void TurnAngle_Check(void);
 void Track_Check(void);
-
+void TurnAngle_NewCheck(void);
 
 
 /*编码器功能函数*/

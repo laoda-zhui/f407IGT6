@@ -9,6 +9,7 @@ RM := rm -rf
 
 # All of the sources participating in the build are defined here
 -include sources.mk
+-include Task/Task1/subdir.mk
 -include HARDWARE/Time_Interrupt/subdir.mk
 -include HARDWARE/Task_Board/bh1750/subdir.mk
 -include HARDWARE/Task_Board/WheelLED/subdir.mk
@@ -19,6 +20,7 @@ RM := rm -rf
 -include HARDWARE/Task_Board/BEEP/subdir.mk
 -include HARDWARE/Drive/subdir.mk
 -include HARDWARE/Delay/subdir.mk
+-include HARDWARE/Core_Board/RFID_RC522/subdir.mk
 -include HARDWARE/Core_Board/LED/subdir.mk
 -include HARDWARE/Core_Board/KEY/subdir.mk
 -include HARDWARE/Core_Board/BEEP/subdir.mk

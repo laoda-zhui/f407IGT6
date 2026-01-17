@@ -4,7 +4,7 @@
 #include "main.h"
 
 /*LED操作*/
-#define 	LED1(x)			HAL_GPIO_t(LED1_GPIO_Port, LED1_Pin, (GPIO_PinState)(x));
+#define 	LED1(x)			HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, (GPIO_PinState)(x));
 #define 	LED2(x)			HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, (GPIO_PinState)(x));
 #define 	LED3(x)			HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, (GPIO_PinState)(x));
 #define 	LED4(x)			HAL_GPIO_WritePin(LED4_GPIO_Port, LED4_Pin, (GPIO_PinState)(x));

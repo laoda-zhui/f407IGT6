@@ -20,11 +20,13 @@ uint8_t Track_CheckFlag = 0;		/*循迹刷新标志位*/
 **************************************************************************/
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-	static uint8_t Count1=0,Count2=0;
+	static uint8_t Count1=0,Count2=0,Count3=0;
 	if(htim == &htim9)	/*Motor-TIM9中断 psc:168-1 arr:=1000-1 中断时间:1ms*/
 	{
 		Count1++;
 		Count2++;
+		Count3++;
+
 		if(Count1 > 15)
 		{
 			TurnCheckFlag = 1;
@@ -35,7 +37,12 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 			Go_and_Back_CheckFlag = 1;
 			Count2 = 0;
 		}
-		Track_CheckFlag = 1;
+		if(Count3 > 5)
+		{
+			Track_CheckFlag = 1;
+			Count3=0;
+		}
+
 
 
 

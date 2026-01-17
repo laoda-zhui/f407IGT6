@@ -29,6 +29,7 @@ HARDWARE/CAN \
 HARDWARE/Core_Board/BEEP \
 HARDWARE/Core_Board/KEY \
 HARDWARE/Core_Board/LED \
+HARDWARE/Core_Board/RFID_RC522 \
 HARDWARE/Delay \
 HARDWARE/Drive \
 HARDWARE/Task_Board/BEEP \
@@ -39,4 +40,5 @@ HARDWARE/Task_Board/Voice \
 HARDWARE/Task_Board/WheelLED \
 HARDWARE/Task_Board/bh1750 \
 HARDWARE/Time_Interrupt \
+Task/Task1 \
 

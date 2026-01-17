@@ -41,8 +41,8 @@ extern "C" {
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
-
-
+extern uint16_t Lux;
+extern uint8_t Start_Flag;/*小车任务开启标志位*/
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/

@@ -48,7 +48,8 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../HARDWARE/Task_Board/WheelLED/WheelLED.h \
  ../HARDWARE/Task_Board/BEEP/Task_Beep.h ../HARDWARE/CAN/can_cmd.h \
  ../HARDWARE/Task_Board/Voice/Voice.h \
- ../HARDWARE/Task_Board/Photoresistance/Photoresistance.h
+ ../HARDWARE/Task_Board/Photoresistance/Photoresistance.h \
+ ../HARDWARE/Core_Board/RFID_RC522/RC522.h ../Task/Task1/Task.h
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:
@@ -113,3 +114,5 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../HARDWARE/CAN/can_cmd.h:
 ../HARDWARE/Task_Board/Voice/Voice.h:
 ../HARDWARE/Task_Board/Photoresistance/Photoresistance.h:
+../HARDWARE/Core_Board/RFID_RC522/RC522.h:
+../Task/Task1/Task.h:
