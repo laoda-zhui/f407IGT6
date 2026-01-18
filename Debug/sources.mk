@@ -26,6 +26,7 @@ Core/Src \
 Core/Startup \
 Drivers/STM32F4xx_HAL_Driver/Src \
 HARDWARE/CAN \
+HARDWARE/Command \
 HARDWARE/Core_Board/BEEP \
 HARDWARE/Core_Board/KEY \
 HARDWARE/Core_Board/LED \

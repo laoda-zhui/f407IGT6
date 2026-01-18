@@ -24,6 +24,7 @@ RM := rm -rf
 -include HARDWARE/Core_Board/LED/subdir.mk
 -include HARDWARE/Core_Board/KEY/subdir.mk
 -include HARDWARE/Core_Board/BEEP/subdir.mk
+-include HARDWARE/Command/subdir.mk
 -include HARDWARE/CAN/subdir.mk
 -include Drivers/STM32F4xx_HAL_Driver/Src/subdir.mk
 -include Core/Startup/subdir.mk

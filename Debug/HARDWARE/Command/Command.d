@@ -1,4 +1,5 @@
-Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
+HARDWARE/Command/Command.o: ../HARDWARE/Command/Command.c \
+ ../HARDWARE/Command/Command.h ../Core/Inc/main.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
  ../Core/Inc/stm32f4xx_hal_conf.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h \
@@ -33,24 +34,11 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h \
- ../Core/Inc/adc.h ../Core/Inc/main.h ../Core/Inc/can.h \
- ../HARDWARE/CAN/can_Tx.h ../Core/Inc/can.h ../HARDWARE/CAN/can_RxSolve.h \
- ../Core/Inc/dma.h ../Core/Inc/i2c.h \
- ../HARDWARE/Task_Board/bh1750/bh1750.h ../Core/Inc/tim.h \
- ../Core/Inc/usart.h ../Core/Inc/gpio.h ../HARDWARE/Drive/Motor.h \
- ../HARDWARE/Drive/PID.h ../HARDWARE/Time_Interrupt/Time_Interrupt.h \
- ../HARDWARE/Time_Interrupt/../Core_Board/KEY/KEY.h \
- ../HARDWARE/Drive/PID.h ../HARDWARE/Core_Board/BEEP/Beep.h \
- ../HARDWARE/Delay/Delay.h ../HARDWARE/Core_Board/KEY/KEY.h \
- ../HARDWARE/Core_Board/LED/LED.h \
- ../HARDWARE/Task_Board/Infrared/infrared.h \
- ../HARDWARE/Task_Board/Ultrasonic/Ultrasonic.h ../Core/Inc/TIM.h \
- ../HARDWARE/Task_Board/WheelLED/WheelLED.h \
- ../HARDWARE/Task_Board/BEEP/Task_Beep.h ../HARDWARE/CAN/can_cmd.h \
- ../HARDWARE/Task_Board/Voice/Voice.h \
- ../HARDWARE/Task_Board/Photoresistance/Photoresistance.h \
- ../HARDWARE/Core_Board/RFID_RC522/RC522.h ../Task/Task1/Task.h \
- ../HARDWARE/Command/Command.h
+ ../HARDWARE/CAN/can_Tx.h ../Core/Inc/can.h ../Core/Inc/main.h \
+ ../HARDWARE/CAN/can_RxSolve.h ../HARDWARE/CAN/can_cmd.h \
+ ../HARDWARE/Task_Board/Ultrasonic/Ultrasonic.h ../HARDWARE/Delay/Delay.h \
+ ../Core/Inc/TIM.h
+../HARDWARE/Command/Command.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:
@@ -86,35 +74,11 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h:
-../Core/Inc/adc.h:
-../Core/Inc/main.h:
-../Core/Inc/can.h:
 ../HARDWARE/CAN/can_Tx.h:
 ../Core/Inc/can.h:
+../Core/Inc/main.h:
 ../HARDWARE/CAN/can_RxSolve.h:
-../Core/Inc/dma.h:
-../Core/Inc/i2c.h:
-../HARDWARE/Task_Board/bh1750/bh1750.h:
-../Core/Inc/tim.h:
-../Core/Inc/usart.h:
-../Core/Inc/gpio.h:
-../HARDWARE/Drive/Motor.h:
-../HARDWARE/Drive/PID.h:
-../HARDWARE/Time_Interrupt/Time_Interrupt.h:
-../HARDWARE/Time_Interrupt/../Core_Board/KEY/KEY.h:
-../HARDWARE/Drive/PID.h:
-../HARDWARE/Core_Board/BEEP/Beep.h:
-../HARDWARE/Delay/Delay.h:
-../HARDWARE/Core_Board/KEY/KEY.h:
-../HARDWARE/Core_Board/LED/LED.h:
-../HARDWARE/Task_Board/Infrared/infrared.h:
-../HARDWARE/Task_Board/Ultrasonic/Ultrasonic.h:
-../Core/Inc/TIM.h:
-../HARDWARE/Task_Board/WheelLED/WheelLED.h:
-../HARDWARE/Task_Board/BEEP/Task_Beep.h:
 ../HARDWARE/CAN/can_cmd.h:
-../HARDWARE/Task_Board/Voice/Voice.h:
-../HARDWARE/Task_Board/Photoresistance/Photoresistance.h:
-../HARDWARE/Core_Board/RFID_RC522/RC522.h:
-../Task/Task1/Task.h:
-../HARDWARE/Command/Command.h:
+../HARDWARE/Task_Board/Ultrasonic/Ultrasonic.h:
+../HARDWARE/Delay/Delay.h:
+../Core/Inc/TIM.h:

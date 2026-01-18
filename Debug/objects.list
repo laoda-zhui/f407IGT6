@@ -36,6 +36,7 @@
 "./HARDWARE/CAN/can_RxSolve.o"
 "./HARDWARE/CAN/can_Tx.o"
 "./HARDWARE/CAN/can_cmd.o"
+"./HARDWARE/Command/Command.o"
 "./HARDWARE/Core_Board/BEEP/Beep.o"
 "./HARDWARE/Core_Board/KEY/KEY.o"
 "./HARDWARE/Core_Board/LED/LED.o"

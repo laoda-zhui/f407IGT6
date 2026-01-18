@@ -20,9 +20,11 @@ extern uint8_t Rotate_2[];
 extern uint8_t Gate_Open[];
 extern uint8_t Gate_Close[];
 extern uint8_t Gate_GetStatus[];
-extern uint8_t SEG_TimOpen[];
+
+extern uint8_t SMG_TimOpen[];
 extern uint8_t SMG_TimClose[];
 extern uint8_t SMG_TimClear[];
+
 extern uint8_t TrafficA_Open[];
 extern uint8_t TrafficA_Red[];
 extern uint8_t TrafficA_Green[];
@@ -39,6 +41,7 @@ extern uint8_t TrafficD_Open[];
 extern uint8_t TrafficD_Red[];
 extern uint8_t TrafficD_Green[];
 extern uint8_t TrafficD_Yellow[];
+
 extern uint8_t GarageA_To1[];
 extern uint8_t GarageA_To2[];
 extern uint8_t GarageA_To3[];
@@ -51,12 +54,18 @@ extern uint8_t GarageB_To3[];
 extern uint8_t GarageB_To4[];
 extern uint8_t GarageB_Get_Floor[];
 extern uint8_t GarageB_Get_Infr[];
+
 extern uint8_t TFTA_PageUp[];
 extern uint8_t TFTA_PageDown[];
+extern uint8_t TFTB_PageUp[8];
 extern uint8_t TFTB_PageDown[];
 extern uint8_t TFTC_PageDown[];
+
+
 extern uint8_t Charge_Open[];
+
 extern uint8_t Terrain_Open[];
+
 extern uint8_t AGV_Thread1[];
 extern uint8_t AGV_Thread2[];
 

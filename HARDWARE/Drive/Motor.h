@@ -28,6 +28,7 @@ typedef enum{
 	wheel_L_Flag,		/*小车左转*/
 	wheel_R_Flag,		/*小车右转*/
 	Track_Flag,			/*小车循迹*/
+	TrackTime_Flag,
 	TurnLeft_Flag,		/*新小车左转*/
 	TurnRight_Flag,		/*新小车右转*/
 
@@ -43,8 +44,10 @@ void Car_Back(uint8_t speed, uint16_t temp);
 void Car_MPLeft(int speed, double Angle) ;
 void Car_MPRight(int speed, double Angle);
 void Car_Track(uint8_t speed);
+void Car_TrackTime(uint8_t speed, uint32_t Time);
 void Car_Left(int Lspeed, int Rspeed);
 void Car_Right(int Lspeed, int Rspeed);
+
 
 /*电机初始化函数*/
 void Motor_Init(void);

@@ -29,6 +29,8 @@ double Car_Speed_ing =20; 	/*小车实际行进速度*/
 
 uint32_t Turn_StartTime=0;  /*转弯检测时间*/
 
+uint32_t TrackTimeOut=0,TrackStartTime=0;
+
 /*小车任务状态-行进标志位*/
 Car_Flag CarFlag;
 /*任务执行状态*/
@@ -285,7 +287,7 @@ void Car_MPRight(int speed, double Angle)       // 主车右转 参数：角度�
 
 
 /**************************************************************************
-函数功能：根据码盘差值控制小车左转
+函数功能：根据巡线控制控制小车左转 - 推荐 -77 77
 入口参数：speed:速度(max=120)
 返回  值：无
 **************************************************************************/
@@ -306,7 +308,7 @@ void Car_Left(int Lspeed, int Rspeed)       // 主车左转 参数：角度参�
 
 
 /**************************************************************************
-函数功能：根据码盘差控制小车右转
+函数功能：根据巡线控制小车右转  推荐 77 -77
 入口参数：speed:速度(max=120)
 返回  值：无
 **************************************************************************/
@@ -336,6 +338,19 @@ void Car_Track(uint8_t speed)   // 主车循迹 参数：速度
 }
 
 
+/**************************************************************************
+函数功能：控制小车规定时间内循迹
+入口参数：speed:速度(max=120) Time:循迹时间
+返回  值：无
+**************************************************************************/
+void Car_TrackTime(uint8_t speed, uint32_t Time)   // 主车循迹 参数：速度
+{
+	TrackStartTime = HAL_GetTick();
+	TrackTimeOut = Time;
+    Stop_Flag = Task_Start;          // 运行状态标志位
+    CarFlag = TrackTime_Flag;         // 循迹标志位
+    Car_Speed = speed;      // 速度值
+}
 
 
 
@@ -500,9 +515,21 @@ void Track_Check(void) 	/*这里选择取循迹的后面八个-x1，右边到左
 {
 	static int8_t err; /*误差*/
 
-	if((CarFlag == Track_Flag) && (Stop_Flag == Task_Start) && (Track_CheckFlag == 1))
+	if((CarFlag == Track_Flag || CarFlag == TrackTime_Flag) && (Stop_Flag == Task_Start) && (Track_CheckFlag == 1))
 	{
 		Track_CheckFlag = 0;
+
+		if(CarFlag == TrackTime_Flag)
+		{
+			if(HAL_GetTick() - TrackStartTime > TrackTimeOut)
+			{
+				err = 0;
+				Stop_Flag = Task_Complete;
+				Motor_Control(0,0);
+				return;
+			}
+
+		}
 
 		switch(x1)
 		{

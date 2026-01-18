@@ -12,6 +12,9 @@
 #include "Delay.h"
 #include "can_cmd.h"
 #include "Photoresistance.h"
+#include "Command.h"
+#include "Task_Beep.h"
+
 
 
 void Task1_Start(void);

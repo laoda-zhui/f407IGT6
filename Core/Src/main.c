@@ -41,6 +41,7 @@
 #include "Photoresistance.h"
 #include "RC522.h"
 #include "Task.h"
+#include "Command.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -64,7 +65,10 @@
 
 uint16_t Lux=0;
 uint8_t TestData[8]={0x56,0x03,0x9f,0x01,0x02,0x03,0x04,0xBB};
+
+/*标志位*/
 uint8_t Start_Flag=0;/*小车任务开启标志位*/
+
 
 /* USER CODE END PV */
 
@@ -165,13 +169,13 @@ int main(void)
   uint8_t KeyNum=0;
 
   /*任务切片时间-ms*/
-  uint32_t ADC_TaskTime=100,ADC_LastTime=0;/*ADC切片*/
+  uint32_t ADC_TaskTime=50,ADC_LastTime=0;/*ADC切片*/
 
   uint32_t BH1750_TaskTime=180,BH1750_LastTime=0;/*BH1750任务时间*/
   uint8_t BH1750_StartFlag=1;	/*BH1750开启标志位 0-关闭 1-开启*/
 
-  uint32_t Ultrasonic_TaskTime=100,Ultrasonic_LastTime=0;/*超声波任务时间*/
-  uint8_t Ultrasonic_StartFlag=0;	/*超声波开启标志位 0-关闭 1-开启*/
+  uint32_t Ultrasonic_TaskTime=200,Ultrasonic_LastTime=0;/*超声波任务时间*/
+  uint8_t Ultrasonic_StartFlag=1;	/*超声波开启标志位 0-关闭 1-开启*/
 
   uint32_t RC522_TaskTime=500,RC522_LastTime=0;/*RFID读卡器初始化检测任务时间*/
 
@@ -210,8 +214,7 @@ int main(void)
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_13);
 
 
-			  Car_MPRight(50, 85);
-
+			  Command_TrafficBInMode();
 		  }
 		  if(KeyNum == 3)
 		  {
@@ -219,9 +222,12 @@ int main(void)
 			  HAL_Delay(100);
 			  Beep_Set(0);
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_14);
-			  char Txdata1[100];
-			  sprintf(Txdata1,"%d\n\r",Lux);
-			  CAN_TxtoDisplay(Txdata1, strlen(Txdata1));
+
+//			  if(FifoBuf_WifiRx[0]==0x55 && FifoBuf_WifiRx[1]==0x03 && FifoBuf_WifiRx[2]==0x01)
+//			  {
+//				  Motor_Control(40, 40);
+//			  }
+			  CAN_TxtoWifi(FifoBuf_WifiRx, 8);
 
 		  }
 		  if(KeyNum == 4)
@@ -231,11 +237,14 @@ int main(void)
 			  Beep_Set(0);
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_15);
 
-			  uint8_t i;
-			  i = Phsis_GetValue();
-			  char Txdata2[50];
-			  sprintf(Txdata2,"%d\n\r",i);
-			  CAN_TxtoDisplay(Txdata2, strlen(Txdata2));
+
+			  Command_AndroidTraffic();
+//			  uint8_t i;
+//			  i = Phsis_GetValue();
+//			  char Txdata2[50];
+//			  sprintf(Txdata2,"%d\n\r",i);
+//			  CAN_TxtoDisplay(Txdata2, strlen(Txdata2));
+
 		  }
 	  }
 
@@ -257,7 +266,7 @@ int main(void)
 	  CAN_TxLoop();
 
 
-	  /******************************任务切片******************************/
+	  /******************************模块任务切片******************************/
 	  /*1.ADC_TaskTime-100ms 触发十次后 上传电量数据*/
 	  if((HAL_GetTick() - ADC_LastTime) > ADC_TaskTime)
 	  {
