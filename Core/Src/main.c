@@ -9,6 +9,7 @@
   *晚上记得早点睡;
   *加油!
   *电子界吴彦祖;
+  *2026.1.18调累了
   *******************************************************************************/
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
@@ -214,7 +215,7 @@ int main(void)
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_13);
 
 
-			  Command_TrafficBInMode();
+			  Command_SlaveCarStart();
 		  }
 		  if(KeyNum == 3)
 		  {
@@ -227,7 +228,7 @@ int main(void)
 //			  {
 //				  Motor_Control(40, 40);
 //			  }
-			  CAN_TxtoWifi(FifoBuf_WifiRx, 8);
+			  Command_ClearTim() ;
 
 		  }
 		  if(KeyNum == 4)

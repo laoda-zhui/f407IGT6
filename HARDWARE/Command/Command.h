@@ -52,5 +52,26 @@ void Command_AndroidTraffic(void);
 
 
 
+/*立体车库*/
+void Command_CarPortA(uint8_t Floor);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #endif /* COMMAND_COMMAND_H_ */

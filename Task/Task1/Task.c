@@ -1,20 +1,19 @@
 #include "Task.h"
 
 
-uint16_t TaskFlag=0;
-uint8_t GoSpeed=120;/*基础速度*/
-uint8_t TrackSpeed = 120;
+uint16_t TaskFlag=0; /*任务状态*/
+uint8_t GoSpeed=100;  /*行进基础速度*/
+uint8_t TrackSpeed = 100; /*循迹基础速度*/
 
 uint32_t Stop_Delay_Tick=0;
-
-uint8_t x=0;
+uint16_t LoopCount =0;	/*循环次数*/
 
 void Task1_Start(void)
 {
 	switch(TaskFlag)
 	{
 		case 0:	/*循迹开始*/
-			if(x==0){Command_StartTim();}
+			if(LoopCount==0){Command_StartTim();Command_StartTim();}
 			Car_Track(TrackSpeed);
 			TaskFlag = 1;
 			break;
@@ -22,6 +21,7 @@ void Task1_Start(void)
 			if(Stop_Flag == Task_Complete)
 			{
 				TaskFlag = 2;
+				if(LoopCount == 1){Command_CloseGate();Command_CloseGate();} /*第二次右转关闸门*/
 			}
 			break;
 		case 2: /*前进开始*/
@@ -32,25 +32,25 @@ void Task1_Start(void)
 			if(Stop_Flag == Task_Complete)
 			{
 				TaskFlag = 4;
-				if(x == 0){Command_OpenGate();Command_OpenGate();} /*第一次右转开闸门*/
+				if(LoopCount == 0){Command_OpenGate();Command_OpenGate();} /*第一次右转开闸门*/
 			}
 			break;
 		case 4: /*右转开始*/
-			Car_Right(77, -77);
+			Car_Right(78, -78);
 			TaskFlag = 5;
 			break;
 		case 5: /*右转结束*/
 			if(Stop_Flag == Task_Complete)
 			{
-				if(x == 0){Command_OpenGate();Command_OpenGate();} /*第一次右转开闸门*/
+				if(LoopCount == 0){Command_OpenGate();Command_OpenGate();} /*第一次右转开闸门*/
 				TaskFlag = 0;
-				x++;
-				if(x == 4)	/*第四次 回到原地*/
+				LoopCount++;
+				if(LoopCount == 4)	/*第四次 回到原地*/
 				{
 					TaskFlag=6;
-					x=0;
+					LoopCount=0;
+					Car_TrackTime(47, 700);
 					Command_EndTim();
-					Car_TrackTime(50, 600);
 				}
 			}
 			break;
@@ -67,9 +67,11 @@ void Task1_Start(void)
 			{
 				TaskBeep_Set(GPIO_PIN_RESET);
 				Command_SlaveCarStart();
+				Command_SlaveCarStart();
+				Command_SlaveCarStart();
 				Start_Flag = 0;
 			}
-
+			break;
 	}
 }
 
