@@ -75,8 +75,59 @@ void Task1_Start(void)
 	}
 }
 
+/*交通灯测试*/
+uint32_t TestTimeOut=3000,TestTimeStart=0;
+void TestTask(void)
+{
+	switch(TaskFlag)
+	{
+	case 0:
+		{
+			Command_TrafficBInMode();
 
+			TaskFlag = 1;
+			TestTimeStart = HAL_GetTick();
+			TestTimeOut = 800;
+			break;
+}
+	case 1:
+		{
+			if((HAL_GetTick() - TestTimeStart) > TestTimeOut)
+			{
+				Command_AndroidTraffic();
+				TestTimeStart = HAL_GetTick();
+				TaskFlag = 2;
+				TestTimeOut = 1500;
+			}
 
+			break;
+		}
+	case 2:
+		{
+			if(AndroidFlag == TrafficRed_Flag && (HAL_GetTick() - TestTimeStart) > 100)
+			{
+			  Command_TrafficBSend(0);
+			  TaskFlag = 3;
+			}
+			if(AndroidFlag == TrafficYellow_Flag && (HAL_GetTick() - TestTimeStart) > 100)
+			{
+			  Command_TrafficBSend(1);
+			  TaskFlag = 3;
+			}
+			if(AndroidFlag == TrafficGreen_Flag && (HAL_GetTick() - TestTimeStart) > 100)
+			{
+			  Command_TrafficBSend(2);
+			  TaskFlag = 3;
+			}
+			if((HAL_GetTick() - TestTimeStart) > TestTimeOut)
+			{
+			  Command_TrafficBSend(2);
+			  TaskFlag = 3;
+			}
+			break;
+		}
+	}
+}
 
 
 

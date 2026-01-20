@@ -43,13 +43,18 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 			Count3=0;
 		}
 
-
-
-
 	}
 	if(htim == &htim10) /*KEY-TIM10中断 psc:168-1 arr:=20000-1 中断时间:20ms*/
 	{
 		KeyNum_Tick();
+	}
+
+
+
+	if(htim == &htim11)/*can 1ms发送接收*/
+	{
+		CanRx_Loop();
+		CAN_TxLoop();
 	}
 
 }

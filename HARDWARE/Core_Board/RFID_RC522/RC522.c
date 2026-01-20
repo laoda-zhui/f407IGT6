@@ -31,7 +31,7 @@ uint8_t ADDR_Str[14]={"RFID_ADDR:01\n"};
 **************************************************************************/
 void RC522_SendData(uint8_t* Data, uint8_t len)
 {
-	HAL_UART_Transmit(&huart1, Data, len, 200);
+	HAL_UART_Transmit(&huart1, Data, len, 10);
 }
 
 
@@ -44,7 +44,7 @@ void RC522_SendData(uint8_t* Data, uint8_t len)
 int8_t RC522_ReceiveData(uint8_t* RxData)
 {
 	int8_t States;
-	States = HAL_UART_Receive(&huart1, RxData, 1, 200);
+	States = HAL_UART_Receive(&huart1, RxData, 1, 10);
 
 	switch(States)
 	{

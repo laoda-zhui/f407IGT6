@@ -310,6 +310,8 @@ void MyCan_Init(void)
 	   **************************************************************************/
 	  Can_CmdStruct_Init();
 
+	  HAL_TIM_Base_Start_IT(&htim11);
+
 }
 
 /* USER CODE END 1 */

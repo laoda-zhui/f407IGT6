@@ -9,7 +9,6 @@
   *晚上记得早点睡;
   *加油!
   *电子界吴彦祖;
-  *2026.1.18调累了
   *******************************************************************************/
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
@@ -65,7 +64,7 @@
 /* USER CODE BEGIN PV */
 
 uint16_t Lux=0;
-uint8_t TestData[8]={0x56,0x03,0x9f,0x01,0x02,0x03,0x04,0xBB};
+
 
 /*标志位*/
 uint8_t Start_Flag=0;/*小车任务开启标志位*/
@@ -109,7 +108,7 @@ void Hardware_Init(void)
 	Motor_Init();
 
 	/*BH1750初始化*/
-	BH1750_Init();	/*没电会初始化失败,瞬间上电也会初始化失败(需要复位)*/
+	BH1750_Init();	/*没电会初始化失败*/
 
 	/*小创语音助手初始化*/
 	Voice_Init();
@@ -161,6 +160,7 @@ int main(void)
   MX_I2C1_Init();
   MX_USART6_UART_Init();
   MX_USART1_UART_Init();
+  MX_TIM11_Init();
   /* USER CODE BEGIN 2 */
 
   /*硬件初始化*/
@@ -170,12 +170,12 @@ int main(void)
   uint8_t KeyNum=0;
 
   /*任务切片时间-ms*/
-  uint32_t ADC_TaskTime=50,ADC_LastTime=0;/*ADC切片*/
+  uint32_t ADC_TaskTime=50,ADC_LastTime=0;/*ADC任务时间*/
 
   uint32_t BH1750_TaskTime=180,BH1750_LastTime=0;/*BH1750任务时间*/
   uint8_t BH1750_StartFlag=1;	/*BH1750开启标志位 0-关闭 1-开启*/
 
-  uint32_t Ultrasonic_TaskTime=200,Ultrasonic_LastTime=0;/*超声波任务时间*/
+  uint32_t Ultrasonic_TaskTime=100,Ultrasonic_LastTime=0;/*超声波任务时间*/
   uint8_t Ultrasonic_StartFlag=1;	/*超声波开启标志位 0-关闭 1-开启*/
 
   uint32_t RC522_TaskTime=500,RC522_LastTime=0;/*RFID读卡器初始化检测任务时间*/
@@ -186,6 +186,7 @@ int main(void)
 
   /*测试变量-记得删*/
   float data;
+  uint8_t i=1;
 
   /* USER CODE END 2 */
 
@@ -193,6 +194,15 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+
+	  /*刷新*/
+	  Track_Check();
+	  Go_and_Back_Check();
+	  TurnAngle_Check();
+	  TurnAngle_NewCheck();
+
+
+
 	  /*按键*/
 	  KeyNum = Key_GetNum();
 	  if(KeyNum)
@@ -213,9 +223,8 @@ int main(void)
 			  HAL_Delay(100);
 			  Beep_Set(0);
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_13);
+			  Command_CarPortB(1);
 
-
-			  Command_SlaveCarStart();
 		  }
 		  if(KeyNum == 3)
 		  {
@@ -224,11 +233,8 @@ int main(void)
 			  Beep_Set(0);
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_14);
 
-//			  if(FifoBuf_WifiRx[0]==0x55 && FifoBuf_WifiRx[1]==0x03 && FifoBuf_WifiRx[2]==0x01)
-//			  {
-//				  Motor_Control(40, 40);
-//			  }
-			  Command_ClearTim() ;
+			  Command_AndroidTraffic();
+
 
 		  }
 		  if(KeyNum == 4)
@@ -237,14 +243,15 @@ int main(void)
 			  HAL_Delay(100);
 			  Beep_Set(0);
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_15);
+//			  char txdata[20];
+//			  sprintf(txdata,"%d",FifoBuf_WifiRx);
+//			  CAN_TxtoDisplay(txdata, strlen(txdata));
 
 
-			  Command_AndroidTraffic();
-//			  uint8_t i;
-//			  i = Phsis_GetValue();
-//			  char Txdata2[50];
-//			  sprintf(Txdata2,"%d\n\r",i);
-//			  CAN_TxtoDisplay(Txdata2, strlen(Txdata2));
+
+			  Command_light(i);
+			  i++;
+			  if(i>3){i=1;}
 
 		  }
 	  }
@@ -252,23 +259,19 @@ int main(void)
 	  /*开启任务*/
 	  if(Start_Flag == 1)
 	  {
-		  Task1_Start();
-
+		  //Task1_Start();
+		  TestTask();
 	  }
 
 
-	  /*刷新*/
-	  Track_Check();
-	  Go_and_Back_Check();
-	  TurnAngle_Check();
-	  TurnAngle_NewCheck();
 
-	  CanRx_Loop();
-	  CAN_TxLoop();
+
+
+
 
 
 	  /******************************模块任务切片******************************/
-	  /*1.ADC_TaskTime-100ms 触发十次后 上传电量数据*/
+	  /*1.电量检测-50ms 触发十次后 上传电量数据*/
 	  if((HAL_GetTick() - ADC_LastTime) > ADC_TaskTime)
 	  {
 		  Power_TxandStart();

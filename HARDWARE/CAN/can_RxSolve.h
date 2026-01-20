@@ -7,13 +7,15 @@
 #include <stdint.h>
 #include <string.h>
 
-#define FIFOSIZE_INFO		20	/*对应缓冲数组大小*/
+/*对应缓冲数组大小*/
+#define FIFOSIZE_INFO		20
 #define FIFOSIZE_WIFIRX		20
 #define FIFOSIZE_WIFITX		20
 #define FIFOSIZE_ZIGBRX		20
 #define FIFOSIZE_ZIGBTX		20
 
-extern uint8_t FifoBuf_Info[FIFOSIZE_INFO];	/*对应缓冲数组*/
+/*对应缓冲数组*/
+extern uint8_t FifoBuf_Info[FIFOSIZE_INFO];
 extern uint8_t FifoBuf_WifiRx[FIFOSIZE_WIFIRX];
 extern uint8_t FifoBuf_WifiTx[FIFOSIZE_WIFITX];
 extern uint8_t FifoBuf_ZigbRx[FIFOSIZE_ZIGBRX];
@@ -40,6 +42,44 @@ extern float roll;	/*roll是围绕Z轴旋转，也叫翻滚角*/
 
 
 extern uint8_t x1,x2; /*循迹拆分数据x1:循迹板后面8个灯状况 x2：循迹板后面7个灯状况(循迹板b档情况下x1有效)*/
+
+/*安卓摄像头状态*/
+typedef enum{
+	TrafficNull_Flag= 0,
+	TrafficRed_Flag,
+	TrafficYellow_Flag,
+	TrafficGreen_Flag,
+
+}CreamFlag;
+
+extern CreamFlag AndroidFlag;
+
+/*zigbee通信回传状态*/
+typedef enum{
+	GateOpen = 0,	/*道闸开启*/
+	CarportA1,	/*车库A到达第1层*/
+	CarportA2,	/*车库A到达第2层*/
+	CarportA3,	/*车库A到达第3层*/
+	CarportA4,	/*车库A到达第4层*/
+	CarportB1,	/*车库B到达第1层*/
+	CarportB2,	/*车库B到达第2层*/
+	CarportB3,	/*车库B到达第3层*/
+	CarportB4,	/*车库B到达第4层*/
+
+}ZigFlag;
+
+extern ZigFlag ZigbeeFlag;
+
+
+
+
+
+
+
+
+
+
+
 
 
 #endif /* CAN_CAN_RXSOLVE_H_ */

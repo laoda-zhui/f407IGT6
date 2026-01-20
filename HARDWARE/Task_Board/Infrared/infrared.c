@@ -23,7 +23,7 @@ void Infrared_Start(void)
 	RI_TXD(0);
 	My_Delayms(9);
 	RI_TXD(1);
-	My_Delayus(4500);
+	My_Delayus(4800);
 }
 
 
@@ -36,7 +36,7 @@ void Infrared_Start(void)
 void Infrared_Stop(void)
 {
 	RI_TXD(0);						//结束
-	My_Delayus(560);				//延时0.56ms
+	My_Delayus(580);				//延时0.56ms
 	RI_TXD(1);						//关闭红外发射
 
 }
@@ -52,14 +52,14 @@ void Infrared_SendBit(uint8_t bit)
 {
   // 560μs 低电平 (所有位的起始脉冲)
 	RI_TXD(0);
-	My_Delayus(560);
+	My_Delayus(580);
 
 	// 高电平时间取决于位值
 	RI_TXD(1);
 	if(bit) {
-		My_Delayus(1690);  // 逻辑1: 1690μs (1.69ms) 空间
+		My_Delayus(1700);  // 逻辑1: 1690μs (1.69ms) 空间
 	} else {
-		My_Delayus(560);   // 逻辑0: 560μs 空间
+		My_Delayus(580);   // 逻辑0: 560μs 空间
 	}
 }
 

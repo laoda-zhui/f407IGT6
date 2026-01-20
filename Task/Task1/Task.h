@@ -18,7 +18,7 @@
 
 
 void Task1_Start(void);
-
+void TestTask(void);
 
 
 #endif /* TASK1_TASK_H_ */

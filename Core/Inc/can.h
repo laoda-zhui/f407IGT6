@@ -32,7 +32,7 @@ extern "C" {
 
 #include "can_Tx.h"
 #include "can_RxSolve.h"
-
+#include "tim.h"
 
 /* USER CODE END Includes */
 

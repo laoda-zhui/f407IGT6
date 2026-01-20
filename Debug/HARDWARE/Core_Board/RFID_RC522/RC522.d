@@ -36,7 +36,8 @@ HARDWARE/Core_Board/RFID_RC522/RC522.o: \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h \
  ../Core/Inc/main.h ../HARDWARE/Core_Board/LED/LED.h \
- ../HARDWARE/CAN/can_Tx.h ../Core/Inc/can.h ../HARDWARE/CAN/can_RxSolve.h
+ ../HARDWARE/CAN/can_Tx.h ../Core/Inc/can.h ../HARDWARE/CAN/can_RxSolve.h \
+ ../Core/Inc/tim.h
 ../HARDWARE/Core_Board/RFID_RC522/RC522.h:
 ../Core/Inc/usart.h:
 ../Core/Inc/main.h:
@@ -79,3 +80,4 @@ HARDWARE/Core_Board/RFID_RC522/RC522.o: \
 ../HARDWARE/CAN/can_Tx.h:
 ../Core/Inc/can.h:
 ../HARDWARE/CAN/can_RxSolve.h:
+../Core/Inc/tim.h:

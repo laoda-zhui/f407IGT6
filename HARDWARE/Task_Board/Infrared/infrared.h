@@ -7,7 +7,7 @@
 
 
 void Infrared_Init(void);
-
 void Infrared_SendpData(uint8_t *pData, uint32_t len);
+
 
 #endif /* INFRARED_INFRARED_H_ */

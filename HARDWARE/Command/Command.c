@@ -264,7 +264,7 @@ void Command_TrafficASend(uint8_t Result)
 
 /**************************************************************************
 函数功能：命令-发送给信号灯B识别结果
-入口参数：0-red 1-green 2-yellow
+入口参数：0-red  1-yellow 2-green
 返回  值：无
 **************************************************************************/
 void Command_TrafficBSend(uint8_t Result)
@@ -275,10 +275,10 @@ void Command_TrafficBSend(uint8_t Result)
 		CAN_TxtoZigbee(TrafficB_Red, 8);
 		break;
 	case 1:
-		CAN_TxtoZigbee(TrafficB_Green, 8);
+		CAN_TxtoZigbee(TrafficB_Yellow, 8);
 		break;
 	case 2:
-		CAN_TxtoZigbee(TrafficB_Yellow, 8);
+		CAN_TxtoZigbee(TrafficB_Green, 8);
 		break;
 	}
 
@@ -295,13 +295,13 @@ void Command_TrafficCSend(uint8_t Result)
 	switch(Result)
 	{
 	case 0:
-		CAN_TxtoZigbee(TrafficC_Red, 8);
+		CAN_TxtoZigbee(TrafficB_Red, 8);
 		break;
 	case 1:
-		CAN_TxtoZigbee(TrafficC_Green, 8);
+		CAN_TxtoZigbee(TrafficB_Yellow, 8);
 		break;
 	case 2:
-		CAN_TxtoZigbee(TrafficC_Yellow, 8);
+		CAN_TxtoZigbee(TrafficB_Green, 8);
 		break;
 	}
 
@@ -318,13 +318,13 @@ void Command_TrafficDSend(uint8_t Result)
 	switch(Result)
 	{
 	case 0:
-		CAN_TxtoZigbee(TrafficD_Red, 8);
+		CAN_TxtoZigbee(TrafficB_Red, 8);
 		break;
 	case 1:
-		CAN_TxtoZigbee(TrafficD_Green, 8);
+		CAN_TxtoZigbee(TrafficB_Yellow, 8);
 		break;
 	case 2:
-		CAN_TxtoZigbee(TrafficD_Yellow, 8);
+		CAN_TxtoZigbee(TrafficB_Green, 8);
 		break;
 	}
 
@@ -442,8 +442,8 @@ void Command_AndroidTraffic(void)
 
 
 /**************************************************************************
-函数功能：命令-控制车库A的层数
-入口参数：Floor:立体车库层数
+函数功能：命令-控制车库A到达指定层数
+入口参数：Floor:立体车库层数 1 2 3 4
 返回  值：无
 **************************************************************************/
 void Command_CarPortA(uint8_t Floor)
@@ -553,10 +553,60 @@ void Command_GetPortBInfr(void)
 入口参数：Floor:立体车库层数
 返回  值：无
 **************************************************************************/
-void Command_g(void)
+void Command_Bus(void)
 {
 	CAN_TxtoZigbee(GarageB_Get_Infr, 8);
 }
+
+
+/*********************************************智能路灯**************************************************/
+
+/**************************************************************************
+函数功能：命令-智能路灯在原本档位增加亮度档位
+入口参数：Gear:增加亮度档位 1:+1  2:+2  3:+3
+返回  值：无
+**************************************************************************/
+void Command_light(uint8_t Gear)
+{
+	switch(Gear)
+	{
+	case 1:
+		Infrared_SendpData(Light_plus1, 4);
+		break;
+
+	case 2:
+		Infrared_SendpData(Light_plus2, 4);
+		break;
+
+	case 3:
+		Infrared_SendpData(Light_plus3, 4);
+		break;
+	}
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

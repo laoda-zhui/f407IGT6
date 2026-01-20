@@ -35,7 +35,7 @@ HARDWARE/CAN/can_RxSolve.o: ../HARDWARE/CAN/can_RxSolve.c \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h \
  ../Core/Inc/can.h ../Core/Inc/main.h ../HARDWARE/CAN/can_Tx.h \
- ../HARDWARE/CAN/can_RxSolve.h
+ ../HARDWARE/CAN/can_RxSolve.h ../Core/Inc/tim.h
 ../HARDWARE/CAN/can_RxSolve.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
@@ -76,3 +76,4 @@ HARDWARE/CAN/can_RxSolve.o: ../HARDWARE/CAN/can_RxSolve.c \
 ../Core/Inc/main.h:
 ../HARDWARE/CAN/can_Tx.h:
 ../HARDWARE/CAN/can_RxSolve.h:
+../Core/Inc/tim.h:

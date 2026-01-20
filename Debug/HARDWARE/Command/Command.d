@@ -35,9 +35,10 @@ HARDWARE/Command/Command.o: ../HARDWARE/Command/Command.c \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h \
  ../HARDWARE/CAN/can_Tx.h ../Core/Inc/can.h ../Core/Inc/main.h \
- ../HARDWARE/CAN/can_RxSolve.h ../HARDWARE/CAN/can_cmd.h \
- ../HARDWARE/Task_Board/Ultrasonic/Ultrasonic.h ../HARDWARE/Delay/Delay.h \
- ../Core/Inc/TIM.h
+ ../HARDWARE/CAN/can_RxSolve.h ../Core/Inc/tim.h \
+ ../HARDWARE/CAN/can_cmd.h ../HARDWARE/Task_Board/Ultrasonic/Ultrasonic.h \
+ ../HARDWARE/Delay/Delay.h ../Core/Inc/TIM.h \
+ ../HARDWARE/Task_Board/Infrared/infrared.h
 ../HARDWARE/Command/Command.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
@@ -78,7 +79,9 @@ HARDWARE/Command/Command.o: ../HARDWARE/Command/Command.c \
 ../Core/Inc/can.h:
 ../Core/Inc/main.h:
 ../HARDWARE/CAN/can_RxSolve.h:
+../Core/Inc/tim.h:
 ../HARDWARE/CAN/can_cmd.h:
 ../HARDWARE/Task_Board/Ultrasonic/Ultrasonic.h:
 ../HARDWARE/Delay/Delay.h:
 ../Core/Inc/TIM.h:
+../HARDWARE/Task_Board/Infrared/infrared.h:

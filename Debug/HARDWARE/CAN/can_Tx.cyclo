@@ -12,4 +12,4 @@
 ../HARDWARE/CAN/can_Tx.c:314:6:CAN_TxtoT0	1
 ../HARDWARE/CAN/can_Tx.c:336:6:CAN_TxtoT1	1
 ../HARDWARE/CAN/can_Tx.c:358:6:CAN_TxtoT2	1
-../HARDWARE/CAN/can_Tx.c:386:6:CAN_TxLoop	27
+../HARDWARE/CAN/can_Tx.c:386:6:CAN_TxLoop	21

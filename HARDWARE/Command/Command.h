@@ -7,7 +7,7 @@
 #include "can_Tx.h"
 #include "can_cmd.h"
 #include "Ultrasonic.h"
-
+#include "infrared.h"
 
 /*从车*/
 void Command_SlaveCarStart(void);
@@ -40,6 +40,8 @@ void Command_TrafficBSend(uint8_t Result);
 void Command_TrafficCSend(uint8_t Result);
 void Command_TrafficDSend(uint8_t Result);
 
+
+
 /*TFT智能显示*/
 void Command_TFTAPageUp(void);
 void Command_TFTAPageDown(void);
@@ -54,12 +56,16 @@ void Command_AndroidTraffic(void);
 
 /*立体车库*/
 void Command_CarPortA(uint8_t Floor);
+void Command_GetPortAFloor(void);
+void Command_GetPortAInfr(void);
+void Command_GetPortBFloor(void);
+void Command_GetPortBInfr(void);
+void Command_CarPortB(uint8_t Floor);
 
 
 
-
-
-
+/*智能路灯*/
+void Command_light(uint8_t Gear);
 
 
 

@@ -31,6 +31,20 @@ float yaw=0;	/*yaw是围绕Y轴旋转，也叫偏航角	 (不使用)	  如无功
 float roll=0;	/*roll是围绕Z轴旋转，也叫翻滚角	 (不使用)		  如无功能扩展板则不使用*/
 
 
+/*安卓摄像头数据处理标志位*/
+CreamFlag AndroidFlag;
+
+
+/*zigbee状态标志位*/
+ZigFlag ZigbeeFlag;
+
+
+void Slove_ZigbeeData(void);
+void Slove_AndroidData(void);
+
+
+
+
 /*******************************************************以上为初始化*****************************************************************/
 
 
@@ -53,6 +67,7 @@ void CanRx_Loop(void)
 		{
 			case 2:			/*zigbee rx*/
 				memcpy(FifoBuf_ZigbRx, RxData, RxMsgArray.DLC);
+
 				break;
 
 			case 0:			/*disp*/
@@ -61,6 +76,7 @@ void CanRx_Loop(void)
 
 			case 1:			/*wifi rx*/
 				memcpy(FifoBuf_WifiRx, RxData, RxMsgArray.DLC);
+				Slove_AndroidData();
 				break;
 
 			case 3:			/*Track*/
@@ -118,15 +134,121 @@ void CanRx_Loop(void)
 		}
 
 	}
+	Slove_AndroidData();
+	Slove_ZigbeeData();
+
+
+
 }
 
 
+/*处理安卓数据-摄像头*/
+void Slove_AndroidData(void)
+{
+	if(FifoBuf_WifiRx[0]==0x55 && FifoBuf_WifiRx[2]==0x02) /*商家红绿灯识别版本回传*/
+	{
+		if(FifoBuf_WifiRx[3]==0x01)
+		{
+			AndroidFlag = TrafficRed_Flag;
+		}
+		if(FifoBuf_WifiRx[3]==0x03)
+		{
+			AndroidFlag = TrafficYellow_Flag;
+		}
+		if(FifoBuf_WifiRx[3]==0x02)
+		{
+			AndroidFlag = TrafficGreen_Flag;
+		}
+
+	}
 
 
 
+	if(FifoBuf_WifiRx[0]==0x55 && FifoBuf_WifiRx[1]==0x03) /*张超老师红绿灯识别版本回传*/
+	{
+		if(FifoBuf_WifiRx[2]==0x01)
+		{
+			AndroidFlag = TrafficRed_Flag;
+		}
+		if(FifoBuf_WifiRx[2]==0x02)
+		{
+			AndroidFlag = TrafficYellow_Flag;
+		}
+		if(FifoBuf_WifiRx[2]==0x03)
+		{
+			AndroidFlag = TrafficGreen_Flag;
+		}
+
+	}
+
+}
+
+
+/*处理zigbee数据*/
+void Slove_ZigbeeData(void)
+{
+
+	/*车库数据*/
+	if(FifoBuf_ZigbRx[0] == 0x55)
+	{
+		if(FifoBuf_ZigbRx[1] == 0x0D && FifoBuf_ZigbRx[2] == 0x03) /*车库A*/
+		{
+			if(FifoBuf_ZigbRx[3] == 0x01) /*普通层数回传*/
+			{
+				if(FifoBuf_ZigbRx[4] == 0x01) /*第一层*/
+				{
+					ZigbeeFlag = CarportA1;
+
+				}
+				if(FifoBuf_ZigbRx[4] == 0x02) /*第二层*/
+				{
+					ZigbeeFlag = CarportA2;
+
+				}
+				if(FifoBuf_ZigbRx[4] == 0x03) /*第三层*/
+				{
+					ZigbeeFlag = CarportA3;
+
+				}
+				if(FifoBuf_ZigbRx[4] == 0x04) /*第四层*/
+				{
+					ZigbeeFlag = CarportA4;
+
+				}
+			}
+		}
+		if(FifoBuf_ZigbRx[1] == 0x05 && FifoBuf_ZigbRx[2] == 0x03) /*车库B*/
+		{
+			if(FifoBuf_ZigbRx[3] == 0x01) /*普通层数回传*/
+			{
+				if(FifoBuf_ZigbRx[4] == 0x01) /*第一层*/
+				{
+					ZigbeeFlag = CarportB1;
+
+				}
+				if(FifoBuf_ZigbRx[4] == 0x02) /*第二层*/
+				{
+					ZigbeeFlag = CarportB2;
+
+				}
+				if(FifoBuf_ZigbRx[4] == 0x03) /*第三层*/
+				{
+					ZigbeeFlag = CarportB3;
+
+				}
+				if(FifoBuf_ZigbRx[4] == 0x04) /*第四层*/
+				{
+					ZigbeeFlag = CarportB4;
+
+				}
+			}
+		}
+
+	}
 
 
 
+}
 
 
 

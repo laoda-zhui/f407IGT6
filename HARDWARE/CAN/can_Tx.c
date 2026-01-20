@@ -390,40 +390,40 @@ void CAN_TxLoop(void)
 
 
 
-	/***********重新发送区***********/
-	if(retry_size_zigbee)
-	{
-		Can_Cmds[1].DLC = retry_size_zigbee;
-		Status = MyCAN_Transmit(&Can_Cmds[1], retry_data_zigbee);
-
-		if(Status == HAL_OK)
-		{
-			retry_size_zigbee = 0;
-			memset(retry_data_zigbee,0,8);
-		}
-	}
-	if(retry_size_Wifi)
-	{
-		Can_Cmds[0].DLC = retry_size_Wifi;
-		Status = MyCAN_Transmit(&Can_Cmds[0], retry_data_Wifi);
-
-		if(Status == HAL_OK)
-		{
-			retry_size_Wifi = 0;
-			memset(retry_data_Wifi,0,8);
-		}
-	}
-	if(retry_size_Dis)
-	{
-		Can_Cmds[2].DLC = retry_size_Dis;
-		Status = MyCAN_Transmit(&Can_Cmds[2], retry_data_Dis);
-
-		if(Status == HAL_OK)
-		{
-			retry_size_Dis = 0;
-			memset(retry_data_Dis,0,8);
-		}
-	}
+//	/***********重新发送区***********/
+//	if(retry_size_zigbee)
+//	{
+//		Can_Cmds[1].DLC = retry_size_zigbee;
+//		Status = MyCAN_Transmit(&Can_Cmds[1], retry_data_zigbee);
+//
+//		if(Status == HAL_OK)
+//		{
+//			retry_size_zigbee = 0;
+//			memset(retry_data_zigbee,0,8);
+//		}
+//	}
+//	if(retry_size_Wifi)
+//	{
+//		Can_Cmds[0].DLC = retry_size_Wifi;
+//		Status = MyCAN_Transmit(&Can_Cmds[0], retry_data_Wifi);
+//
+//		if(Status == HAL_OK)
+//		{
+//			retry_size_Wifi = 0;
+//			memset(retry_data_Wifi,0,8);
+//		}
+//	}
+//	if(retry_size_Dis)
+//	{
+//		Can_Cmds[2].DLC = retry_size_Dis;
+//		Status = MyCAN_Transmit(&Can_Cmds[2], retry_data_Dis);
+//
+//		if(Status == HAL_OK)
+//		{
+//			retry_size_Dis = 0;
+//			memset(retry_data_Dis,0,8);
+//		}
+//	}
 
 
 
