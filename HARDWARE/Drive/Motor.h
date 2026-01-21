@@ -45,8 +45,8 @@ void Car_MPLeft(int speed, double Angle) ;
 void Car_MPRight(int speed, double Angle);
 void Car_Track(uint8_t speed);
 void Car_TrackTime(uint8_t speed, uint32_t Time);
-void Car_Left(int Lspeed, int Rspeed);
-void Car_Right(int Lspeed, int Rspeed);
+void Car_Left(int SpeedAll);
+void Car_Right(int SpeedAll);
 
 
 /*电机初始化函数*/

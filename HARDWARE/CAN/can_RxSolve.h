@@ -45,7 +45,7 @@ extern uint8_t x1,x2; /*循迹拆分数据x1:循迹板后面8个灯状况 x2：�
 
 /*安卓摄像头状态*/
 typedef enum{
-	TrafficNull_Flag= 0,
+	TrafficNull= 0,
 	TrafficRed_Flag,
 	TrafficYellow_Flag,
 	TrafficGreen_Flag,
@@ -54,9 +54,9 @@ typedef enum{
 
 extern CreamFlag AndroidFlag;
 
-/*zigbee通信回传状态*/
+/*车库层数状态*/
 typedef enum{
-	GateOpen = 0,	/*道闸开启*/
+	CarPortNull=0,
 	CarportA1,	/*车库A到达第1层*/
 	CarportA2,	/*车库A到达第2层*/
 	CarportA3,	/*车库A到达第3层*/
@@ -66,16 +66,35 @@ typedef enum{
 	CarportB3,	/*车库B到达第3层*/
 	CarportB4,	/*车库B到达第4层*/
 
-}ZigFlag;
+}CarPort;
 
-extern ZigFlag ZigbeeFlag;
+extern CarPort CarPortFlag;
 
+/*ETC闸门状态*/
+typedef enum{
+	GatetNull = 0,
+	GateOpen 	 /*道闸开启*/
 
+}GateStates;
 
+extern GateStates GateFlag;
 
+/*报警台救援坐标*/
+extern uint8_t  RescueLocation;
 
+/*公交站回传数据*/
+typedef struct{
+	uint8_t year;
+	uint8_t month;
+	uint8_t day;
+	uint8_t hour;
+	uint8_t min;
+	uint8_t secs;
+	uint8_t weather;
+	uint8_t temperature;
+}SmartBus;
 
-
+extern SmartBus BusData;
 
 
 

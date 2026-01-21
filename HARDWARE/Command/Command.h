@@ -8,9 +8,16 @@
 #include "can_cmd.h"
 #include "Ultrasonic.h"
 #include "infrared.h"
+#include "Delay.h"
+#include "bh1750.h"
+#include "can_RxSolve.h"
+
 
 /*从车*/
 void Command_SlaveCarStart(void);
+void Command_SlaveCarSTep(void);
+
+
 
 /*道闸*/
 void Command_OpenGate(void);
@@ -35,10 +42,10 @@ void Command_TrafficAInMode(void);
 void Command_TrafficBInMode(void);
 void Command_TrafficCInMode(void);
 void Command_TrafficDInMode(void);
-void Command_TrafficASend(uint8_t Result);
-void Command_TrafficBSend(uint8_t Result);
-void Command_TrafficCSend(uint8_t Result);
-void Command_TrafficDSend(uint8_t Result);
+void Command_TrafficASend(void);
+void Command_TrafficBSend(void);
+void Command_TrafficCSend(void);
+void Command_TrafficDSend(void);
 
 
 
@@ -65,13 +72,18 @@ void Command_CarPortB(uint8_t Floor);
 
 
 /*智能路灯*/
-void Command_light(uint8_t Gear);
+uint8_t Command_LightLoc(uint8_t Loaction);
 
 
-
-
-
-
+/*公交站*/
+void Command_BusReportFixed(uint8_t Number);
+void Command_BusReportRandom(void);
+void Command_BusSetDate(uint8_t Year, uint8_t Month, uint8_t Day);
+void Command_BusCheckDate(void);
+void Command_BusSetTime(uint8_t Hour, uint8_t Minutes, uint8_t Seconds);
+void Command_BusCheakTime(void);
+void Command_BusSetTem(uint8_t Weather, uint8_t Temperature);
+void Command_BusCheckTem(void);
 
 
 

@@ -291,15 +291,15 @@ void Car_MPRight(int speed, double Angle)       // 主车右转 参数：角度�
 入口参数：speed:速度(max=120)
 返回  值：无
 **************************************************************************/
-void Car_Left(int Lspeed, int Rspeed)       // 主车左转 参数：角度参考值
+void Car_Left(int SpeedAll)       // 主车左转 参数：角度参考值
 {
 	Turn_StartTime = HAL_GetTick();
 
     Stop_Flag = Task_Start;          // 运行状态标志位
     CarFlag = TurnLeft_Flag;       // 左转标志位
 
-    Car_LSpeed = Lspeed;      // 速度值
-    Car_RSpeed = Rspeed;
+    Car_LSpeed = -SpeedAll;      // 速度值
+    Car_RSpeed = SpeedAll;
 
 
 
@@ -312,14 +312,14 @@ void Car_Left(int Lspeed, int Rspeed)       // 主车左转 参数：角度参�
 入口参数：speed:速度(max=120)
 返回  值：无
 **************************************************************************/
-void Car_Right(int Lspeed, int Rspeed)       // 主车右转 参数：角度参考值
+void Car_Right(int SpeedAll)       // 主车右转 参数：角度参考值
 {
 	Turn_StartTime = HAL_GetTick();
     Stop_Flag = Task_Start;          // 运行状态标志位
     CarFlag = TurnRight_Flag;       // 右转标志位
 
-    Car_LSpeed = Lspeed;      // 速度值
-    Car_RSpeed = Rspeed;
+    Car_LSpeed = SpeedAll;      // 速度值
+    Car_RSpeed = -SpeedAll;
 }
 
 
@@ -479,7 +479,15 @@ void TurnAngle_NewCheck(void)
 			return;
 		}
 
-		if( (x1 & 0x18) != 0x18 )
+		if( (x1 & 0x08) == 0x00 && CarFlag == TurnLeft_Flag)
+		{
+			if (x1 != 0x00)
+			{
+				Stop_Flag = Task_Complete;
+				Motor_Control(0,0);
+			}
+		}
+		if( (x1 & 0x10) == 0x00 && CarFlag == TurnRight_Flag)
 		{
 			if (x1 != 0x00)
 			{
@@ -514,7 +522,7 @@ PID_t PID_TurnTrack={
 void Track_Check(void) 	/*这里选择取循迹的后面八个-x1，右边到左右依次增大，第n个等于2的(n-1)次方*/
 {
 	static int8_t err; /*误差*/
-
+	static uint16_t count=0;
 	if((CarFlag == Track_Flag || CarFlag == TrackTime_Flag) && (Stop_Flag == Task_Start) && (Track_CheckFlag == 1))
 	{
 		Track_CheckFlag = 0;
@@ -563,7 +571,7 @@ void Track_Check(void) 	/*这里选择取循迹的后面八个-x1，右边到左
 			case 0xFF:	/*脱线了全灭*/
 			{
 				err = 0;
-				uint8_t count;
+
 				if(count > 1000)
 				{
 					count=0;

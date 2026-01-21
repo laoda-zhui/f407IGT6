@@ -34,9 +34,19 @@ float roll=0;	/*roll是围绕Z轴旋转，也叫翻滚角	 (不使用)		  如无
 /*安卓摄像头数据处理标志位*/
 CreamFlag AndroidFlag;
 
-
 /*zigbee状态标志位*/
-ZigFlag ZigbeeFlag;
+CarPort CarPortFlag;
+
+/*道闸状态标志位*/
+GateStates GateFlag;
+
+
+/*报警台救援坐标*/
+uint8_t  RescueLocation=0;
+
+/*公交站回传信息*/
+SmartBus BusData;
+
 
 
 void Slove_ZigbeeData(void);
@@ -188,7 +198,7 @@ void Slove_AndroidData(void)
 void Slove_ZigbeeData(void)
 {
 
-	/*车库数据*/
+	/*车库回传层数状态*/
 	if(FifoBuf_ZigbRx[0] == 0x55)
 	{
 		if(FifoBuf_ZigbRx[1] == 0x0D && FifoBuf_ZigbRx[2] == 0x03) /*车库A*/
@@ -197,22 +207,22 @@ void Slove_ZigbeeData(void)
 			{
 				if(FifoBuf_ZigbRx[4] == 0x01) /*第一层*/
 				{
-					ZigbeeFlag = CarportA1;
+					CarPortFlag = CarportA1;
 
 				}
 				if(FifoBuf_ZigbRx[4] == 0x02) /*第二层*/
 				{
-					ZigbeeFlag = CarportA2;
+					CarPortFlag = CarportA2;
 
 				}
 				if(FifoBuf_ZigbRx[4] == 0x03) /*第三层*/
 				{
-					ZigbeeFlag = CarportA3;
+					CarPortFlag = CarportA3;
 
 				}
 				if(FifoBuf_ZigbRx[4] == 0x04) /*第四层*/
 				{
-					ZigbeeFlag = CarportA4;
+					CarPortFlag = CarportA4;
 
 				}
 			}
@@ -223,28 +233,89 @@ void Slove_ZigbeeData(void)
 			{
 				if(FifoBuf_ZigbRx[4] == 0x01) /*第一层*/
 				{
-					ZigbeeFlag = CarportB1;
+					CarPortFlag = CarportB1;
 
 				}
 				if(FifoBuf_ZigbRx[4] == 0x02) /*第二层*/
 				{
-					ZigbeeFlag = CarportB2;
+					CarPortFlag = CarportB2;
 
 				}
 				if(FifoBuf_ZigbRx[4] == 0x03) /*第三层*/
 				{
-					ZigbeeFlag = CarportB3;
+					CarPortFlag = CarportB3;
 
 				}
 				if(FifoBuf_ZigbRx[4] == 0x04) /*第四层*/
 				{
-					ZigbeeFlag = CarportB4;
+					CarPortFlag = CarportB4;
 
 				}
 			}
 		}
 
 	}
+
+
+	/*ETC闸门回传开启状态*/
+	if(FifoBuf_ZigbRx[0] == 0x55 && FifoBuf_ZigbRx[1]  == 0x0c)
+	{
+		if(FifoBuf_ZigbRx[2] == 0x01 && FifoBuf_ZigbRx[3] == 0x01 && FifoBuf_ZigbRx[4] == 0x06)
+		{
+			GateFlag = GateOpen;
+		}
+
+	}
+
+
+	/*报警台回传救援坐标*/
+	if(FifoBuf_ZigbRx[0] == 0x55 && FifoBuf_ZigbRx[1]  == 0x07)
+	{
+		if(FifoBuf_ZigbRx[2] == 0x01)
+		{
+			RescueLocation = FifoBuf_ZigbRx[3];
+		}
+	}
+
+	/*公交站回传数据*/
+	if(FifoBuf_ZigbRx[0] == 0x55 && FifoBuf_ZigbRx[1]  == 0x06)
+	{
+		if(FifoBuf_ZigbRx[2] == 0x02) /*日期*/
+		{
+			BusData.year  =   FifoBuf_ZigbRx[3]/16*10 + FifoBuf_ZigbRx[3]%16;
+			BusData.month =   FifoBuf_ZigbRx[4]/16*10 + FifoBuf_ZigbRx[4]%16;
+			BusData.day   =   FifoBuf_ZigbRx[5]/16*10 + FifoBuf_ZigbRx[5]%16;
+
+		}
+
+		if(FifoBuf_ZigbRx[2] == 0x03) /*时间*/
+		{
+			BusData.hour  =   FifoBuf_ZigbRx[3]/16*10 + FifoBuf_ZigbRx[3]%16;
+			BusData.min   =   FifoBuf_ZigbRx[4]/16*10 + FifoBuf_ZigbRx[4]%16;
+			BusData.secs  =   FifoBuf_ZigbRx[5]/16*10 + FifoBuf_ZigbRx[5]%16;
+		}
+
+		if(FifoBuf_ZigbRx[2] == 0x04) /*天气和温度*/
+		{
+			BusData.weather     = FifoBuf_ZigbRx[3];
+			BusData.temperature = FifoBuf_ZigbRx[4];
+
+		}
+
+
+	}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

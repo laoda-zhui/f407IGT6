@@ -245,17 +245,18 @@ void Command_TrafficDInMode(void)
 入口参数：0-red 1-green 2-yellow
 返回  值：无
 **************************************************************************/
-void Command_TrafficASend(uint8_t Result)
+void Command_TrafficASend(void)
 {
-	switch(Result)
+
+	switch(AndroidFlag)
 	{
-	case 0:
+	case TrafficRed_Flag:
 		CAN_TxtoZigbee(TrafficA_Red, 8);
 		break;
-	case 1:
+	case TrafficGreen_Flag:
 		CAN_TxtoZigbee(TrafficA_Green, 8);
 		break;
-	case 2:
+	case TrafficYellow_Flag:
 		CAN_TxtoZigbee(TrafficA_Yellow, 8);
 		break;
 	}
@@ -267,18 +268,19 @@ void Command_TrafficASend(uint8_t Result)
 入口参数：0-red  1-yellow 2-green
 返回  值：无
 **************************************************************************/
-void Command_TrafficBSend(uint8_t Result)
+void Command_TrafficBSend(void)
 {
-	switch(Result)
+
+	switch(AndroidFlag)
 	{
-	case 0:
+	case TrafficRed_Flag:
 		CAN_TxtoZigbee(TrafficB_Red, 8);
 		break;
-	case 1:
-		CAN_TxtoZigbee(TrafficB_Yellow, 8);
-		break;
-	case 2:
+	case TrafficGreen_Flag:
 		CAN_TxtoZigbee(TrafficB_Green, 8);
+		break;
+	case TrafficYellow_Flag:
+		CAN_TxtoZigbee(TrafficB_Yellow, 8);
 		break;
 	}
 
@@ -290,18 +292,18 @@ void Command_TrafficBSend(uint8_t Result)
 入口参数：0-red 1-green 2-yellow
 返回  值：无
 **************************************************************************/
-void Command_TrafficCSend(uint8_t Result)
+void Command_TrafficCSend(void)
 {
-	switch(Result)
+	switch(AndroidFlag)
 	{
-	case 0:
-		CAN_TxtoZigbee(TrafficB_Red, 8);
+	case TrafficRed_Flag:
+		CAN_TxtoZigbee(TrafficC_Red, 8);
 		break;
-	case 1:
-		CAN_TxtoZigbee(TrafficB_Yellow, 8);
+	case TrafficGreen_Flag:
+		CAN_TxtoZigbee(TrafficC_Green, 8);
 		break;
-	case 2:
-		CAN_TxtoZigbee(TrafficB_Green, 8);
+	case TrafficYellow_Flag:
+		CAN_TxtoZigbee(TrafficC_Yellow, 8);
 		break;
 	}
 
@@ -313,18 +315,19 @@ void Command_TrafficCSend(uint8_t Result)
 入口参数：0-red 1-green 2-yellow
 返回  值：无
 **************************************************************************/
-void Command_TrafficDSend(uint8_t Result)
+void Command_TrafficDSend(void)
 {
-	switch(Result)
+
+	switch(AndroidFlag)
 	{
-	case 0:
-		CAN_TxtoZigbee(TrafficB_Red, 8);
+	case TrafficRed_Flag:
+		CAN_TxtoZigbee(TrafficD_Red, 8);
 		break;
-	case 1:
-		CAN_TxtoZigbee(TrafficB_Yellow, 8);
+	case TrafficGreen_Flag:
+		CAN_TxtoZigbee(TrafficD_Green, 8);
 		break;
-	case 2:
-		CAN_TxtoZigbee(TrafficB_Green, 8);
+	case TrafficYellow_Flag:
+		CAN_TxtoZigbee(TrafficD_Yellow, 8);
 		break;
 	}
 
@@ -348,7 +351,18 @@ void Command_SlaveCarStart(void)
 }
 
 
+/**************************************************************************
+函数功能：命令-从车发送温度数据
+入口参数：无
+返回  值：无
+**************************************************************************/
+void Command_SlaveCarSTep(void)
+{
+	uint8_t TxBuf[8]={0x9f,0x02,0x9f,0x02,0x00,0x00,0x00,0xBB};
 
+	TxBuf[5] = BusData.temperature;
+	CAN_TxtoZigbee(TxBuf, 8);
+}
 
 
 /*********************************************多功能显示**************************************************/
@@ -494,7 +508,7 @@ void Command_GetPortAInfr(void)
 
 /**************************************************************************
 函数功能：命令-控制车库B的层数
-入口参数：Floor:立体车库层数
+入口参数：Floor:立体车库层数 1-4
 返回  值：无
 **************************************************************************/
 void Command_CarPortB(uint8_t Floor)
@@ -548,25 +562,199 @@ void Command_GetPortBInfr(void)
 /*********************************************智能公交站**************************************************/
 
 
+
 /**************************************************************************
-函数功能：命令-请求返回车库B前后侧红外状态
-入口参数：Floor:立体车库层数
+函数功能：命令-公交站台 播报指定信息
+入口参数：Number: 1-富强路站 2-民主路站 3-文明路站 4-和谐路站 5-爱国路站 6-敬业路站 7-友善路站
 返回  值：无
 **************************************************************************/
-void Command_Bus(void)
+void Command_BusReportFixed(uint8_t Number)
 {
-	CAN_TxtoZigbee(GarageB_Get_Infr, 8);
+
+	uint8_t TxBuf[8]={0x55,0x06,0x10,0x00,0x00,0x00,0x00,0xBB};
+
+	switch(Number)
+	{
+	case 1:
+		TxBuf[3] = 0x01;
+		break;
+	case 2:
+		TxBuf[3] = 0x02;
+		break;
+	case 3:
+		TxBuf[3] = 0x03;
+		break;
+	case 4:
+		TxBuf[3] = 0x04;
+		break;
+	case 5:
+		TxBuf[3] = 0x05;
+		break;
+	case 6:
+		TxBuf[3] = 0x06;
+		break;
+	case 7:
+		TxBuf[3] = 0x07;
+		break;
+	}
+
+
+	TxBuf[6] = (TxBuf[2] + TxBuf[3] + TxBuf[4] + TxBuf[5])%256;
+
+
+	CAN_TxtoZigbee(TxBuf, 8);
 }
+
+
+
+/**************************************************************************
+函数功能：命令-公交站台 播报随机信息(1-7)
+入口参数：无
+返回  值：无
+**************************************************************************/
+void Command_BusReportRandom(void)
+{
+	uint8_t TxBuf[8]={0x55,0x06,0x20,0x01,0x00,0x00,0x00,0xBB};
+
+
+
+	TxBuf[6] = (TxBuf[2] + TxBuf[3] + TxBuf[4] + TxBuf[5])%256;
+
+	CAN_TxtoZigbee(TxBuf, 8);
+}
+
+
+
+
+/**************************************************************************
+函数功能：命令-公交站台 设置RTC日期
+入口参数：年月日
+返回  值：无
+**************************************************************************/
+void Command_BusSetDate(uint8_t Year, uint8_t Month, uint8_t Day)
+{
+	uint8_t TxBuf[8]={0x55,0x06,0x30,0x00,0x00,0x00,0x00,0xBB};
+
+
+	TxBuf[3] = Year;
+	TxBuf[4] = Month;
+	TxBuf[5] = Day;
+
+
+	TxBuf[6] = (TxBuf[2] + TxBuf[3] + TxBuf[4] + TxBuf[5])%256;
+
+	CAN_TxtoZigbee(TxBuf, 8);
+}
+
+
+/**************************************************************************
+函数功能：命令-公交站台 查询RTC日期
+入口参数：无
+返回  值：无
+**************************************************************************/
+void Command_BusCheckDate(void)
+{
+	uint8_t TxBuf[8]={0x55,0x06,0x31,0x01,0x00,0x00,0x00,0xBB};
+
+
+	TxBuf[6] = (TxBuf[2] + TxBuf[3] + TxBuf[4] + TxBuf[5])%256;
+
+	CAN_TxtoZigbee(TxBuf, 8);
+}
+
+
+
+/**************************************************************************
+函数功能：命令-公交站台 设置RTC时间
+入口参数：时分秒
+返回  值：无
+**************************************************************************/
+void Command_BusSetTime(uint8_t Hour, uint8_t Minutes, uint8_t Seconds)
+{
+	uint8_t TxBuf[8]={0x55,0x06,0x40,0x00,0x00,0x00,0x00,0xBB};
+
+	TxBuf[3] = Hour;
+	TxBuf[4] = Minutes;
+	TxBuf[5] = Seconds;
+
+	TxBuf[6] = (TxBuf[2] + TxBuf[3] + TxBuf[4] + TxBuf[5])%256;
+
+	CAN_TxtoZigbee(TxBuf, 8);
+}
+
+
+/**************************************************************************
+函数功能：命令-公交站台 查询RTC时间
+入口参数：无
+返回  值：无
+**************************************************************************/
+void Command_BusCheakTime(void)
+{
+	uint8_t TxBuf[8]={0x55,0x06,0x41,0x01,0x00,0x00,0x00,0xBB};
+
+
+
+	TxBuf[6] = (TxBuf[2] + TxBuf[3] + TxBuf[4] + TxBuf[5])%256;
+
+	CAN_TxtoZigbee(TxBuf, 8);
+}
+
+
+/**************************************************************************
+函数功能：命令-公交站台 设置天气数据与温度数据
+入口参数：Weather:天气	 	  0x00-大风   0x01-多云	 0x02-晴	 0x03-小雪  0x04-小雨 0x05-阴天
+	   Temperature：温度    十六进制0x19 = 十进制25°
+返回  值：无
+**************************************************************************/
+void Command_BusSetTem(uint8_t Weather, uint8_t Temperature)
+{
+	uint8_t TxBuf[8]={0x55,0x06,0x42,0x00,0x00,0x00,0x00,0xBB};
+
+
+	TxBuf[3] = Weather;
+	TxBuf[4] = Temperature;
+
+
+	TxBuf[6] = (TxBuf[2] + TxBuf[3] + TxBuf[4] + TxBuf[5])%256;
+
+	CAN_TxtoZigbee(TxBuf, 8);
+}
+
+
+
+
+
+/**************************************************************************
+函数功能：命令-公交站台 查询天气数据与温度数据
+入口参数：无
+返回  值：无
+**************************************************************************/
+void Command_BusCheckTem(void)
+{
+	uint8_t TxBuf[8]={0x55,0x06,0x43,0x00,0x00,0x00,0x00,0xBB};
+
+
+
+	TxBuf[6] = (TxBuf[2] + TxBuf[3] + TxBuf[4] + TxBuf[5])%256;
+
+	CAN_TxtoZigbee(TxBuf, 8);
+}
+
+
+
+
+
+
 
 
 /*********************************************智能路灯**************************************************/
 
 /**************************************************************************
-函数功能：命令-智能路灯在原本档位增加亮度档位
+函数功能：命令-智能路灯 增加亮度档位
 入口参数：Gear:增加亮度档位 1:+1  2:+2  3:+3
 返回  值：无
 **************************************************************************/
-void Command_light(uint8_t Gear)
+void Command_Light(uint8_t Gear)
 {
 	switch(Gear)
 	{
@@ -585,27 +773,112 @@ void Command_light(uint8_t Gear)
 
 }
 
+/**************************************************************************
+函数功能：命令-智能路灯 调节至指定档位
+入口参数：Location:指定档位
+返回  值：无
+**************************************************************************/
+uint8_t Command_LightLoc(uint8_t Loaction)
+{
+	uint8_t Gear_Init = 0;	// 初始挡位值
+	uint16_t LuxBuf[2];		//缓存自学习的光档位数组
+	char TestData[30];
+
+	for(uint8_t i=1;i<5;i++)/*1-4*/
+	{
+		LuxBuf[0] = BH1750_GetLux	();	/*原本光照值*/
+
+		sprintf(TestData,"Lux%d:%d\r\n",i,LuxBuf[0]);
+		CAN_TxtoDisplay(TestData, strlen(TestData));
+
+		Command_Light(1); /*加一档*/
+
+		HAL_Delay(900);
+
+		LuxBuf[1] = BH1750_GetLux();	/*原本光照值*/
+		sprintf(TestData,"Lux%d:%d\r\n",i,LuxBuf[1]);
+		CAN_TxtoDisplay(TestData, strlen(TestData));
+
+		if(LuxBuf[0] > LuxBuf[1]) /*如果上一档的光照值更亮*/
+		{
+			Gear_Init = 5 - (i-1);
+			HAL_Delay(700);
+			break;
+		}
+
+	}
+
+	Command_Light(Loaction-1);  /*从第一档加到指定档位*/
+
+
+	return Gear_Init;
+}
+
+
+
+/*********************************************智能报警台**************************************************/
+
+/**************************************************************************
+函数功能：命令-报警台 使用红外通信开启
+入口参数：TxData-6字节开启码
+返回  值：无
+**************************************************************************/
+void Command_AlarmStart(void)
+{
+	Infrared_SendpData(Alarm_Open, 6);
+}
+
+
+/**************************************************************************
+函数功能：命令-报警台 使用红外通信关闭
+入口参数：TxData-6字节开启码
+返回  值：无
+**************************************************************************/
+void Command_AlarmEnd(void)
+{
+	Infrared_SendpData(Alarm_Close, 6);
+}
 
 
 
 
+/**************************************************************************
+函数功能：命令-报警台 请求回传救援坐标
+入口参数：无
+返回  值：无
+**************************************************************************/
+void Command_AlarmReq(void)
+{
+	uint8_t TxBuf[8]={0x55,0x07,0x09,0x00,0x00,0x00,0x00,0xBB};
+
+
+	TxBuf[6] = (TxBuf[2] + TxBuf[3] + TxBuf[4] + TxBuf[5])%256;
+
+
+	Infrared_SendpData(TxBuf, 8);
+}
 
 
 
+/*********************************************自动评分系统**************************************************/
 
 
 
+/**************************************************************************
+函数功能：命令-自动评分系统
+入口参数：无
+返回  值：无
+**************************************************************************/
+void Command_Autosystem(uint8_t Number)
+{
+	uint8_t TxBuf[8]={0xAF,0x06,0x00,0x02,0x00,0x00,0x01,0xBB};
 
 
+	TxBuf[2] = Number;
 
 
-
-
-
-
-
-
-
+	Infrared_SendpData(TxBuf, 8);
+}
 
 
 

@@ -63,11 +63,12 @@
 
 /* USER CODE BEGIN PV */
 
-uint16_t Lux=0;
 
 
 /*标志位*/
 uint8_t Start_Flag=0;/*小车任务开启标志位*/
+uint8_t Ultrasonic_StartFlag=1;	/*超声波开启标志位 0-关闭 1-开启*/
+//uint8_t BH1750_StartFlag=1;	/*BH1750开启标志位 0-关闭 1-开启*/
 
 
 /* USER CODE END PV */
@@ -172,21 +173,18 @@ int main(void)
   /*任务切片时间-ms*/
   uint32_t ADC_TaskTime=50,ADC_LastTime=0;/*ADC任务时间*/
 
-  uint32_t BH1750_TaskTime=180,BH1750_LastTime=0;/*BH1750任务时间*/
-  uint8_t BH1750_StartFlag=1;	/*BH1750开启标志位 0-关闭 1-开启*/
+//  uint32_t BH1750_TaskTime=180,BH1750_LastTime=0;/*BH1750任务时间*/
+
 
   uint32_t Ultrasonic_TaskTime=100,Ultrasonic_LastTime=0;/*超声波任务时间*/
-  uint8_t Ultrasonic_StartFlag=1;	/*超声波开启标志位 0-关闭 1-开启*/
+
 
   uint32_t RC522_TaskTime=500,RC522_LastTime=0;/*RFID读卡器初始化检测任务时间*/
 
 
-  /*光照值Lux 0-65535*/
-  uint16_t LuxTemp=0;
-
   /*测试变量-记得删*/
-  float data;
   uint8_t i=1;
+
 
   /* USER CODE END 2 */
 
@@ -223,7 +221,9 @@ int main(void)
 			  HAL_Delay(100);
 			  Beep_Set(0);
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_13);
-			  Command_CarPortB(1);
+
+			  Voice_ASR();
+
 
 		  }
 		  if(KeyNum == 3)
@@ -233,7 +233,10 @@ int main(void)
 			  Beep_Set(0);
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_14);
 
-			  Command_AndroidTraffic();
+			  Command_BusReportFixed(i);
+			  i++;
+			  if(i>8){i=0;}
+
 
 
 		  }
@@ -243,15 +246,11 @@ int main(void)
 			  HAL_Delay(100);
 			  Beep_Set(0);
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_15);
-//			  char txdata[20];
-//			  sprintf(txdata,"%d",FifoBuf_WifiRx);
-//			  CAN_TxtoDisplay(txdata, strlen(txdata));
 
 
-
-			  Command_light(i);
-			  i++;
-			  if(i>3){i=1;}
+			  char txdata[50];
+			  sprintf(txdata,"%d.%d\r\n",BusData.weather,BusData.temperature);
+			  CAN_TxtoDisplay(txdata, strlen(txdata));
 
 		  }
 	  }
@@ -259,8 +258,8 @@ int main(void)
 	  /*开启任务*/
 	  if(Start_Flag == 1)
 	  {
-		  //Task1_Start();
-		  TestTask();
+		  Task1_Start();
+		  //TestTask();
 	  }
 
 
@@ -285,16 +284,17 @@ int main(void)
 		  Ultrasonic_LastTime = HAL_GetTick();
 	  }
 
-	  /*3.BH1750-180ms,获取光照值lux*/
-	  if( ((HAL_GetTick() - BH1750_LastTime) > BH1750_TaskTime) && BH1750_StartFlag == 1)
-	  {
-		  LuxTemp = BH1750_GetLux();
-		  if(LuxTemp)
-		  {
-			  Lux = LuxTemp;
-		  }
-		  BH1750_LastTime = HAL_GetTick();
-	  }
+//	  /*3.BH1750-180ms,获取光照值lux*/
+//	  if( ((HAL_GetTick() - BH1750_LastTime) > BH1750_TaskTime) && BH1750_StartFlag == 1)
+//	  {
+//		  LuxTemp = BH1750_GetLux();
+//		  if(LuxTemp)
+//		  {
+//			  Lux = LuxTemp;
+//		  }
+//		  BH1750_LastTime = HAL_GetTick();
+//	  }
+
 	  /*4.RFID_RC522初始化检测-500ms*/
 	  if((HAL_GetTick() - RC522_LastTime) > RC522_TaskTime)
 	  {

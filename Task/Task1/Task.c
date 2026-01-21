@@ -5,78 +5,85 @@ uint16_t TaskFlag=0; /*任务状态*/
 uint8_t GoSpeed=100;  /*行进基础速度*/
 uint8_t TrackSpeed = 100; /*循迹基础速度*/
 
-uint32_t Stop_Delay_Tick=0;
-uint16_t LoopCount =0;	/*循环次数*/
+uint32_t TestTimeOut=3000,TestTimeStart=0;
+
+
+
 
 void Task1_Start(void)
 {
 	switch(TaskFlag)
 	{
-		case 0:	/*循迹开始*/
-			if(LoopCount==0){Command_StartTim();Command_StartTim();}
-			Car_Track(TrackSpeed);
-			TaskFlag = 1;
-			break;
-		case 1: /*循迹结束*/
-			if(Stop_Flag == Task_Complete)
-			{
-				TaskFlag = 2;
-				if(LoopCount == 1){Command_CloseGate();Command_CloseGate();} /*第二次右转关闸门*/
-			}
-			break;
-		case 2: /*前进开始*/
-			Car_Go(GoSpeed, 6);
+	case 0:
+		Command_StartTim();	/*开始计时*/
+		Command_StartTim();
+		Car_Track(TrackSpeed); /*开始循迹*/
+		TaskFlag = 1;
+		break;
+	case 1:
+		if(Stop_Flag == Task_Complete)
+		{
+			Car_Go(TrackSpeed, 7);
+
+			TaskFlag = 2;
+		}
+		break;
+
+	case 2:
+		if(Stop_Flag == Task_Complete)
+		{
+			Car_Left(78);	/*左转*/
 			TaskFlag = 3;
-			break;
-		case 3: /*前进结束*/
-			if(Stop_Flag == Task_Complete)
-			{
-				TaskFlag = 4;
-				if(LoopCount == 0){Command_OpenGate();Command_OpenGate();} /*第一次右转开闸门*/
-			}
-			break;
-		case 4: /*右转开始*/
-			Car_Right(78, -78);
+		}
+		break;
+
+	case 3:
+		if(Stop_Flag == Task_Complete)
+		{
+			Command_TrafficAInMode();	/*开启A交通灯识别*/
+			Command_TrafficAInMode();
+			TaskFlag = 4;
+			TestTimeStart = HAL_GetTick();
+			TestTimeOut = 700;
+		}
+
+		break;
+
+	case 4:
+		if((HAL_GetTick() - TestTimeStart) > TestTimeOut)/*等900ms开始安卓识别*/
+		{
+			Command_AndroidTraffic();
+			TestTimeStart = HAL_GetTick();
 			TaskFlag = 5;
-			break;
-		case 5: /*右转结束*/
-			if(Stop_Flag == Task_Complete)
-			{
-				if(LoopCount == 0){Command_OpenGate();Command_OpenGate();} /*第一次右转开闸门*/
-				TaskFlag = 0;
-				LoopCount++;
-				if(LoopCount == 4)	/*第四次 回到原地*/
-				{
-					TaskFlag=6;
-					LoopCount=0;
-					Car_TrackTime(47, 700);
-					Command_EndTim();
-				}
-			}
-			break;
-		case 6:
-			if(Stop_Flag == Task_Complete)
-			{
-				TaskBeep_Set(GPIO_PIN_SET);
-				Car_Back(44, 57);
-				TaskFlag = 7;
-			}
-			break;
-		case 7:
-			if(Stop_Flag == Task_Complete)
-			{
-				TaskBeep_Set(GPIO_PIN_RESET);
-				Command_SlaveCarStart();
-				Command_SlaveCarStart();
-				Command_SlaveCarStart();
-				Start_Flag = 0;
-			}
-			break;
+			TestTimeOut = 1500;
+		}
+		break;
+
+	case 5:
+		Command_TrafficASend();
+		Command_AndroidTraffic();
+
+		if((HAL_GetTick() - TestTimeStart) > TestTimeOut)
+		{
+			TaskFlag = 6;
+		}
+
+		break;
+	case 6:
+
+		break;
+
+
+
+
 	}
 }
 
+
+
+
+
 /*交通灯测试*/
-uint32_t TestTimeOut=3000,TestTimeStart=0;
 void TestTask(void)
 {
 	switch(TaskFlag)
@@ -104,26 +111,7 @@ void TestTask(void)
 		}
 	case 2:
 		{
-			if(AndroidFlag == TrafficRed_Flag && (HAL_GetTick() - TestTimeStart) > 100)
-			{
-			  Command_TrafficBSend(0);
-			  TaskFlag = 3;
-			}
-			if(AndroidFlag == TrafficYellow_Flag && (HAL_GetTick() - TestTimeStart) > 100)
-			{
-			  Command_TrafficBSend(1);
-			  TaskFlag = 3;
-			}
-			if(AndroidFlag == TrafficGreen_Flag && (HAL_GetTick() - TestTimeStart) > 100)
-			{
-			  Command_TrafficBSend(2);
-			  TaskFlag = 3;
-			}
-			if((HAL_GetTick() - TestTimeStart) > TestTimeOut)
-			{
-			  Command_TrafficBSend(2);
-			  TaskFlag = 3;
-			}
+
 			break;
 		}
 	}

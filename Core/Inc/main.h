@@ -41,8 +41,10 @@ extern "C" {
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
-extern uint16_t Lux;
+
 extern uint8_t Start_Flag;				/*小车任务开启标志位*/
+extern uint8_t Ultrasonic_StartFlag;	/*超声波开启标志位 0-关闭 1-开启*/
+//extern uint8_t BH1750_StartFlag;	/*BH1750开启标志位 0-关闭 1-开启*/
 
 
 

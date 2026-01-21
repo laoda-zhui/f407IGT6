@@ -16,5 +16,5 @@
 ../HARDWARE/Drive/Motor.c:346:6:Car_TrackTime	1
 ../HARDWARE/Drive/Motor.c:366:6:Go_and_Back_Check	16
 ../HARDWARE/Drive/Motor.c:426:6:TurnAngle_Check	7
-../HARDWARE/Drive/Motor.c:465:6:TurnAngle_NewCheck	8
-../HARDWARE/Drive/Motor.c:514:6:Track_Check	26
+../HARDWARE/Drive/Motor.c:465:6:TurnAngle_NewCheck	12
+../HARDWARE/Drive/Motor.c:522:6:Track_Check	27

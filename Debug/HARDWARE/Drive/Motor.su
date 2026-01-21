@@ -10,11 +10,11 @@
 ../HARDWARE/Drive/Motor.c:226:6:Car_Back	16	static
 ../HARDWARE/Drive/Motor.c:246:6:Car_MPLeft	24	static
 ../HARDWARE/Drive/Motor.c:270:6:Car_MPRight	24	static
-../HARDWARE/Drive/Motor.c:294:6:Car_Left	16	static
-../HARDWARE/Drive/Motor.c:315:6:Car_Right	16	static
+../HARDWARE/Drive/Motor.c:294:6:Car_Left	8	static
+../HARDWARE/Drive/Motor.c:315:6:Car_Right	8	static
 ../HARDWARE/Drive/Motor.c:333:6:Car_Track	0	static
 ../HARDWARE/Drive/Motor.c:346:6:Car_TrackTime	16	static
 ../HARDWARE/Drive/Motor.c:366:6:Go_and_Back_Check	72	static
 ../HARDWARE/Drive/Motor.c:426:6:TurnAngle_Check	8	static
 ../HARDWARE/Drive/Motor.c:465:6:TurnAngle_NewCheck	8	static
-../HARDWARE/Drive/Motor.c:514:6:Track_Check	8	static
+../HARDWARE/Drive/Motor.c:522:6:Track_Check	8	static
