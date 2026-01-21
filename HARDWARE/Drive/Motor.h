@@ -41,12 +41,12 @@ extern Car_Flag CarFlag;
 void Motor_Control(int L_Spend,int R_Spend);
 void Car_Go(uint8_t speed, uint16_t temp);
 void Car_Back(uint8_t speed, uint16_t temp);
-void Car_MPLeft(int speed, double Angle) ;
-void Car_MPRight(int speed, double Angle);
+void Car_MPLeft(uint8_t speed, double Angle) ;
+void Car_MPRight(uint8_t speed, double Angle);
 void Car_Track(uint8_t speed);
 void Car_TrackTime(uint8_t speed, uint32_t Time);
-void Car_Left(int SpeedAll);
-void Car_Right(int SpeedAll);
+void Car_Left(uint8_t SpeedAll);
+void Car_Right(uint8_t SpeedAll);
 
 
 /*电机初始化函数*/

@@ -72,7 +72,7 @@ void Command_CarPortB(uint8_t Floor);
 
 
 /*智能路灯*/
-uint8_t Command_LightLoc(uint8_t Loaction);
+uint8_t Command_LightAuto(uint8_t Loaction);
 
 
 /*公交站*/
@@ -85,11 +85,13 @@ void Command_BusCheakTime(void);
 void Command_BusSetTem(uint8_t Weather, uint8_t Temperature);
 void Command_BusCheckTem(void);
 
+/*无线充电站*/
+void Command_WireCharStart(void);
+void Command_WireCharEnd(void);
 
 
-
-
-
-
+/*ETC闸门*/
+void Command_ETCUp(void);
+void Command_ETCDown(void);
 
 #endif /* COMMAND_COMMAND_H_ */

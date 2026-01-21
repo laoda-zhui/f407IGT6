@@ -183,7 +183,7 @@ int main(void)
 
 
   /*测试变量-记得删*/
-  uint8_t i=1;
+
 
 
   /* USER CODE END 2 */
@@ -222,7 +222,8 @@ int main(void)
 			  Beep_Set(0);
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_13);
 
-			  Voice_ASR();
+//			  Voice_ASR();
+			  Command_SlaveCarStart();
 
 
 		  }
@@ -233,9 +234,9 @@ int main(void)
 			  Beep_Set(0);
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_14);
 
-			  Command_BusReportFixed(i);
-			  i++;
-			  if(i>8){i=0;}
+//			  Command_BusReportFixed(i);
+//			  i++;
+//			  if(i>8){i=0;}
 
 
 
@@ -246,11 +247,11 @@ int main(void)
 			  HAL_Delay(100);
 			  Beep_Set(0);
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_15);
+			  Command_ClearTim();
 
-
-			  char txdata[50];
-			  sprintf(txdata,"%d.%d\r\n",BusData.weather,BusData.temperature);
-			  CAN_TxtoDisplay(txdata, strlen(txdata));
+//			  char txdata[50];
+//			  sprintf(txdata,"%d\r\n",CarPortFlag);
+//			  CAN_TxtoDisplay(txdata, strlen(txdata));
 
 		  }
 	  }

@@ -57,11 +57,11 @@ extern CreamFlag AndroidFlag;
 /*车库层数状态*/
 typedef enum{
 	CarPortNull=0,
-	CarportA1,	/*车库A到达第1层*/
+	CarportA1 = 1,	/*车库A到达第1层*/
 	CarportA2,	/*车库A到达第2层*/
 	CarportA3,	/*车库A到达第3层*/
 	CarportA4,	/*车库A到达第4层*/
-	CarportB1,	/*车库B到达第1层*/
+	CarportB1 = 1,	/*车库B到达第1层*/
 	CarportB2,	/*车库B到达第2层*/
 	CarportB3,	/*车库B到达第3层*/
 	CarportB4,	/*车库B到达第4层*/

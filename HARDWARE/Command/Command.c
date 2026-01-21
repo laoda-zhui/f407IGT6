@@ -259,6 +259,8 @@ void Command_TrafficASend(void)
 	case TrafficYellow_Flag:
 		CAN_TxtoZigbee(TrafficA_Yellow, 8);
 		break;
+	case TrafficNull:
+		break;
 	}
 
 }
@@ -281,6 +283,8 @@ void Command_TrafficBSend(void)
 		break;
 	case TrafficYellow_Flag:
 		CAN_TxtoZigbee(TrafficB_Yellow, 8);
+		break;
+	case TrafficNull:
 		break;
 	}
 
@@ -305,6 +309,8 @@ void Command_TrafficCSend(void)
 	case TrafficYellow_Flag:
 		CAN_TxtoZigbee(TrafficC_Yellow, 8);
 		break;
+	case TrafficNull:
+		break;
 	}
 
 }
@@ -328,6 +334,8 @@ void Command_TrafficDSend(void)
 		break;
 	case TrafficYellow_Flag:
 		CAN_TxtoZigbee(TrafficD_Yellow, 8);
+		break;
+	case TrafficNull:
 		break;
 	}
 
@@ -778,31 +786,31 @@ void Command_Light(uint8_t Gear)
 入口参数：Location:指定档位
 返回  值：无
 **************************************************************************/
-uint8_t Command_LightLoc(uint8_t Loaction)
+uint8_t Command_LightAuto(uint8_t Loaction)
 {
 	uint8_t Gear_Init = 0;	// 初始挡位值
 	uint16_t LuxBuf[2];		//缓存自学习的光档位数组
-	char TestData[30];
+//	char TestData[30];
 
 	for(uint8_t i=1;i<5;i++)/*1-4*/
 	{
 		LuxBuf[0] = BH1750_GetLux	();	/*原本光照值*/
 
-		sprintf(TestData,"Lux%d:%d\r\n",i,LuxBuf[0]);
-		CAN_TxtoDisplay(TestData, strlen(TestData));
+//		sprintf(TestData,"Lux%d:%d\r\n",i,LuxBuf[0]);
+//		CAN_TxtoDisplay(TestData, strlen(TestData));
 
 		Command_Light(1); /*加一档*/
 
-		HAL_Delay(900);
+		My_Delayms(800);
 
 		LuxBuf[1] = BH1750_GetLux();	/*原本光照值*/
-		sprintf(TestData,"Lux%d:%d\r\n",i,LuxBuf[1]);
-		CAN_TxtoDisplay(TestData, strlen(TestData));
+//		sprintf(TestData,"Lux%d:%d\r\n",i,LuxBuf[1]);
+//		CAN_TxtoDisplay(TestData, strlen(TestData));
 
 		if(LuxBuf[0] > LuxBuf[1]) /*如果上一档的光照值更亮*/
 		{
 			Gear_Init = 5 - (i-1);
-			HAL_Delay(700);
+			My_Delayms(700);
 			break;
 		}
 
@@ -877,8 +885,95 @@ void Command_Autosystem(uint8_t Number)
 	TxBuf[2] = Number;
 
 
-	Infrared_SendpData(TxBuf, 8);
+	CAN_TxtoZigbee(TxBuf, 8);
 }
+
+
+
+
+
+
+/*********************************************智能无线充电**************************************************/
+
+
+
+/**************************************************************************
+函数功能：命令-无线充电站开启
+入口参数：无
+返回  值：无
+**************************************************************************/
+void Command_WireCharStart(void)
+{
+	uint8_t TxBuf[8]={0x55,0x0A,0x01,0x01,0x00,0x00,0x00,0xBB};
+
+
+	TxBuf[6] = (TxBuf[2] + TxBuf[3] + TxBuf[4] + TxBuf[5])%256;
+
+
+	CAN_TxtoZigbee(TxBuf, 8);
+}
+
+
+/**************************************************************************
+函数功能：命令-无线充电站关闭
+入口参数：无
+返回  值：无
+**************************************************************************/
+void Command_WireCharEnd(void)
+{
+	uint8_t TxBuf[8]={0x55,0x0A,0x01,0x02,0x00,0x00,0x00,0xBB};
+
+
+	TxBuf[6] = (TxBuf[2] + TxBuf[3] + TxBuf[4] + TxBuf[5])%256;
+
+
+	CAN_TxtoZigbee(TxBuf, 8);
+}
+
+
+
+/*********************************************ETC闸门**************************************************/
+
+
+/**************************************************************************
+函数功能：命令-ETC闸门上调初始角度
+入口参数：无
+返回  值：无
+**************************************************************************/
+void Command_ETCUp(void)
+{
+	uint8_t TxBuf[8]={0x55,0x0C,0x08,0x01,0x01,0x00,0x00,0xBB};
+
+
+	TxBuf[6] = (TxBuf[2] + TxBuf[3] + TxBuf[4] + TxBuf[5])%256;
+
+
+	CAN_TxtoZigbee(TxBuf, 8);
+}
+
+
+/**************************************************************************
+函数功能：命令-ETC闸门下调初始角度
+入口参数：无
+返回  值：无
+**************************************************************************/
+void Command_ETCDown(void)
+{
+	uint8_t TxBuf[8]={0x55,0x0C,0x08,0x02,0x02,0x00,0x00,0xBB};
+
+
+	TxBuf[6] = (TxBuf[2] + TxBuf[3] + TxBuf[4] + TxBuf[5])%256;
+
+
+	CAN_TxtoZigbee(TxBuf, 8);
+}
+
+
+
+
+
+
+
 
 
 
