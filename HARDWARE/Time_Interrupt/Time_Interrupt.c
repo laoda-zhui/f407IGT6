@@ -52,7 +52,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 	if(htim == &htim11)/*can 1ms发送接收*/
 	{
-
+	  CanRx_Loop();
+	  CAN_TxLoop();
 	}
 
 }

@@ -199,8 +199,7 @@ int main(void)
 	  Go_and_Back_Check();
 	  TurnAngle_Check();
 	  TurnAngle_NewCheck();
-	  CanRx_Loop();
-	  CAN_TxLoop();
+
 
 
 	  /*按键*/
