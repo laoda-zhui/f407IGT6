@@ -1,0 +1,11 @@
+../Task/Task1/Task.c:165:6:Task_CarWait	4
+../Task/Task1/Task.c:195:6:Task_CarGO	4
+../Task/Task1/Task.c:221:6:Task_CarBack	4
+../Task/Task1/Task.c:248:6:Task_CarLeft	4
+../Task/Task1/Task.c:272:6:Task_CarRight	4
+../Task/Task1/Task.c:298:6:Task_CarTrack	4
+../Task/Task1/Task.c:324:6:Task_CarTrackTime	4
+../Task/Task1/Task.c:349:6:Task_CarMpTrack	4
+../Task/Task1/Task.c:28:6:Task1_Start	24
+../Task/Task1/Task.c:381:6:Task_CarMPLeft	4
+../Task/Task1/Task.c:406:6:Task_CarMPRight	4

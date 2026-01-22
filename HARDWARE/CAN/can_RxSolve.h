@@ -6,28 +6,51 @@
 #include "can.h"
 #include <stdint.h>
 #include <string.h>
+#include "stdlib.h"
 
 /*对应缓冲数组大小*/
-#define FIFOSIZE_INFO		20
-#define FIFOSIZE_WIFIRX		20
-#define FIFOSIZE_WIFITX		20
-#define FIFOSIZE_ZIGBRX		20
-#define FIFOSIZE_ZIGBTX		20
+#define	Can_RxFIFOZize		500	/*接收缓冲区最大空间 wifi zigbee display*/
+#define Can_RxZigbeeZize  	20
+#define Can_RxInfoZize 		20
+#define Can_RxTrackZize 	20
+#define Can_RxNavigZize 	20
+#define Can_RxHOSTZize  	20
+#define Can_RxAnythingZize 	20
+
+
 
 /*对应缓冲数组*/
-extern uint8_t FifoBuf_Info[FIFOSIZE_INFO];
-extern uint8_t FifoBuf_WifiRx[FIFOSIZE_WIFIRX];
-extern uint8_t FifoBuf_WifiTx[FIFOSIZE_WIFITX];
-extern uint8_t FifoBuf_ZigbRx[FIFOSIZE_ZIGBRX];
-extern uint8_t FifoBuf_ZigbTx[FIFOSIZE_ZIGBTX];
+extern uint8_t FifoBuf_Info[Can_RxInfoZize]; 	/*0接收显示屏*/
+extern uint8_t FifoBuf_WifiRx[Can_RxFIFOZize]; 	/*1接收wifi*/
+extern uint8_t FifoBuf_ZigbRx[Can_RxZigbeeZize]; 	/*2接收zigbee*/
+extern uint8_t FifoBuf_Track[Can_RxTrackZize];	/*3接收循迹*/
+extern uint8_t FifoBuf_Navig[Can_RxNavigZize]; 	/*4接收navig-暂时不知道是啥*/
+extern uint8_t FifoBuf_HOST[Can_RxHOSTZize];	/*5接收主机*/
+extern uint8_t FifoBuf_Anything[Can_RxAnythingZize];	/*6接收任何信息*/
 
-extern uint8_t FifoBuf_Track[FIFOSIZE_ZIGBTX];		/*接收循迹*/
-extern uint8_t FifoBuf_Navig[FIFOSIZE_ZIGBTX]; 	/*接收navig-暂时不知道是啥*/
-extern uint8_t FifoBuf_HOST[FIFOSIZE_ZIGBTX];		/*接收主机*/
-extern uint8_t FifoBuf_Anything[FIFOSIZE_ZIGBTX];	/*接收任何信息*/
+
+
+/*定义接收CAN通信缓冲区数组*/
+typedef struct{
+	uint8_t Flag;	/*标志位*/
+	uint8_t  *Data;	/*发送数据缓冲区*/
+	uint16_t rp; 	/*读索引*/
+	uint16_t wp; 	/*写索引*/
+}Can_RXFIFOBUF;
+
+
+
+/*缓冲区操作*/
+void Can_RxBufWrite(Can_RXFIFOBUF *CanBuf, uint8_t *Data, uint8_t len);
+uint8_t Can_RxReadBit(Can_RXFIFOBUF *CanBuf, uint8_t *data);
+
+/*初始化函数*/
+void CanRxBuf_Init(void);
+
 
 /*刷新-接收到指定数组函数,并进行数据处理*/
 void CanRx_Loop(void);
+void Slove_ALL(void);
 
 extern int16_t CanHost_Mp; /*码盘值A*/
 extern int16_t CanHost_Mp1;	/*码盘值B*/
@@ -40,8 +63,13 @@ extern float pitch;	/*pitch是围绕X轴旋转，也叫做俯仰角*/
 extern float yaw;	/*yaw是围绕Y轴旋转，也叫偏航角*/
 extern float roll;	/*roll是围绕Z轴旋转，也叫翻滚角*/
 
-
 extern uint8_t x1,x2; /*循迹拆分数据x1:循迹板后面8个灯状况 x2：循迹板后面7个灯状况(循迹板b档情况下x1有效)*/
+
+
+/*WIFI摄像头数据处理开启标志位*/
+extern uint8_t Wifi_TrafficFlag;	/*Wifi_Traffic数据处理开启标志位 1-开启 0-关闭*/
+extern uint8_t Wifi_CameraFlag;		/*Wifi_Camera数据处理开启标志位 1-开启 0-关闭*/
+
 
 /*安卓摄像头状态*/
 typedef enum{
@@ -50,9 +78,9 @@ typedef enum{
 	TrafficYellow_Flag,
 	TrafficGreen_Flag,
 
-}CreamFlag;
+}CameraFlag;
 
-extern CreamFlag AndroidFlag;
+extern CameraFlag AndroidFlag;
 
 /*车库层数状态*/
 typedef enum{
@@ -97,6 +125,29 @@ typedef struct{
 extern SmartBus BusData;
 
 
+/*公交站回传数据*/
+typedef struct{
+	uint8_t ruijiao;	/*锐角*/
+	uint8_t dunjiao;	/*钝角*/
+	uint8_t zhijiao;	/*直角*/
+	uint8_t lingxing;	/*菱形*/
+	uint8_t changfan;	/*长方形*/
+	uint8_t juxing;		/*矩形*/
+	uint8_t star;		/*五角星形*/
+	uint8_t circle;		/*圆形*/
+
+	uint8_t red;		/*红色*/
+	uint8_t green;		/*绿色*/
+	uint8_t blue;		/*蓝色*/
+	uint8_t yellow;		/*黄色*/
+	uint8_t qingse;		/*青色*/
+	uint8_t orange;		/*橙色*/
+	uint8_t purple;		/*紫色*/
+	uint8_t black;		/*黑色*/
+
+}ColorShape;
+
+extern ColorShape CameraData;
 
 
 

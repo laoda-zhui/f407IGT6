@@ -402,6 +402,25 @@ void Command_TFTAPageDown(void)
 
 
 /**************************************************************************
+函数功能：命令-多功能显示标志物A 显示指定HEX数据
+入口参数：无
+返回  值：无
+**************************************************************************/
+void Command_TFTAShowHex(uint8_t First, uint8_t Second, uint8_t Third)
+{
+	uint8_t TxBuf[8]={0x55,0x0B,0x40,0x00,0x00,0x00,0x00,0xBB};
+
+	TxBuf[3] = First;
+	TxBuf[4] = Second;
+	TxBuf[5] = Third;
+
+	TxBuf[6] = (TxBuf[2] + TxBuf[3] + TxBuf[4] + TxBuf[5])%256;
+	CAN_TxtoZigbee(TxBuf, 8);
+}
+
+
+
+/**************************************************************************
 函数功能：命令-多功能显示标志物B 向上翻页
 入口参数：无
 返回  值：无
@@ -422,6 +441,67 @@ void Command_TFTBPageDown(void)
 {
 	CAN_TxtoZigbee(TFTB_PageDown, 8);
 }
+
+/**************************************************************************
+函数功能：命令-多功能显示标志物B 显示指定HEX数据
+入口参数：无
+返回  值：无
+**************************************************************************/
+void Command_TFTBShowHex(uint8_t First, uint8_t Second, uint8_t Third)
+{
+	uint8_t TxBuf[8]={0x55,0x08,0x40,0x00,0x00,0x00,0x00,0xBB};
+
+	TxBuf[3] = First;
+	TxBuf[4] = Second;
+	TxBuf[5] = Third;
+
+	TxBuf[6] = (TxBuf[2] + TxBuf[3] + TxBuf[4] + TxBuf[5])%256;
+	CAN_TxtoZigbee(TxBuf, 8);
+}
+
+
+
+/**************************************************************************
+函数功能：命令-多功能显示标志物C 向上翻页
+入口参数：无
+返回  值：无
+**************************************************************************/
+void Command_TFTCPageUp(void)
+{
+	CAN_TxtoZigbee(TFTC_PageUp, 8);
+}
+
+
+
+/**************************************************************************
+函数功能：命令-多功能显示标志物C 向下翻页
+入口参数：无
+返回  值：无
+**************************************************************************/
+void Command_TFTCPageDown(void)
+{
+	CAN_TxtoZigbee(TFTC_PageDown, 8);
+}
+
+
+/**************************************************************************
+函数功能：命令-多功能显示标志物C 显示指定HEX数据
+入口参数：无
+返回  值：无
+**************************************************************************/
+void Command_TFTCShowHex(uint8_t First, uint8_t Second, uint8_t Third)
+{
+	uint8_t TxBuf[8]={0x55,0x12,0x40,0x00,0x00,0x00,0x00,0xBB};
+
+	TxBuf[3] = First;
+	TxBuf[4] = Second;
+	TxBuf[5] = Third;
+
+	TxBuf[6] = (TxBuf[2] + TxBuf[3] + TxBuf[4] + TxBuf[5])%256;
+	CAN_TxtoZigbee(TxBuf, 8);
+}
+
+
 
 
 
@@ -454,8 +534,41 @@ void Command_SendAndroid(uint8_t First, uint8_t Second)
 **************************************************************************/
 void Command_AndroidTraffic(void)
 {
+	Wifi_TrafficFlag = 1;
+	Wifi_CameraFlag = 0;
+
 	Command_SendAndroid(0x01, 0x01);
 }
+
+/**************************************************************************
+函数功能：命令-安卓终端 开启图形形状识别
+入口参数：无
+返回  值：无
+**************************************************************************/
+void Command_Androidshape(void)
+{
+	Wifi_TrafficFlag = 0;
+	Wifi_CameraFlag = 1;
+
+	Command_SendAndroid(0x02, 0x00);
+}
+
+
+
+/**************************************************************************
+函数功能：命令-安卓终端 开启图形颜色识别
+入口参数：无
+返回  值：无
+**************************************************************************/
+void Command_AndroidColor(void)
+{
+	Wifi_TrafficFlag = 0;
+	Wifi_CameraFlag = 1;
+
+	Command_SendAndroid(0x03, 0x00);
+}
+
+
 
 
 
@@ -801,7 +914,7 @@ uint8_t Command_LightAuto(uint8_t Loaction)
 
 		Command_Light(1); /*加一档*/
 
-		My_Delayms(800);
+		My_Delayms(900);
 
 		LuxBuf[1] = BH1750_GetLux();	/*原本光照值*/
 //		sprintf(TestData,"Lux%d:%d\r\n",i,LuxBuf[1]);
@@ -810,14 +923,14 @@ uint8_t Command_LightAuto(uint8_t Loaction)
 		if(LuxBuf[0] > LuxBuf[1]) /*如果上一档的光照值更亮*/
 		{
 			Gear_Init = 5 - (i-1);
-			My_Delayms(700);
+			My_Delayms(50);
 			break;
 		}
-
 	}
 
 	Command_Light(Loaction-1);  /*从第一档加到指定档位*/
 
+	My_Delayms(50);
 
 	return Gear_Init;
 }

@@ -25,10 +25,11 @@ extern Task_Flag Stop_Flag;
 typedef enum{
 	Go_Flag 	  = 0,	/*小车前进*/
 	Back_Flag,			/*小车后退*/
-	wheel_L_Flag,		/*小车左转*/
-	wheel_R_Flag,		/*小车右转*/
+	wheel_L_Flag,		/*小车MP左转*/
+	wheel_R_Flag,		/*小车MP右转*/
 	Track_Flag,			/*小车循迹*/
-	TrackTime_Flag,
+	TrackTime_Flag,		/*小车时间循迹*/
+	TrackMp_Flag,		/*小车码盘循迹*/
 	TurnLeft_Flag,		/*新小车左转*/
 	TurnRight_Flag,		/*新小车右转*/
 
@@ -45,6 +46,7 @@ void Car_MPLeft(uint8_t speed, double Angle) ;
 void Car_MPRight(uint8_t speed, double Angle);
 void Car_Track(uint8_t speed);
 void Car_TrackTime(uint8_t speed, uint32_t Time);
+void Car_TrackMp(uint8_t speed, uint16_t Temp);
 void Car_Left(uint8_t SpeedAll);
 void Car_Right(uint8_t SpeedAll);
 

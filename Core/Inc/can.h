@@ -67,7 +67,7 @@ typedef struct _Can_Filter_Struct
 }Can_Filter_Struct;
 
 /*CAN接收缓冲数组*/
-extern uint8_t RxData[20];
+extern uint8_t RxData[40];
 
 /*CAN接收成功标志位 0-无数据 1-接收到数据*/
 extern uint8_t MyCAN_RxFlag;

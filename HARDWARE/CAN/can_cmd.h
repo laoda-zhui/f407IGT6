@@ -59,6 +59,7 @@ extern uint8_t TFTA_PageUp[];
 extern uint8_t TFTA_PageDown[];
 extern uint8_t TFTB_PageUp[8];
 extern uint8_t TFTB_PageDown[];
+extern uint8_t TFTC_PageUp[8];
 extern uint8_t TFTC_PageDown[];
 
 

@@ -194,11 +194,13 @@ int main(void)
   {
 
 	  /*刷新*/
+	  Slove_ALL();
 	  Track_Check();
 	  Go_and_Back_Check();
 	  TurnAngle_Check();
 	  TurnAngle_NewCheck();
-
+	  CanRx_Loop();
+	  CAN_TxLoop();
 
 
 	  /*按键*/
@@ -222,9 +224,11 @@ int main(void)
 			  Beep_Set(0);
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_13);
 
-//			  Voice_ASR();
-			  Command_SlaveCarStart();
 
+//			  Voice_ASR();
+//			  Command_SlaveCarStart();
+//			  CAN_TxtoZigbee(FifoBuf_ZigbRx, 8);
+			  Command_TFTAShowHex(0x11,0x22,0x33);
 
 		  }
 		  if(KeyNum == 3)
@@ -234,10 +238,13 @@ int main(void)
 			  Beep_Set(0);
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_14);
 
+//			  Command_CarPortB(3);
+//			  Command_Androidshape();
+//			  Command_AndroidColor();
 //			  Command_BusReportFixed(i);
 //			  i++;
 //			  if(i>8){i=0;}
-
+			  Command_LEDShowDown(0xF0|(CameraData.red), 0xF0|(CameraData.green), 0xF0|(CameraData.blue));
 
 
 		  }
@@ -247,10 +254,10 @@ int main(void)
 			  HAL_Delay(100);
 			  Beep_Set(0);
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_15);
-			  Command_ClearTim();
 
-//			  char txdata[50];
-//			  sprintf(txdata,"%d\r\n",CarPortFlag);
+//			  char txdata[200];
+//			  sprintf(txdata,"red:%d blue:%d green:%d yellow:%d qingse:%d orange:%d purple:%d black:%d\r\n",
+//					  CameraData.red,CameraData.blue,CameraData.green,CameraData.yellow,CameraData.qingse,CameraData.orange,CameraData.purple,CameraData.black);
 //			  CAN_TxtoDisplay(txdata, strlen(txdata));
 
 		  }

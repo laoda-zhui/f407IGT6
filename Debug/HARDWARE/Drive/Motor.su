@@ -14,7 +14,8 @@
 ../HARDWARE/Drive/Motor.c:315:6:Car_Right	8	static
 ../HARDWARE/Drive/Motor.c:333:6:Car_Track	0	static
 ../HARDWARE/Drive/Motor.c:346:6:Car_TrackTime	16	static
-../HARDWARE/Drive/Motor.c:366:6:Go_and_Back_Check	72	static
-../HARDWARE/Drive/Motor.c:426:6:TurnAngle_Check	8	static
-../HARDWARE/Drive/Motor.c:465:6:TurnAngle_NewCheck	8	static
-../HARDWARE/Drive/Motor.c:522:6:Track_Check	8	static
+../HARDWARE/Drive/Motor.c:361:6:Car_TrackMp	16	static
+../HARDWARE/Drive/Motor.c:389:6:Go_and_Back_Check	72	static
+../HARDWARE/Drive/Motor.c:449:6:TurnAngle_Check	8	static
+../HARDWARE/Drive/Motor.c:488:6:TurnAngle_NewCheck	8	static
+../HARDWARE/Drive/Motor.c:545:6:Track_Check	8	static

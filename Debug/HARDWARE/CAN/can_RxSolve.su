@@ -1,3 +1,12 @@
-../HARDWARE/CAN/can_RxSolve.c:156:6:Slove_AndroidData	0	static
-../HARDWARE/CAN/can_RxSolve.c:198:6:Slove_ZigbeeData	4	static
-../HARDWARE/CAN/can_RxSolve.c:70:6:CanRx_Loop	8	static
+../HARDWARE/CAN/can_RxSolve.c:75:6:CanRxBuf_Init	0	static
+../HARDWARE/CAN/can_RxSolve.c:362:6:Slove_ZigbeeData	4	static
+../HARDWARE/CAN/can_RxSolve.c:483:6:Slove_Track	0	static
+../HARDWARE/CAN/can_RxSolve.c:495:6:Slove_Naving	0	static
+../HARDWARE/CAN/can_RxSolve.c:508:6:Slove_Host	0	static
+../HARDWARE/CAN/can_RxSolve.c:585:6:Can_RxBufWrite	24	static
+../HARDWARE/CAN/can_RxSolve.c:99:6:CanRx_Loop	8	static
+../HARDWARE/CAN/can_RxSolve.c:616:9:Can_RxCheckReadEn	0	static
+../HARDWARE/CAN/can_RxSolve.c:640:9:Can_RxReadBit	16	static
+../HARDWARE/CAN/can_RxSolve.c:149:6:Slove_AndroidData	16	static
+../HARDWARE/CAN/can_RxSolve.c:232:6:Slove_Camera	520	static
+../HARDWARE/CAN/can_RxSolve.c:547:6:Slove_ALL	8	static

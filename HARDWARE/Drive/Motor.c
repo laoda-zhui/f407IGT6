@@ -287,7 +287,7 @@ void Car_MPRight(uint8_t speed, double Angle)       // 主车右转 参数：角
 
 
 /**************************************************************************
-函数功能：根据巡线控制控制小车左转 - 推荐 -77 77
+函数功能：根据巡线控制控制小车左转 - 推荐 -80 80
 入口参数：speed:速度(max=120)
 返回  值：无
 **************************************************************************/
@@ -308,7 +308,7 @@ void Car_Left(uint8_t SpeedAll)       // 主车左转 参数：角度参考值
 
 
 /**************************************************************************
-函数功能：根据巡线控制小车右转  推荐 77 -77
+函数功能：根据巡线控制小车右转  推荐 80 -80
 入口参数：speed:速度(max=120)
 返回  值：无
 **************************************************************************/
@@ -353,9 +353,32 @@ void Car_TrackTime(uint8_t speed, uint32_t Time)   // 主车循迹 参数：速�
 }
 
 
+/**************************************************************************
+函数功能：控制小车规定距离内循迹
+入口参数：speed:速度(max=120) Mp:循迹距离
+返回  值：无
+**************************************************************************/
+void Car_TrackMp(uint8_t speed, uint16_t Temp)   // 主车循迹 参数：速度
+{
+	Motor_SyncLeftEncoder();     /*左编码器同步一次*/
+	Motor_SyncRightEncoder();    /*右编码器同步一次*/
+
+	Taget_Pulses = Motor_calculate_pulses(Temp);         // 距离转换为码盘值
+
+    Stop_Flag = Task_Start;          // 运行状态标志位
+    CarFlag = TrackMp_Flag;         // 循迹标志位
+    Car_Speed = speed;      // 速度值
+
+}
+
+
+
+
 
 
 /********************************************* 路况执行 ***********************************************/
+
+
 
 
 /**************************************************************************
@@ -523,11 +546,11 @@ void Track_Check(void) 	/*这里选择取循迹的后面八个-x1，右边到左
 {
 	static int8_t err; /*误差*/
 	static uint16_t count=0;
-	if((CarFlag == Track_Flag || CarFlag == TrackTime_Flag) && (Stop_Flag == Task_Start) && (Track_CheckFlag == 1))
+	if((CarFlag == Track_Flag || CarFlag == TrackTime_Flag || CarFlag == TrackMp_Flag) && (Stop_Flag == Task_Start) && (Track_CheckFlag == 1))
 	{
 		Track_CheckFlag = 0;
 
-		if(CarFlag == TrackTime_Flag)
+		if(CarFlag == TrackTime_Flag)	/*循迹时间超时*/
 		{
 			if(HAL_GetTick() - TrackStartTime > TrackTimeOut)
 			{
@@ -536,8 +559,20 @@ void Track_Check(void) 	/*这里选择取循迹的后面八个-x1，右边到左
 				Motor_Control(0,0);
 				return;
 			}
-
 		}
+
+		if(CarFlag == TrackMp_Flag)
+		{
+			if(Taget_Pulses <= Motor_GetLDifcoder()) // 行驶距离大于等于需要行驶的码盘值/距离时，停车
+			{
+				err = 0;
+				Stop_Flag = Task_Complete;
+				Motor_Control(0,0);
+				return;
+			}
+		}
+
+
 
 		switch(x1)
 		{

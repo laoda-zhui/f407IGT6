@@ -379,7 +379,7 @@ void CAN_TxtoT2(uint8_t time)  // 设置循迹数据上传时间间隔
 static uint8_t retry_data_zigbee[8],retry_data_Wifi[8],retry_data_Dis[8];  // 重发数据缓冲区
 static uint8_t retry_size_zigbee = 0, retry_size_Wifi = 0, retry_size_Dis = 0; // 重发数据大小
 /**************************************************************************
-函数功能：CAN-检测缓冲区数据并上传(if的顺序控制优先级)s
+函数功能：CAN-检测缓冲区数据并上传(if的顺序控制优先级)
 入口参数：无
 返回  值：无
 **************************************************************************/

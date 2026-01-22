@@ -43,4 +43,11 @@ void CAN_TxtoT2(uint8_t time);
 void CAN_TxLoop(void);
 
 
+/*缓冲区操作*/
+void Can_BufWrite(CanP_Cmd_Struct *CanBuf, uint8_t *Data, uint8_t len);
+uint8_t Can_CheckReadEn(CanP_Cmd_Struct *p);
+uint8_t Can_BufRead(CanP_Cmd_Struct *CanBuf,uint8_t *Data);
+
+
+
 #endif /* CAN_CAN_TX_H_ */

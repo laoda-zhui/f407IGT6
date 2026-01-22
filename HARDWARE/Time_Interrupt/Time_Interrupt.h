@@ -5,7 +5,8 @@
 #include "main.h"
 #include "Motor.h"
 #include "tim.h"
-
+#include "can_RxSolve.h"
+#include "can_Tx.h"
 #include "../Core_Board/KEY/KEY.h"
 
 

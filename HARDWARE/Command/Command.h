@@ -52,13 +52,19 @@ void Command_TrafficDSend(void);
 /*TFT智能显示*/
 void Command_TFTAPageUp(void);
 void Command_TFTAPageDown(void);
+void Command_TFTAShowHex(uint8_t First, uint8_t Second, uint8_t Third);
 void Command_TFTBPageUp(void);
 void Command_TFTBPageDown(void);
+void Command_TFTBShowHex(uint8_t First, uint8_t Second, uint8_t Third);
+void Command_TFTCPageUp(void);
+void Command_TFTCPageDown(void);
+void Command_TFTCShowHex(uint8_t First, uint8_t Second, uint8_t Third);
 
 
 /*Android*/
 void Command_AndroidTraffic(void);
-
+void Command_Androidshape(void);
+void Command_AndroidColor(void);
 
 
 /*立体车库*/
