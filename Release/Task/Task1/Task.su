@@ -1,11 +1,1 @@
-../Task/Task1/Task.c:165:6:Task_CarWait	16	static
-../Task/Task1/Task.c:195:6:Task_CarGO	8	static
-../Task/Task1/Task.c:221:6:Task_CarBack	8	static
-../Task/Task1/Task.c:248:6:Task_CarLeft	8	static
-../Task/Task1/Task.c:272:6:Task_CarRight	8	static
-../Task/Task1/Task.c:298:6:Task_CarTrack	8	static
-../Task/Task1/Task.c:324:6:Task_CarTrackTime	8	static
-../Task/Task1/Task.c:349:6:Task_CarMpTrack	8	static
-../Task/Task1/Task.c:28:6:Task1_Start	16	static
-../Task/Task1/Task.c:381:6:Task_CarMPLeft	8	static
-../Task/Task1/Task.c:406:6:Task_CarMPRight	8	static
+../Task/Task1/Task.c:15:6:Task1_Start	24	static

@@ -60,7 +60,8 @@ SmartBus BusData;
 /*颜色图形数据结构体*/
 ColorShape CameraData;
 
-
+/*从车数据结构体*/
+SlaveCar SlaveCarData;
 
 
 
@@ -466,6 +467,26 @@ void Slove_ZigbeeData(void)
 
 		}
 	}
+
+	/*从车发来的车牌信息*/
+	if(FifoBuf_ZigbRx[0] == 0x55 && FifoBuf_ZigbRx[1]  == 0x12)
+	{
+		if(FifoBuf_ZigbRx[2]  == 0x20)
+		{
+			SlaveCarData.chepai[0] = FifoBuf_ZigbRx[3];
+			SlaveCarData.chepai[1] = FifoBuf_ZigbRx[4];
+			SlaveCarData.chepai[2] = FifoBuf_ZigbRx[5];
+		}
+
+		if(FifoBuf_ZigbRx[2]  == 0x21)
+		{
+			SlaveCarData.chepai[3] = FifoBuf_ZigbRx[3];
+			SlaveCarData.chepai[4] = FifoBuf_ZigbRx[4];
+			SlaveCarData.chepai[5] = FifoBuf_ZigbRx[5];
+		}
+
+	}
+
 
 
 }

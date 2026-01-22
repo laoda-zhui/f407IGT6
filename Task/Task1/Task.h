@@ -14,7 +14,7 @@
 #include "Photoresistance.h"
 #include "Command.h"
 #include "Task_Beep.h"
-
+#include "Voice.h"
 
 
 void Task1_Start(void);

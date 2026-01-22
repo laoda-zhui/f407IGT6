@@ -236,14 +236,14 @@ int main(void)
 			  HAL_Delay(100);
 			  Beep_Set(0);
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_14);
-
-//			  Command_CarPortB(3);
+//			  Command_BusCheckTem();
+			  Command_CarPortB(3);
 //			  Command_Androidshape();
 //			  Command_AndroidColor();
 //			  Command_BusReportFixed(i);
 //			  i++;
 //			  if(i>8){i=0;}
-			  Command_LEDShowDown(0xF0|(CameraData.red), 0xF0|(CameraData.green), 0xF0|(CameraData.blue));
+//			  Command_LEDShowDown(0xF0|(CameraData.red), 0xF0|(CameraData.green), 0xF0|(CameraData.blue));
 
 
 		  }
@@ -253,7 +253,9 @@ int main(void)
 			  HAL_Delay(100);
 			  Beep_Set(0);
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_15);
+			  Command_SlaveCarStart();
 
+//			  Command_SlaveCarSTep();
 //			  char txdata[200];
 //			  sprintf(txdata,"red:%d blue:%d green:%d yellow:%d qingse:%d orange:%d purple:%d black:%d\r\n",
 //					  CameraData.red,CameraData.blue,CameraData.green,CameraData.yellow,CameraData.qingse,CameraData.orange,CameraData.purple,CameraData.black);

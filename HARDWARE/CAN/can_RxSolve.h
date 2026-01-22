@@ -149,6 +149,13 @@ typedef struct{
 
 extern ColorShape CameraData;
 
+/*从车回传数据*/
+typedef struct{
+	uint8_t chepai[7];	/*车牌*/
+
+}SlaveCar;
+
+extern SlaveCar SlaveCarData;
 
 
 

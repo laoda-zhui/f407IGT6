@@ -7,7 +7,7 @@
 
 
 /**************************************************接收初始化***************************************************************/
-#define	Can_TxMaxBuf	80	/*发送缓冲区最大空间 wifi zigbee display*/
+#define	Can_TxMaxBuf	500	/*发送缓冲区最大空间 wifi zigbee display*/
 #define Can_CmdMaxBuf	10	/*剩下命令缓冲区最大空间*/
 
 /*创建发送CAN结构体buf缓冲区数组*/
@@ -376,8 +376,6 @@ void CAN_TxtoT2(uint8_t time)  // 设置循迹数据上传时间间隔
 
 /***********************************刷新判断是否有数据*****************************************************/
 
-static uint8_t retry_data_zigbee[8],retry_data_Wifi[8],retry_data_Dis[8];  // 重发数据缓冲区
-static uint8_t retry_size_zigbee = 0, retry_size_Wifi = 0, retry_size_Dis = 0; // 重发数据大小
 /**************************************************************************
 函数功能：CAN-检测缓冲区数据并上传(if的顺序控制优先级)
 入口参数：无
@@ -385,45 +383,8 @@ static uint8_t retry_size_zigbee = 0, retry_size_Wifi = 0, retry_size_Dis = 0; /
 **************************************************************************/
 void CAN_TxLoop(void)
 {
-	uint8_t Status,Txsizeof1,Txsizeof2,Txsizeof3;
+	uint8_t Txsizeof1,Txsizeof2,Txsizeof3;
 	uint8_t TxDataBuf_Zigbee[8],TxDataBuf_Wifi[8],TxDataBuf_Dis[8];
-
-
-
-	/***********重新发送区***********/
-	if(retry_size_zigbee)
-	{
-		Can_Cmds[1].DLC = retry_size_zigbee;
-		Status = MyCAN_Transmit(&Can_Cmds[1], retry_data_zigbee);
-
-		if(Status == HAL_OK)
-		{
-			retry_size_zigbee = 0;
-			memset(retry_data_zigbee,0,8);
-		}
-	}
-	if(retry_size_Wifi)
-	{
-		Can_Cmds[0].DLC = retry_size_Wifi;
-		Status = MyCAN_Transmit(&Can_Cmds[0], retry_data_Wifi);
-
-		if(Status == HAL_OK)
-		{
-			retry_size_Wifi = 0;
-			memset(retry_data_Wifi,0,8);
-		}
-	}
-	if(retry_size_Dis)
-	{
-		Can_Cmds[2].DLC = retry_size_Dis;
-		Status = MyCAN_Transmit(&Can_Cmds[2], retry_data_Dis);
-
-		if(Status == HAL_OK)
-		{
-			retry_size_Dis = 0;
-			memset(retry_data_Dis,0,8);
-		}
-	}
 
 
 
@@ -432,119 +393,88 @@ void CAN_TxLoop(void)
 	if(Txsizeof1) /*Zigbee 优先级:0*/
 	{
 		Can_Cmds[1].DLC = Txsizeof1;
-		Status = MyCAN_Transmit(&Can_Cmds[1], TxDataBuf_Zigbee);
+		MyCAN_Transmit(&Can_Cmds[1], TxDataBuf_Zigbee);
 
-		if(Status != HAL_OK)/*发送失败*/
-		{
-			retry_size_zigbee = Txsizeof1;
-			memcpy(retry_data_zigbee, TxDataBuf_Zigbee, Txsizeof1);
-		}
 	}
 
 	Txsizeof2 = Can_BufRead(&CanP_Cmd_SBuf[0], TxDataBuf_Wifi);
 	if(Txsizeof2) /*Wifi 优先级:1*/
 	{
 		Can_Cmds[0].DLC = Txsizeof2;
-		Status = MyCAN_Transmit(&Can_Cmds[0], TxDataBuf_Wifi);
+		MyCAN_Transmit(&Can_Cmds[0], TxDataBuf_Wifi);
 
-		if(Status != HAL_OK)/*发送失败*/
-		{
-			retry_size_Wifi = Txsizeof2;
-			memcpy(retry_data_Wifi, TxDataBuf_Wifi, Txsizeof2);
-		}
 	}
 
 	if(CanP_Cmd_SBuf[3].Flag == 1) /*电机 优先级:2*/
 	{
-		Status = MyCAN_Transmit(&Can_Cmds[3], CanP_Cmd_SBuf[3].Data);
-		if(Status == HAL_OK)
-		{
-			memset(CanP_Cmd_SBuf[3].Data, 0, 8);
-			CanP_Cmd_SBuf[3].Flag = 0;
-		}
+		MyCAN_Transmit(&Can_Cmds[3], CanP_Cmd_SBuf[3].Data);
+
+		memset(CanP_Cmd_SBuf[3].Data, 0, 8);
+		CanP_Cmd_SBuf[3].Flag = 0;
+
 	}
 
 	if(CanP_Cmd_SBuf[9].Flag == 1) /*T2 优先级:3*/
 	{
-		Status = MyCAN_Transmit(&Can_Cmds[9], CanP_Cmd_SBuf[9].Data);
-		if(Status == HAL_OK)
-		{
-			memset(CanP_Cmd_SBuf[9].Data, 0, 8);
-			CanP_Cmd_SBuf[9].Flag = 0;
-		}
+		MyCAN_Transmit(&Can_Cmds[9], CanP_Cmd_SBuf[9].Data);
+
+		memset(CanP_Cmd_SBuf[9].Data, 0, 8);
+		CanP_Cmd_SBuf[9].Flag = 0;
+
 	}
 
 
 	if(CanP_Cmd_SBuf[7].Flag == 1) /*T0 优先级:4*/
 	{
-		Status = MyCAN_Transmit(&Can_Cmds[7], CanP_Cmd_SBuf[7].Data);
-		if(Status == HAL_OK)
-		{
-			memset(CanP_Cmd_SBuf[7].Data, 0, 8);
-			CanP_Cmd_SBuf[7].Flag = 0;
-		}
+		MyCAN_Transmit(&Can_Cmds[7], CanP_Cmd_SBuf[7].Data);
+		memset(CanP_Cmd_SBuf[7].Data, 0, 8);
+		CanP_Cmd_SBuf[7].Flag = 0;
+
 	}
 
 
 	if(CanP_Cmd_SBuf[8].Flag == 1) /*T1 优先级:5*/
 	{
-		Status = MyCAN_Transmit(&Can_Cmds[8], CanP_Cmd_SBuf[8].Data);
-		if(Status == HAL_OK)
-		{
-			memset(CanP_Cmd_SBuf[8].Data, 0, 8);
-			CanP_Cmd_SBuf[8].Flag = 0;
-		}
+		MyCAN_Transmit(&Can_Cmds[8], CanP_Cmd_SBuf[8].Data);
+		memset(CanP_Cmd_SBuf[8].Data, 0, 8);
+		CanP_Cmd_SBuf[8].Flag = 0;
+
 	}
 
 
 	if(CanP_Cmd_SBuf[5].Flag == 1) /*NV 优先级:6*/
 	{
-		Status = MyCAN_Transmit(&Can_Cmds[5], CanP_Cmd_SBuf[5].Data);
+		MyCAN_Transmit(&Can_Cmds[5], CanP_Cmd_SBuf[5].Data);
 
-		if(Status == HAL_OK)
-		{
-			memset(CanP_Cmd_SBuf[5].Data, 0, 8);
-			CanP_Cmd_SBuf[5].Flag = 0;
-		}
+		memset(CanP_Cmd_SBuf[5].Data, 0, 8);
+		CanP_Cmd_SBuf[5].Flag = 0;
+
 
 	}
 
 
 	if(CanP_Cmd_SBuf[4].Flag == 1) /*CNT 优先级:7*/
 	{
-		Status = MyCAN_Transmit(&Can_Cmds[4], CanP_Cmd_SBuf[4].Data);
-
-		if(Status == HAL_OK)
-		{
-			memset(CanP_Cmd_SBuf[4].Data, 0, 8);
-			CanP_Cmd_SBuf[4].Flag = 0;
-		}
+		MyCAN_Transmit(&Can_Cmds[4], CanP_Cmd_SBuf[4].Data);
+		memset(CanP_Cmd_SBuf[4].Data, 0, 8);
+		CanP_Cmd_SBuf[4].Flag = 0;
 	}
 
 	Txsizeof3 = Can_BufRead(&CanP_Cmd_SBuf[2], TxDataBuf_Dis);
 	if(Txsizeof3) /*显示 优先级:8*/
 	{
 		Can_Cmds[2].DLC = Txsizeof3;
+		MyCAN_Transmit(&Can_Cmds[2], TxDataBuf_Dis);
 
-		Status = MyCAN_Transmit(&Can_Cmds[2], TxDataBuf_Dis);
-
-		if(Status != HAL_OK)/*发送失败*/
-		{
-			retry_size_Dis = Txsizeof3;
-			memcpy(retry_data_Dis, TxDataBuf_Dis, Txsizeof3);
-		}
 	}
 
 
 	if(CanP_Cmd_SBuf[6].Flag == 1) /*Power 优先级:9*/
 	{
-		Status = MyCAN_Transmit(&Can_Cmds[6], CanP_Cmd_SBuf[6].Data);
+		MyCAN_Transmit(&Can_Cmds[6], CanP_Cmd_SBuf[6].Data);
+		memset(CanP_Cmd_SBuf[6].Data, 0, 8);
+		CanP_Cmd_SBuf[6].Flag = 0;
 
-		if(Status == HAL_OK)
-		{
-			memset(CanP_Cmd_SBuf[6].Data, 0, 8);
-			CanP_Cmd_SBuf[6].Flag = 0;
-		}
 	}
 }
 

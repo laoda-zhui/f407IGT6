@@ -140,7 +140,7 @@ void HAL_CAN_MspInit(CAN_HandleTypeDef* canHandle)
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
     /* CAN1 interrupt Init */
-    HAL_NVIC_SetPriority(CAN1_RX0_IRQn, 3, 0);
+    HAL_NVIC_SetPriority(CAN1_RX0_IRQn, 1, 0);
     HAL_NVIC_EnableIRQ(CAN1_RX0_IRQn);
     HAL_NVIC_SetPriority(CAN1_SCE_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(CAN1_SCE_IRQn);
@@ -242,7 +242,7 @@ void Filter_Init(void)
 HAL_StatusTypeDef MyCAN_Transmit(CAN_TxHeaderTypeDef *TxMessage, uint8_t *Data)
 {
 	uint32_t Used_pTxMailbox;
-	uint32_t Timeout=1000;		/*重试次数*/
+	uint32_t Timeout=100;		/*重试次数*/
 
 
 	while(HAL_CAN_AddTxMessage(&hcan1, TxMessage, Data, &Used_pTxMailbox) != HAL_OK)

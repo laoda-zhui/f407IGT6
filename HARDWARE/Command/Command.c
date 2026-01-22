@@ -368,9 +368,23 @@ void Command_SlaveCarSTep(void)
 {
 	uint8_t TxBuf[8]={0x9f,0x02,0x9f,0x02,0x00,0x00,0x00,0xBB};
 
-	TxBuf[5] = BusData.temperature;
+	TxBuf[4] = BusData.temperature;
 	CAN_TxtoZigbee(TxBuf, 8);
 }
+
+/**************************************************************************
+函数功能：命令-从车发送灯光初始值
+入口参数：LightInit-初始路灯档位值
+返回  值：无
+**************************************************************************/
+void Command_SlaveCarLight(uint8_t LightInit)
+{
+	uint8_t TxBuf[8]={0x9f,0x02,0x9f,0x03,0x00,0x00,0x00,0xBB};
+
+	TxBuf[4] = LightInit;
+	CAN_TxtoZigbee(TxBuf, 8);
+}
+
 
 
 /*********************************************多功能显示**************************************************/

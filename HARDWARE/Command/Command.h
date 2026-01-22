@@ -16,7 +16,7 @@
 /*从车*/
 void Command_SlaveCarStart(void);
 void Command_SlaveCarSTep(void);
-
+void Command_SlaveCarLight(uint8_t LightInit);
 
 
 /*道闸*/
@@ -90,6 +90,7 @@ void Command_BusSetTime(uint8_t Hour, uint8_t Minutes, uint8_t Seconds);
 void Command_BusCheakTime(void);
 void Command_BusSetTem(uint8_t Weather, uint8_t Temperature);
 void Command_BusCheckTem(void);
+
 
 /*无线充电站*/
 void Command_WireCharStart(void);

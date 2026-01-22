@@ -12,4 +12,4 @@
 ../HARDWARE/CAN/can_Tx.c:314:6:CAN_TxtoT0	8	static
 ../HARDWARE/CAN/can_Tx.c:336:6:CAN_TxtoT1	8	static
 ../HARDWARE/CAN/can_Tx.c:358:6:CAN_TxtoT2	8	static
-../HARDWARE/CAN/can_Tx.c:386:6:CAN_TxLoop	32	static
+../HARDWARE/CAN/can_Tx.c:384:6:CAN_TxLoop	32	static
