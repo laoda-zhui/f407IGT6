@@ -564,7 +564,7 @@ void Command_Androidshape(void)
 	Wifi_TrafficFlag = 0;
 	Wifi_CameraFlag = 1;
 
-	Command_SendAndroid(0x02, 0x00);
+	Command_SendAndroid(0x01, 0x02);
 }
 
 
@@ -579,9 +579,21 @@ void Command_AndroidColor(void)
 	Wifi_TrafficFlag = 0;
 	Wifi_CameraFlag = 1;
 
-	Command_SendAndroid(0x03, 0x00);
+	Command_SendAndroid(0x01, 0x03);
 }
 
+/**************************************************************************
+函数功能：命令-安卓终端 开启二维码识别
+入口参数：无
+返回  值：无
+**************************************************************************/
+void Command_AndroidQR(void)
+{
+	Wifi_TrafficFlag = 0;
+	Wifi_CameraFlag = 0;
+
+	Command_SendAndroid(0x02, 0x00);
+}
 
 
 
@@ -913,40 +925,66 @@ void Command_Light(uint8_t Gear)
 入口参数：Location:指定档位
 返回  值：无
 **************************************************************************/
-uint8_t Command_LightAuto(uint8_t Loaction)
+uint8_t Command_LightAuto(uint8_t Target_Gear)
 {
-	uint8_t Gear_Init = 0;	// 初始挡位值
-	uint16_t LuxBuf[2];		//缓存自学习的光档位数组
-//	char TestData[30];
+    // 1. 变量定义
+    uint16_t Lux_Samples[4]; // 存储4次采样的亮度
+    uint16_t Max_Lux = 0;
+    uint8_t  Max_Index = 0;  // 记录最大值是在第几次操作前测到的
+    uint8_t  Current_Gear = 0;
 
-	for(uint8_t i=1;i<5;i++)/*1-4*/
-	{
-		LuxBuf[0] = BH1750_GetLux	();	/*原本光照值*/
+    // 2. 采集一圈数据 (共测4次，确保覆盖1-4档)
+    for(uint8_t i = 0; i < 4; i++)
+    {
+        // 采样当前亮度
+        Lux_Samples[i] = BH1750_GetLux();
 
-//		sprintf(TestData,"Lux%d:%d\r\n",i,LuxBuf[0]);
-//		CAN_TxtoDisplay(TestData, strlen(TestData));
+        // 寻找最大值（锚点）
+        // 这里假设最亮的那一档是 4档
+        if(Lux_Samples[i] > Max_Lux)
+        {
+            Max_Lux = Lux_Samples[i];
+            Max_Index = i; // 记录下来：第 i 次采样时是最亮的
+        }
 
-		Command_Light(1); /*加一档*/
+        // 切换到下一档 (假设是循环的 1->2->3->4->1)
+        Command_Light(1);
+        My_Delayms(1000); // 给路灯一点反应时间
+    }
 
-		My_Delayms(900);
+    // 3. 反推初始档位
+    // 逻辑推演：
+    // Max_Index 对应的是“4档”。
+    // 比如 Lux_Samples[1] 最大，说明在第2次测量时（操作了1次后）是4档。
+    // 那么初始状态 (i=0) 就是 4 - 1 = 3档。
+    // 公式：Initial_Gear = 4 - Max_Index
 
-		LuxBuf[1] = BH1750_GetLux();	/*原本光照值*/
-//		sprintf(TestData,"Lux%d:%d\r\n",i,LuxBuf[1]);
-//		CAN_TxtoDisplay(TestData, strlen(TestData));
+    uint8_t Initial_Gear = 4 - Max_Index;
 
-		if(LuxBuf[0] > LuxBuf[1]) /*如果上一档的光照值更亮*/
-		{
-			Gear_Init = 5 - (i-1);
-			My_Delayms(50);
-			break;
-		}
-	}
+    // 4. 计算当前档位 (经过4次操作后，回到了初始档位)
+    Current_Gear = Initial_Gear;
 
-	Command_Light(Loaction-1);  /*从第一档加到指定档位*/
+    // 计算需要加几档 (差值)
+   int steps_needed = Target_Gear - Current_Gear;
 
-	My_Delayms(50);
+   // 处理回绕：
+   // 比如现在4档，要去1档。 1 - 4 = -3。
+   // 实际需要加 1 档 (4->1)。 -3 + 4 = 1。
+   if (steps_needed < 0)
+   {
+	   steps_needed += 4;
+   }
 
-	return Gear_Init;
+   // 如果 steps_needed == 0，说明已经在目标档位了，不需要动
+   if (steps_needed > 0)
+   {
+	   My_Delayms(200); // 等待生效
+	   // 直接发送“加 N 档”的指令
+	   Command_Light(steps_needed);
+   }
+
+
+    return Initial_Gear; // 返回反推出来的初始档位
 }
 
 
@@ -1001,7 +1039,7 @@ void Command_AlarmReq(void)
 
 /**************************************************************************
 函数功能：命令-自动评分系统
-入口参数：无
+入口参数：语音编号
 返回  值：无
 **************************************************************************/
 void Command_Autosystem(uint8_t Number)
@@ -1094,10 +1132,6 @@ void Command_ETCDown(void)
 
 	CAN_TxtoZigbee(TxBuf, 8);
 }
-
-
-
-
 
 
 

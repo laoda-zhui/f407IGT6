@@ -65,6 +65,8 @@ void Command_TFTCShowHex(uint8_t First, uint8_t Second, uint8_t Third);
 void Command_AndroidTraffic(void);
 void Command_Androidshape(void);
 void Command_AndroidColor(void);
+void Command_AndroidQR(void);
+
 
 
 /*立体车库*/
@@ -100,5 +102,21 @@ void Command_WireCharEnd(void);
 /*ETC闸门*/
 void Command_ETCUp(void);
 void Command_ETCDown(void);
+
+
+
+/*自动评分系统*/
+void Command_Autosystem(uint8_t Number);
+
+
+
+
+
+
+
+
+
+
+
 
 #endif /* COMMAND_COMMAND_H_ */

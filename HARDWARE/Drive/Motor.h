@@ -30,6 +30,7 @@ typedef enum{
 	Track_Flag,			/*小车循迹*/
 	TrackTime_Flag,		/*小车时间循迹*/
 	TrackMp_Flag,		/*小车码盘循迹*/
+	TrackMpBack_Flag,	/*小车码盘循迹后退*/
 	TurnLeft_Flag,		/*新小车左转*/
 	TurnRight_Flag,		/*新小车右转*/
 
@@ -47,6 +48,7 @@ void Car_MPRight(uint8_t speed, double Angle);
 void Car_Track(uint8_t speed);
 void Car_TrackTime(uint8_t speed, uint32_t Time);
 void Car_TrackMp(uint8_t speed, uint16_t Temp);
+void Car_TrackBackMp(uint8_t speed, uint16_t Temp);
 void Car_Left(uint8_t SpeedAll);
 void Car_Right(uint8_t SpeedAll);
 

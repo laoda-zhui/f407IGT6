@@ -141,7 +141,7 @@ extern uint8_t READ_RFID[16];		// 存放RFID
 
 
 /*函数*/
-void RC522(uint8_t card_addr,uint8_t mode);
+uint8_t RC522(uint8_t card_addr,uint8_t mode);
 int8_t InitRC522(void);
 void RC522_LinkTest(void);
 uint8_t RC522_GetLinkFlag(void);

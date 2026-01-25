@@ -44,6 +44,7 @@
 "./HARDWARE/Delay/Delay.o"
 "./HARDWARE/Drive/Motor.o"
 "./HARDWARE/Drive/PID.o"
+"./HARDWARE/SpecialLoad/SpecialLoad.o"
 "./HARDWARE/Task_Board/BEEP/Task_Beep.o"
 "./HARDWARE/Task_Board/Infrared/infrared.o"
 "./HARDWARE/Task_Board/Photoresistance/Photoresistance.o"

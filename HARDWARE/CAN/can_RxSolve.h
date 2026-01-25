@@ -29,6 +29,8 @@ extern uint8_t FifoBuf_HOST[Can_RxHOSTZize];	/*5接收主机*/
 extern uint8_t FifoBuf_Anything[Can_RxAnythingZize];	/*6接收任何信息*/
 
 
+extern uint8_t AndroidGoFlag;
+
 
 /*定义接收CAN通信缓冲区数组*/
 typedef struct{
@@ -101,7 +103,7 @@ extern CarPort CarPortFlag;
 /*ETC闸门状态*/
 typedef enum{
 	GatetNull = 0,
-	GateOpen 	 /*道闸开启*/
+	GateOpen 	 /*ETC道闸开启*/
 
 }GateStates;
 

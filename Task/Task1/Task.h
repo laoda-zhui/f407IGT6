@@ -16,9 +16,14 @@
 #include "Task_Beep.h"
 #include "Voice.h"
 
+extern uint8_t VoiceNumber;
 
 void Task1_Start(void);
 void TestTask(void);
+void Task_testSpecialLoad(void);
+
+extern uint8_t LightInit;
+extern uint8_t VoiceNumber;
 
 
 #endif /* TASK1_TASK_H_ */

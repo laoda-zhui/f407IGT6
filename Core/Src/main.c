@@ -208,9 +208,6 @@ int main(void)
 	  {
 		  if(KeyNum == 1)
 		  {
-			  Beep_Set(1);
-			  HAL_Delay(100);
-			  Beep_Set(0);
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_12);
 
 			  Start_Flag = 1;
@@ -218,62 +215,58 @@ int main(void)
 		  }
 		  if(KeyNum == 2)
 		  {
-			  Beep_Set(1);
-			  HAL_Delay(100);
-			  Beep_Set(0);
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_13);
 
 
-//			  Voice_ASR();
-//			  Command_SlaveCarStart();
-//			  CAN_TxtoZigbee(FifoBuf_ZigbRx, 8);
-			  Command_TFTAShowHex(0x11,0x22,0x33);
+//			  Command_TrafficAInMode();
+//			  RC522(18, RFID_Write_Read);
+			  RC522(18, RFID_Read);
+
 
 		  }
 		  if(KeyNum == 3)
 		  {
-			  Beep_Set(1);
-			  HAL_Delay(100);
-			  Beep_Set(0);
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_14);
-//			  Command_BusCheckTem();
-			  Command_CarPortB(3);
-//			  Command_Androidshape();
-//			  Command_AndroidColor();
-//			  Command_BusReportFixed(i);
-//			  i++;
-//			  if(i>8){i=0;}
-//			  Command_LEDShowDown(0xF0|(CameraData.red), 0xF0|(CameraData.green), 0xF0|(CameraData.blue));
+
+//			  Command_CarPortB(4);
+
+			  char txdata[200];
+//////			  sprintf(txdata,"red:%d blue:%d green:%d yellow:%d qingse:%d orange:%d purple:%d black:%d\r\n",
+//////			  					  CameraData.red,CameraData.blue,CameraData.green,CameraData.yellow,CameraData.qingse,CameraData.orange,CameraData.purple,CameraData.black);
+////			  sprintf(txdata,"GareInit:%d\r\nTem:%d\r\nVoiceNum:%d\n\rCarPort:%d\n\r",LightInit,BusData.temperature,LightInit,CarPortFlag);
+			  memcpy(txdata, READ_RFID, sizeof(READ_RFID));
+//			  sprintf(txdata, "%d",sizeof(READ_RFID));
+			  CAN_TxtoDisplay(txdata, strlen(txdata));
 
 
 		  }
 		  if(KeyNum == 4)
 		  {
-			  Beep_Set(1);
-			  HAL_Delay(100);
-			  Beep_Set(0);
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_15);
-			  Command_SlaveCarStart();
-
+//			  Command_SlaveCarStart();
 //			  Command_SlaveCarSTep();
 //			  char txdata[200];
-//			  sprintf(txdata,"red:%d blue:%d green:%d yellow:%d qingse:%d orange:%d purple:%d black:%d\r\n",
-//					  CameraData.red,CameraData.blue,CameraData.green,CameraData.yellow,CameraData.qingse,CameraData.orange,CameraData.purple,CameraData.black);
+////			  sprintf(txdata,"red:%d blue:%d green:%d yellow:%d qingse:%d orange:%d purple:%d black:%d\r\n",
+////					  CameraData.red,CameraData.blue,CameraData.green,CameraData.yellow,CameraData.qingse,CameraData.orange,CameraData.purple,CameraData.black);
+//			  sprintf(txdata,"GareInit:%d\r\nTem:%d\r\nVoiceNum:%d\n\rCarPort:%d\n\r",LightInit,BusData.temperature,LightInit,CarPortFlag);
 //			  CAN_TxtoDisplay(txdata, strlen(txdata));
-
+			  Command_Androidshape();
 		  }
 	  }
 
+	  /*安卓发送启动*/
+	  if(AndroidGoFlag == 1)
+	  {
+		  Start_Flag = 1;
+		  AndroidGoFlag = 0;
+	  }
 	  /*开启任务*/
 	  if(Start_Flag == 1)
 	  {
-		  Task1_Start();
-		  //TestTask();
+//		  Task1_Start();
+		  Task_testSpecialLoad();
+
 	  }
-
-
-
-
 
 
 

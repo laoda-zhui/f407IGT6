@@ -42,26 +42,30 @@ float roll=0;	/*roll是围绕Z轴旋转，也叫翻滚角	 (不使用)		  如无
 
 
 /*安卓摄像头数据处理标志位*/
-CameraFlag AndroidFlag;
+CameraFlag AndroidFlag = {0};
 
-/*zigbee状态标志位*/
-CarPort CarPortFlag;
+/*安卓数据处理标志位*/
+uint8_t AndroidGoFlag = 0;
+
+/*车库层数状态标志位*/
+CarPort CarPortFlag = {0};
 
 /*道闸状态标志位*/
-GateStates GateFlag;
+GateStates GateFlag = {0};
 
 
 /*报警台救援坐标*/
 uint8_t  RescueLocation=0;
 
 /*公交站回传信息*/
-SmartBus BusData;
+SmartBus BusData= {0};
+
 
 /*颜色图形数据结构体*/
-ColorShape CameraData;
+ColorShape CameraData = {0};
 
 /*从车数据结构体*/
-SlaveCar SlaveCarData;
+SlaveCar SlaveCarData = {0};
 
 
 
@@ -355,6 +359,22 @@ void Slove_Camera(void)
 }
 
 
+void Slove_GoFlag(void)
+{
+	if(FifoBuf_WifiRx[0] == 0x55 && FifoBuf_WifiRx[1] == 0xAA)
+	{
+		if(FifoBuf_WifiRx[2] == 0xA0 && FifoBuf_WifiRx[6] == 0xA0)
+		{
+			AndroidGoFlag = 1;
+		}
+	}
+}
+
+
+
+
+
+
 /**************************************************************************
 函数功能：CAN-Zigbee数据处理
 入口参数：无
@@ -576,6 +596,7 @@ void Slove_ALL(void)
 	{
 		Slove_AndroidData();
 		Slove_Camera();
+		Slove_GoFlag();
 
 	}
 	if(Can_RxFiFoBuf[3].Flag == 1) /*循迹*/

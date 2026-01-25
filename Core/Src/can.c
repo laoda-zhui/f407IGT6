@@ -241,17 +241,26 @@ void Filter_Init(void)
 **************************************************************************/
 HAL_StatusTypeDef MyCAN_Transmit(CAN_TxHeaderTypeDef *TxMessage, uint8_t *Data)
 {
-	uint32_t Used_pTxMailbox;
-	uint32_t Timeout=100;		/*重试次数*/
+    uint32_t TxMailbox;
+    uint32_t tickstart = HAL_GetTick();
 
+    // 1. 检查是否有空闲邮箱
+    while (HAL_CAN_GetTxMailboxesFreeLevel(&hcan1) == 0)
+    {
+        // 2. 超时退出 (防止死锁)
+        if ((HAL_GetTick() - tickstart) > 5)
+        {
+            return HAL_TIMEOUT; // 5ms 都没发出去，说明总线挂了或极度拥堵
+        }
+    }
 
-	while(HAL_CAN_AddTxMessage(&hcan1, TxMessage, Data, &Used_pTxMailbox) != HAL_OK)
-	{
-		Timeout--;
-		if(Timeout == 0){return HAL_TIMEOUT;}
+    // 3. 放入邮箱
+    if (HAL_CAN_AddTxMessage(&hcan1, TxMessage, Data, &TxMailbox) != HAL_OK)
+    {
+        return HAL_ERROR;
+    }
 
-	}
-	return HAL_OK;
+    return HAL_OK;
 }
 
 /**************************************************************************

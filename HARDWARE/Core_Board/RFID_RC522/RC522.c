@@ -10,7 +10,7 @@ static uint8_t RC522_LinkFlag=0;
 uint8_t CT[2];		// 卡类型
 uint8_t SN[4];		// 卡号
 uint8_t READ_RFID[16];		// 存放RFID
-uint8_t WRITE_RFID[16]={"0123456789ABCDEF"};
+uint8_t WRITE_RFID[16]={"0123456789ABCDE"};
 uint8_t KEY_A[6]={0xff,0xff,0xff,0xff,0xff,0xff};   // A密钥
 uint8_t KEY_B[6]={0xff,0xff,0xff,0xff,0xff,0xff};	// B密钥
 uint8_t ADDR_Str[14]={"RFID_ADDR:01\n"};
@@ -699,7 +699,7 @@ int8_t RC522_PcdRead(uint8_t addr,uint8_t *pData)
 				RFID_Write_Read -> RFID先写操作后读操作
 返回  值：无
 ********************************************************/
-void RC522(uint8_t card_addr,uint8_t mode)
+uint8_t RC522(uint8_t card_addr,uint8_t mode)
 {
 	uint8_t card_key = (card_addr/4)*4+3;
 	LED1(0)LED2(0)LED3(0)LED4(0)
@@ -740,6 +740,7 @@ void RC522(uint8_t card_addr,uint8_t mode)
 							CAN_TxtoDisplay("DATA(ASCII):\n",14);
 							CAN_TxtoDisplay((char *)READ_RFID,16);
 							CAN_TxtoDisplay("\n",2);
+							return 1;
 						}
 					}
 					CAN_TxtoDisplay("\n",2);
@@ -747,5 +748,6 @@ void RC522(uint8_t card_addr,uint8_t mode)
 			}
 		}
 	}
+	return 0;
 }
 

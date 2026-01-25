@@ -384,7 +384,7 @@ void CAN_TxtoT2(uint8_t time)  // 设置循迹数据上传时间间隔
 void CAN_TxLoop(void)
 {
 	uint8_t Txsizeof1,Txsizeof2,Txsizeof3;
-	uint8_t TxDataBuf_Zigbee[8],TxDataBuf_Wifi[8],TxDataBuf_Dis[8];
+	uint8_t TxDataBuf_Zigbee[10]={0},TxDataBuf_Wifi[10]={0},TxDataBuf_Dis[10]={0};
 
 
 
@@ -392,7 +392,7 @@ void CAN_TxLoop(void)
 	Txsizeof1 = Can_BufRead(&CanP_Cmd_SBuf[1], TxDataBuf_Zigbee);
 	if(Txsizeof1) /*Zigbee 优先级:0*/
 	{
-		Can_Cmds[1].DLC = Txsizeof1;
+		Can_Cmds[1].DLC = 8;
 		MyCAN_Transmit(&Can_Cmds[1], TxDataBuf_Zigbee);
 
 	}
@@ -400,7 +400,7 @@ void CAN_TxLoop(void)
 	Txsizeof2 = Can_BufRead(&CanP_Cmd_SBuf[0], TxDataBuf_Wifi);
 	if(Txsizeof2) /*Wifi 优先级:1*/
 	{
-		Can_Cmds[0].DLC = Txsizeof2;
+		Can_Cmds[0].DLC = 8;
 		MyCAN_Transmit(&Can_Cmds[0], TxDataBuf_Wifi);
 
 	}
@@ -463,7 +463,7 @@ void CAN_TxLoop(void)
 	Txsizeof3 = Can_BufRead(&CanP_Cmd_SBuf[2], TxDataBuf_Dis);
 	if(Txsizeof3) /*显示 优先级:8*/
 	{
-		Can_Cmds[2].DLC = Txsizeof3;
+		Can_Cmds[2].DLC = 8;
 		MyCAN_Transmit(&Can_Cmds[2], TxDataBuf_Dis);
 
 	}
