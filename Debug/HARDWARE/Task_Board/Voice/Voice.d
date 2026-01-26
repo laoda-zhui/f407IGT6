@@ -35,7 +35,8 @@ HARDWARE/Task_Board/Voice/Voice.o: ../HARDWARE/Task_Board/Voice/Voice.c \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h \
  ../Core/Inc/usart.h ../Core/Inc/main.h ../HARDWARE/CAN/can_Tx.h \
- ../Core/Inc/can.h ../HARDWARE/CAN/can_RxSolve.h ../Core/Inc/tim.h
+ ../Core/Inc/can.h ../HARDWARE/CAN/can_RxSolve.h ../Core/Inc/tim.h \
+ ../HARDWARE/Delay/Delay.h
 ../HARDWARE/Task_Board/Voice/Voice.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
@@ -78,3 +79,4 @@ HARDWARE/Task_Board/Voice/Voice.o: ../HARDWARE/Task_Board/Voice/Voice.c \
 ../Core/Inc/can.h:
 ../HARDWARE/CAN/can_RxSolve.h:
 ../Core/Inc/tim.h:
+../HARDWARE/Delay/Delay.h:

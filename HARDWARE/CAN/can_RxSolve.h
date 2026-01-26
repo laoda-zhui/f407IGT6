@@ -45,6 +45,8 @@ typedef struct{
 /*缓冲区操作*/
 void Can_RxBufWrite(Can_RXFIFOBUF *CanBuf, uint8_t *Data, uint8_t len);
 uint8_t Can_RxReadBit(Can_RXFIFOBUF *CanBuf, uint8_t *data);
+uint8_t RingBuf_PeekByte(Can_RXFIFOBUF *buf, uint8_t *val);
+uint8_t Can_RxCheckReadEn(Can_RXFIFOBUF *p);
 
 /*初始化函数*/
 void CanRxBuf_Init(void);
@@ -67,10 +69,6 @@ extern float roll;	/*roll是围绕Z轴旋转，也叫翻滚角*/
 
 extern uint8_t x1,x2; /*循迹拆分数据x1:循迹板后面8个灯状况 x2：循迹板后面7个灯状况(循迹板b档情况下x1有效)*/
 
-
-/*WIFI摄像头数据处理开启标志位*/
-extern uint8_t Wifi_TrafficFlag;	/*Wifi_Traffic数据处理开启标志位 1-开启 0-关闭*/
-extern uint8_t Wifi_CameraFlag;		/*Wifi_Camera数据处理开启标志位 1-开启 0-关闭*/
 
 
 /*安卓摄像头状态*/

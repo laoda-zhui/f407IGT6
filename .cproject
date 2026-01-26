@@ -46,9 +46,50 @@
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths.640870760" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="../Core/Inc"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/MyLib/Lib.h"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/MyLib/Lib.c"/>
+									<listOptionValue builtIn="false" value="../Core/Inc"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/MyLib/Lib.h"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/MyLib/Lib.c"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/MyLib"/>
 									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/Photoresistance"/>
 									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/Infrared"/>
 									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/WheelLED"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/MyLib"/>
+									<listOptionValue builtIn="false" value="../Core/Inc"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/Photoresistance"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/Infrared"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/WheelLED"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/Command"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/bh1750"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/Voice"/>
+									<listOptionValue builtIn="false" value="../Task/Task1"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/Delay"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/Ultrasonic"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/BEEP"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/Core_Board/LED"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/Core_Board/BEEP"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/Core_Board/RFID_RC522"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/Time_Interrupt"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/Core_Board/KEY"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/Drive"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/CAN"/>
+									<listOptionValue builtIn="false" value="../Drivers/STM32F4xx_HAL_Driver/Inc"/>
+									<listOptionValue builtIn="false" value="../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy"/>
+									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Device/ST/STM32F4xx/Include"/>
+									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Include"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/Command"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/bh1750"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/Voice"/>
+									<listOptionValue builtIn="false" value="../Drivers/STM32F4xx_HAL_Driver/Inc"/>
+									<listOptionValue builtIn="false" value="../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy"/>
+									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Device/ST/STM32F4xx/Include"/>
+									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Include"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/MyLib"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/Photoresistance"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/Infrared"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/WheelLED"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/MyLib"/>
 									<listOptionValue builtIn="false" value="../Core/Inc"/>
 									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/Photoresistance"/>
 									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/Infrared"/>
@@ -152,9 +193,45 @@
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths.153482135" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="../Core/Inc"/>
+									<listOptionValue builtIn="false" value="../Core/Inc"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/MyLib"/>
 									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/Photoresistance"/>
 									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/Infrared"/>
 									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/WheelLED"/>
+									<listOptionValue builtIn="false" value="../Core/Inc"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/Photoresistance"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/Infrared"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/WheelLED"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/Command"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/bh1750"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/Voice"/>
+									<listOptionValue builtIn="false" value="../Task/Task1"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/Delay"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/Ultrasonic"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/BEEP"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/Core_Board/LED"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/Core_Board/BEEP"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/Core_Board/RFID_RC522"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/Time_Interrupt"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/Core_Board/KEY"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/Drive"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/CAN"/>
+									<listOptionValue builtIn="false" value="../Drivers/STM32F4xx_HAL_Driver/Inc"/>
+									<listOptionValue builtIn="false" value="../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy"/>
+									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Device/ST/STM32F4xx/Include"/>
+									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Include"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/Command"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/bh1750"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/Voice"/>
+									<listOptionValue builtIn="false" value="../Drivers/STM32F4xx_HAL_Driver/Inc"/>
+									<listOptionValue builtIn="false" value="../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy"/>
+									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Device/ST/STM32F4xx/Include"/>
+									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Include"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/MyLib"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/Photoresistance"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/Infrared"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/WheelLED"/>
+									<listOptionValue builtIn="false" value="../HARDWARE/MyLib"/>
 									<listOptionValue builtIn="false" value="../Core/Inc"/>
 									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/Photoresistance"/>
 									<listOptionValue builtIn="false" value="../HARDWARE/Task_Board/Infrared"/>

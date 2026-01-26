@@ -1,2 +1,14 @@
-../Task/Task1/Task.c:15:6:Task1_Start	101
-../Task/Task1/Task.c:483:6:Task_testSpecialLoad	18
+../Task/Task1/Task.c:29:6:RC522Read2	1
+../Task/Task1/Task.c:62:6:RFID_Slove2	4
+../Task/Task1/Task.c:109:6:SendBat	1
+../Task/Task1/Task.c:25:6:RC522Read	1
+../Task/Task1/Task.c:34:6:RFID_Slove	5
+../Task/Task1/Task.c:104:6:SendLight	1
+../Task/Task1/Task.c:116:9:Action_WaitGateOpen	8
+../Task/Task1/Task.c:151:6:CommandLight	1
+../Task/Task1/Task.c:155:6:Command_sendshap	1
+../Task/Task1/Task.c:159:6:Command_sendcolor	1
+../Task/Task1/Task.c:163:6:GetVoicNum	1
+../Task/Task1/Task.c:167:6:CommandCarPtB1	1
+../Task/Task1/Task.c:391:6:Task_Engine_Run	26
+../Task/Task1/Task.c:504:6:Task_Engine_Init	1

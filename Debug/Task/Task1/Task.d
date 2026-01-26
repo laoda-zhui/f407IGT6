@@ -46,7 +46,7 @@ Task/Task1/Task.o: ../Task/Task1/Task.c ../Task/Task1/Task.h \
  ../HARDWARE/CAN/can_cmd.h \
  ../HARDWARE/Task_Board/Photoresistance/Photoresistance.h \
  ../HARDWARE/Command/Command.h ../HARDWARE/Task_Board/BEEP/Task_Beep.h \
- ../HARDWARE/Task_Board/Voice/Voice.h
+ ../HARDWARE/Task_Board/Voice/Voice.h ../HARDWARE/MyLib/Lib.h
 ../Task/Task1/Task.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
@@ -107,3 +107,4 @@ Task/Task1/Task.o: ../Task/Task1/Task.c ../Task/Task1/Task.h \
 ../HARDWARE/Command/Command.h:
 ../HARDWARE/Task_Board/BEEP/Task_Beep.h:
 ../HARDWARE/Task_Board/Voice/Voice.h:
+../HARDWARE/MyLib/Lib.h:

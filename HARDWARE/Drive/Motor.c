@@ -255,9 +255,10 @@ void Car_MPLeft(uint8_t speed, double Angle)       // 主车左转 参数：角�
 	PID_Clear(&Turn_PID);	/*清空一次转向pid*/
 	Taget_AnglePulse = Motor_calculate_pulses(Angle*(M_PI/180.0)*WHEEL_BASE_CM/1.5);
 	Turn_PID.Target = (float)Taget_AnglePulse;
+    Car_Speed = speed;      // 速度值
     Stop_Flag = Task_Start;          // 运行状态标志位
     CarFlag = wheel_L_Flag;       // 左转标志位
-    Car_Speed = speed;      // 速度值
+
 
 }
 
@@ -275,14 +276,16 @@ void Car_MPRight(uint8_t speed, double Angle)       // 主车右转 参数：角
 																			45°				45
 
 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	*/
-
 	PID_Clear(&Turn_PID);	/*清空一次转向pid*/
 	Taget_AnglePulse = Motor_calculate_pulses(Angle*(M_PI/180.0)*WHEEL_BASE_CM/1.5);
 	Turn_PID.Target = (float)Taget_AnglePulse;
+
+    Car_Speed = speed;      // 速度值
+
     Stop_Flag = Task_Start;          // 运行状态标志位
     CarFlag = wheel_R_Flag;       // 右转标志位
 
-    Car_Speed = speed;      // 速度值
+
 }
 
 
@@ -295,12 +298,11 @@ void Car_Left(uint8_t SpeedAll)       // 主车左转 参数：角度参考值
 {
 	Turn_StartTime = HAL_GetTick();
 
-    Stop_Flag = Task_Start;          // 运行状态标志位
-    CarFlag = TurnLeft_Flag;       // 左转标志位
-
     Car_LSpeed = -SpeedAll;      // 速度值
     Car_RSpeed = SpeedAll;
 
+    Stop_Flag = Task_Start;          // 运行状态标志位
+    CarFlag = TurnLeft_Flag;       // 左转标志位
 
 
 }
@@ -315,11 +317,11 @@ void Car_Left(uint8_t SpeedAll)       // 主车左转 参数：角度参考值
 void Car_Right(uint8_t SpeedAll)       // 主车右转 参数：角度参考值
 {
 	Turn_StartTime = HAL_GetTick();
-    Stop_Flag = Task_Start;          // 运行状态标志位
-    CarFlag = TurnRight_Flag;       // 右转标志位
-
     Car_LSpeed = SpeedAll;      // 速度值
     Car_RSpeed = -SpeedAll;
+
+    Stop_Flag = Task_Start;          // 运行状态标志位
+    CarFlag = TurnRight_Flag;       // 右转标志位
 }
 
 
@@ -332,9 +334,10 @@ void Car_Right(uint8_t SpeedAll)       // 主车右转 参数：角度参考值
 **************************************************************************/
 void Car_Track(uint8_t speed)   // 主车循迹 参数：速度
 {
+
+    Car_Speed = speed;      // 速度值
     Stop_Flag = Task_Start;          // 运行状态标志位
     CarFlag = Track_Flag;         // 循迹标志位
-    Car_Speed = speed;      // 速度值
 }
 
 
@@ -347,9 +350,11 @@ void Car_TrackTime(uint8_t speed, uint32_t Time)   // 主车循迹 参数：速�
 {
 	TrackStartTime = HAL_GetTick();
 	TrackTimeOut = Time;
+    Car_Speed = speed;      // 速度值
+
     Stop_Flag = Task_Start;          // 运行状态标志位
     CarFlag = TrackTime_Flag;         // 循迹标志位
-    Car_Speed = speed;      // 速度值
+
 }
 
 
@@ -365,10 +370,9 @@ void Car_TrackMp(uint8_t speed, uint16_t Temp)   // 主车循迹 参数：速度
 
 	Taget_Pulses = Motor_calculate_pulses(Temp);         // 距离转换为码盘值
 
+    Car_Speed = speed;      // 速度值
     Stop_Flag = Task_Start;          // 运行状态标志位
     CarFlag = TrackMp_Flag;         // 循迹标志位
-    Car_Speed = speed;      // 速度值
-
 }
 
 /**************************************************************************
@@ -430,7 +434,7 @@ void Go_and_Back_Check(void)
 		if(Taget_Pulses <= Motor_GetLDifcoder()) // 行驶距离大于等于需要行驶的码盘值/距离时，停车
 		{
 			Stop_Flag = Task_Complete;
-			Car_Speed_ing = 60;
+			Car_Speed_ing = 50;
 			Motor_Control(0,0);		// 停止
 			return;
 		}
@@ -545,7 +549,7 @@ void TurnAngle_NewCheck(void)
 PID_t PID_TurnTrack={
 		.Kp = 19.0,
 		.Ki = 0.0,
-		.Kd = 1.5,
+		.Kd = 2.7,
 
 		.OutMax = 120,
 		.OutMin = -120,
@@ -612,16 +616,16 @@ void Track_Check(void) 	/*这里选择取循迹的后面八个-x1，右边到左
 
 			case 0xE7: err = 0; break;		/*直线 1110 0111*/
 
-			case 0xEF: err = -3; break;		/*左转1 1110 1111*/
-			case 0xCF: err = -5; break;		/*左转2  1100 1111*/
+			case 0xEF: err = -4; break;		/*左转1 1110 1111*/
+			case 0xCF: err = -6; break;		/*左转2  1100 1111*/
 			case 0xDF: err = -7; break;		/*左转2  1101 1111*/
 			case 0x9F: err = -9; break;		/*左转3  1001 1111*/
-			case 0xBF: err = -11; break;		/*左转3  1011 1111*/
-			case 0x3F: err = -12; break;		/*左转3  0011 1111*/
+			case 0xBF: err = -11; break;	/*左转3  1011 1111*/
+			case 0x3F: err = -12; break;	/*左转3  0011 1111*/
 			case 0x7F: err = -13; break;	/*左转4  0111 1111*/
 
-			case 0xF7: err = 3; break;		/*右转1  1111 0111*/
-			case 0xF3: err = 5; break;		/*右转2  1111 0011*/
+			case 0xF7: err = 4; break;		/*右转1  1111 0111*/
+			case 0xF3: err = 6; break;		/*右转2  1111 0011*/
 			case 0xFB: err = 7; break;		/*右转2  1111 1011*/
 			case 0xF9: err = 9; break;		/*右转3  1111 1001*/
 			case 0xFD: err = 11; break;		/*右转2  1111 1101*/

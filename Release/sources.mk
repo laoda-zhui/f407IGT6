@@ -33,7 +33,7 @@ HARDWARE/Core_Board/LED \
 HARDWARE/Core_Board/RFID_RC522 \
 HARDWARE/Delay \
 HARDWARE/Drive \
-HARDWARE/SpecialLoad \
+HARDWARE/MyLib \
 HARDWARE/Task_Board/BEEP \
 HARDWARE/Task_Board/Infrared \
 HARDWARE/Task_Board/Photoresistance \

@@ -181,6 +181,8 @@ int main(void)
 
   uint32_t RC522_TaskTime=500,RC522_LastTime=0;/*RFID读卡器初始化检测任务时间*/
 
+  /*任务复位*/
+  Task_Engine_Init();
 
   /*测试变量-记得删*/
 
@@ -210,6 +212,7 @@ int main(void)
 		  {
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_12);
 
+
 			  Start_Flag = 1;
 
 		  }
@@ -219,9 +222,8 @@ int main(void)
 
 
 //			  Command_TrafficAInMode();
-//			  RC522(18, RFID_Write_Read);
-			  RC522(18, RFID_Read);
-
+//			  Command_EndTim();
+			  Command_CarPortB(4);
 
 		  }
 		  if(KeyNum == 3)
@@ -230,42 +232,34 @@ int main(void)
 
 //			  Command_CarPortB(4);
 
-			  char txdata[200];
+//			  char txdata[200];
 //////			  sprintf(txdata,"red:%d blue:%d green:%d yellow:%d qingse:%d orange:%d purple:%d black:%d\r\n",
 //////			  					  CameraData.red,CameraData.blue,CameraData.green,CameraData.yellow,CameraData.qingse,CameraData.orange,CameraData.purple,CameraData.black);
 ////			  sprintf(txdata,"GareInit:%d\r\nTem:%d\r\nVoiceNum:%d\n\rCarPort:%d\n\r",LightInit,BusData.temperature,LightInit,CarPortFlag);
-			  memcpy(txdata, READ_RFID, sizeof(READ_RFID));
+//			  memcpy(txdata, READ_RFID, sizeof(READ_RFID));
 //			  sprintf(txdata, "%d",sizeof(READ_RFID));
-			  CAN_TxtoDisplay(txdata, strlen(txdata));
+//			  CAN_TxtoDisplay(txdata, strlen(txdata));
 
-
+			  RC522((7*4+1+1), RFID_Read);
 		  }
 		  if(KeyNum == 4)
 		  {
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_15);
-//			  Command_SlaveCarStart();
-//			  Command_SlaveCarSTep();
 //			  char txdata[200];
 ////			  sprintf(txdata,"red:%d blue:%d green:%d yellow:%d qingse:%d orange:%d purple:%d black:%d\r\n",
 ////					  CameraData.red,CameraData.blue,CameraData.green,CameraData.yellow,CameraData.qingse,CameraData.orange,CameraData.purple,CameraData.black);
 //			  sprintf(txdata,"GareInit:%d\r\nTem:%d\r\nVoiceNum:%d\n\rCarPort:%d\n\r",LightInit,BusData.temperature,LightInit,CarPortFlag);
-//			  CAN_TxtoDisplay(txdata, strlen(txdata));
-			  Command_Androidshape();
+//			  CAN_TxtoDisplay(txdata,strlen(txdata));
+
 		  }
 	  }
 
-	  /*安卓发送启动*/
-	  if(AndroidGoFlag == 1)
-	  {
-		  Start_Flag = 1;
-		  AndroidGoFlag = 0;
-	  }
-	  /*开启任务*/
-	  if(Start_Flag == 1)
-	  {
-//		  Task1_Start();
-		  Task_testSpecialLoad();
 
+	  /*开启任务*/
+	  if(Start_Flag == 1 || AndroidGoFlag == 1)
+	  {
+		  Task_Engine_Run();
+		  AndroidGoFlag = 0;
 	  }
 
 

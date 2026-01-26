@@ -1,6 +1,5 @@
-HARDWARE/SpecialLoad/SpecialLoad.o: ../HARDWARE/SpecialLoad/SpecialLoad.c \
- ../HARDWARE/SpecialLoad/SpecialLoad.h ../Core/Inc/main.h \
- ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
+HARDWARE/MyLib/Lib.o: ../HARDWARE/MyLib/Lib.c ../HARDWARE/MyLib/Lib.h \
+ ../Core/Inc/main.h ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
  ../Core/Inc/stm32f4xx_hal_conf.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h \
@@ -33,13 +32,8 @@ HARDWARE/SpecialLoad/SpecialLoad.o: ../HARDWARE/SpecialLoad/SpecialLoad.c \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h \
- ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h \
- ../HARDWARE/Drive/Motor.h ../HARDWARE/CAN/can_RxSolve.h \
- ../Core/Inc/can.h ../Core/Inc/main.h ../HARDWARE/CAN/can_Tx.h \
- ../Core/Inc/tim.h ../Core/Inc/tim.h ../HARDWARE/Drive/PID.h \
- ../HARDWARE/Time_Interrupt/Time_Interrupt.h \
- ../HARDWARE/Time_Interrupt/../Core_Board/KEY/KEY.h
-../HARDWARE/SpecialLoad/SpecialLoad.h:
+ ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
+../HARDWARE/MyLib/Lib.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:
@@ -75,13 +69,3 @@ HARDWARE/SpecialLoad/SpecialLoad.o: ../HARDWARE/SpecialLoad/SpecialLoad.c \
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h:
-../HARDWARE/Drive/Motor.h:
-../HARDWARE/CAN/can_RxSolve.h:
-../Core/Inc/can.h:
-../Core/Inc/main.h:
-../HARDWARE/CAN/can_Tx.h:
-../Core/Inc/tim.h:
-../Core/Inc/tim.h:
-../HARDWARE/Drive/PID.h:
-../HARDWARE/Time_Interrupt/Time_Interrupt.h:
-../HARDWARE/Time_Interrupt/../Core_Board/KEY/KEY.h:

@@ -385,6 +385,22 @@ void Command_SlaveCarLight(uint8_t LightInit)
 	CAN_TxtoZigbee(TxBuf, 8);
 }
 
+/**************************************************************************
+函数功能：命令-从车发送无线充电的密码
+入口参数：LightInit-初始路灯档位值
+返回  值：无
+**************************************************************************/
+void Command_SlaveCarSendBt(uint8_t First,uint8_t Second, uint8_t Third)
+{
+	uint8_t TxBuf[8]={0x9f,0x02,0x9f,0x04,0x00,0x00,0x00,0xBB};
+
+	TxBuf[4] = First;
+	TxBuf[5] = Second;
+	TxBuf[6] = Third;
+	CAN_TxtoZigbee(TxBuf, 8);
+}
+
+
 
 
 /*********************************************多功能显示**************************************************/
@@ -548,9 +564,6 @@ void Command_SendAndroid(uint8_t First, uint8_t Second)
 **************************************************************************/
 void Command_AndroidTraffic(void)
 {
-	Wifi_TrafficFlag = 1;
-	Wifi_CameraFlag = 0;
-
 	Command_SendAndroid(0x01, 0x01);
 }
 
@@ -561,9 +574,6 @@ void Command_AndroidTraffic(void)
 **************************************************************************/
 void Command_Androidshape(void)
 {
-	Wifi_TrafficFlag = 0;
-	Wifi_CameraFlag = 1;
-
 	Command_SendAndroid(0x01, 0x02);
 }
 
@@ -576,9 +586,6 @@ void Command_Androidshape(void)
 **************************************************************************/
 void Command_AndroidColor(void)
 {
-	Wifi_TrafficFlag = 0;
-	Wifi_CameraFlag = 1;
-
 	Command_SendAndroid(0x01, 0x03);
 }
 
@@ -589,9 +596,6 @@ void Command_AndroidColor(void)
 **************************************************************************/
 void Command_AndroidQR(void)
 {
-	Wifi_TrafficFlag = 0;
-	Wifi_CameraFlag = 0;
-
 	Command_SendAndroid(0x02, 0x00);
 }
 
@@ -1135,9 +1139,23 @@ void Command_ETCDown(void)
 
 
 
+/*********************************************特殊地形**************************************************/
+
+/**************************************************************************
+函数功能：命令-ETC闸门下调初始角度
+入口参数：无
+返回  值：无
+**************************************************************************/
+void Command_SpecialTe(void)
+{
+	uint8_t TxBuf[8]={0x55,0x10,0x10,0x01,0x00,0x00,0x00,0xBB};
 
 
+	TxBuf[6] = (TxBuf[2] + TxBuf[3] + TxBuf[4] + TxBuf[5])%256;
 
+
+	CAN_TxtoZigbee(TxBuf, 8);
+}
 
 
 

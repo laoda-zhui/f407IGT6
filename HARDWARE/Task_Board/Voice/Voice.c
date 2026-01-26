@@ -60,7 +60,7 @@ uint8_t Voice_ASR(void)
 	uint8_t Frame[5];		// 保存发送命令的数组
 	uint8_t Voice_Flag_2 = 1;
 	uint8_t Voice_Flag   = 0;
-	char Buf[50];
+//	char Buf[50];
 
 	/* 发送开启语音识别指令 */
 	Frame[0] = 0xFA;
@@ -82,10 +82,11 @@ uint8_t Voice_ASR(void)
 				if (Voice_RxData[1] == 0x02)
 				{
 					Voice_Flag &= 0xF0;
+					My_Delayms(10);
 					Voice_SendData(&Voice_RxData[2],1);
 					Voice_Flag |= Voice_RxData[2];
-					sprintf(Buf, "bkrc_voice_V1\nID: %d\n",Voice_Flag);
-					CAN_TxtoDisplay(Buf, strlen(Buf));
+//					sprintf(Buf, "bkrc_voice_V1\nID: %d\n",Voice_Flag);
+//					CAN_TxtoDisplay(Buf, strlen(Buf));
 					Voice_Flag_2 = 0;
 				}
 			}

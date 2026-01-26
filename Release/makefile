@@ -18,7 +18,7 @@ RM := rm -rf
 -include HARDWARE/Task_Board/Photoresistance/subdir.mk
 -include HARDWARE/Task_Board/Infrared/subdir.mk
 -include HARDWARE/Task_Board/BEEP/subdir.mk
--include HARDWARE/SpecialLoad/subdir.mk
+-include HARDWARE/MyLib/subdir.mk
 -include HARDWARE/Drive/subdir.mk
 -include HARDWARE/Delay/subdir.mk
 -include HARDWARE/Core_Board/RFID_RC522/subdir.mk

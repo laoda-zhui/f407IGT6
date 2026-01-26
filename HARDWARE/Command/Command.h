@@ -17,6 +17,7 @@
 void Command_SlaveCarStart(void);
 void Command_SlaveCarSTep(void);
 void Command_SlaveCarLight(uint8_t LightInit);
+void Command_SlaveCarSendBt(uint8_t First,uint8_t Second, uint8_t Third);
 
 
 /*道闸*/
@@ -103,7 +104,8 @@ void Command_WireCharEnd(void);
 void Command_ETCUp(void);
 void Command_ETCDown(void);
 
-
+/*特殊地形*/
+void Command_SpecialTe(void);
 
 /*自动评分系统*/
 void Command_Autosystem(uint8_t Number);

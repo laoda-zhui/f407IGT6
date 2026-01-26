@@ -4,10 +4,6 @@
 /*10ms wifi空闲处理数据*/
 uint32_t WifiWaitTime = 10,WifiStartTime=0;
 
-/*Wifi_Traffic数据处理开启标志位 1-开启 0-关闭*/
-uint8_t Wifi_TrafficFlag=0;
-/*Wifi_Camera数据处理开启标志位 1-开启 0-关闭*/
-uint8_t Wifi_CameraFlag=0;
 
 /**************************************************接收数组初始化***************************************************************/
 
@@ -44,7 +40,7 @@ float roll=0;	/*roll是围绕Z轴旋转，也叫翻滚角	 (不使用)		  如无
 /*安卓摄像头数据处理标志位*/
 CameraFlag AndroidFlag = {0};
 
-/*安卓数据处理标志位*/
+/*安卓数据车辆启动标志位*/
 uint8_t AndroidGoFlag = 0;
 
 /*车库层数状态标志位*/
@@ -109,34 +105,35 @@ void CanRx_Loop(void)
 
 		switch(RxMsgArray.FilterMatchIndex)		//判断消息邮箱索引
 		{
-			case 2:			/*zigbee rx*/
-				memcpy(FifoBuf_ZigbRx, RxData, RxMsgArray.DLC);
-				Can_RxFiFoBuf[2].Flag = 1;
-				break;
-			case 0:			/*disp*/
-				memcpy(FifoBuf_Info, RxData, RxMsgArray.DLC);
-				Can_RxFiFoBuf[0].Flag = 1;
-				break;
-			case 1:			/*wifi rx*/
-				Can_RxBufWrite(&Can_RxFiFoBuf[1], RxData, RxMsgArray.DLC);
-				Can_RxFiFoBuf[1].Flag = 1;
-				WifiStartTime = HAL_GetTick();
-				break;
-			case 3:			/*Track*/
-				memcpy(FifoBuf_Track, RxData, RxMsgArray.DLC);
-				Can_RxFiFoBuf[3].Flag = 1;
-				break;
-			case 4:			/*Navig*/
-				memcpy(FifoBuf_Navig, RxData, RxMsgArray.DLC);
-				Can_RxFiFoBuf[4].Flag = 1;
-				break;
-			case 5:			/*HOST*/
-				memcpy(FifoBuf_HOST, RxData, RxMsgArray.DLC);
-				Can_RxFiFoBuf[5].Flag = 1;
-				break;
-			case 6:			/*Anything*/
-				//memcpy(FifoBuf_Anything, RxData, RxMsgArray.DLC);
-				//Can_RxFiFoBuf[6].Flag = 1;
+		case 1:			/*wifi rx*/
+			Can_RxBufWrite(&Can_RxFiFoBuf[1], RxData, RxMsgArray.DLC);
+			Can_RxFiFoBuf[1].Flag = 1;
+			WifiStartTime = HAL_GetTick();
+			break;
+		case 2:			/*zigbee rx*/
+			memcpy(FifoBuf_ZigbRx, RxData, RxMsgArray.DLC);
+			Can_RxFiFoBuf[2].Flag = 1;
+			break;
+		case 0:			/*disp*/
+			memcpy(FifoBuf_Info, RxData, RxMsgArray.DLC);
+			Can_RxFiFoBuf[0].Flag = 1;
+			break;
+
+		case 3:			/*Track*/
+			memcpy(FifoBuf_Track, RxData, RxMsgArray.DLC);
+			Can_RxFiFoBuf[3].Flag = 1;
+			break;
+		case 4:			/*Navig*/
+			memcpy(FifoBuf_Navig, RxData, RxMsgArray.DLC);
+			Can_RxFiFoBuf[4].Flag = 1;
+			break;
+		case 5:			/*HOST*/
+			memcpy(FifoBuf_HOST, RxData, RxMsgArray.DLC);
+			Can_RxFiFoBuf[5].Flag = 1;
+			break;
+		case 6:			/*Anything*/
+			//memcpy(FifoBuf_Anything, RxData, RxMsgArray.DLC);
+			//Can_RxFiFoBuf[6].Flag = 1;
 				break;
 		}
 	}
@@ -153,210 +150,157 @@ void CanRx_Loop(void)
 **************************************************************************/
 void Slove_AndroidData(void)
 {
-	if(Wifi_TrafficFlag == 0){return;}
 
-	static uint8_t state = 0;
-	uint8_t byte = 0;
-	Can_RXFIFOBUF *pBuf = &Can_RxFiFoBuf[1];
+    // 1. 检查是否有数据
+    Can_RXFIFOBUF *pBuf = &Can_RxFiFoBuf[1];
+    if (Can_RxCheckReadEn(pBuf) == 0) return;
 
-	// 从环形缓冲读取一个字节
-	while (Can_RxReadBit(pBuf, &byte) == 1)
-	{
-		switch (state)
+    uint8_t head;
+
+    // 2. 【关键】先偷看第一个字节，不移动 rp 指针
+    RingBuf_PeekByte(pBuf, &head);
+
+
+	// --- 情况 A: 二进制指令 (0x55 开头) ---
+    if (head == 0x55)
+    {
+		// 不需要等待超时，直接全部读出来处理
+		// (代码与您之前的一样，省略部分细节)
+
+		char temp_buf[Can_RxFIFOZize + 1];
+		uint16_t len = 0;
+		uint8_t byte;
+
+		// 真正取出数据
+		while (Can_RxReadBit(pBuf, &byte) == 1)
 		{
-		// ----------------------------------------------------
-		// 阶段 1：寻找公共包头 0x55
-		// ----------------------------------------------------
-		case 0:
-			if (byte == 0x55) state = 1;
-			break;
-
-		// ----------------------------------------------------
-		// 阶段 2：分支判断 (区分是张老师版还是商家版)
-		// ----------------------------------------------------
-		case 1:
-			if(byte == 0x03)
+			if (len < Can_RxFIFOZize)
 			{
-				// === 命中张老师版 (55 03) ===
-				state = 10; // 跳转到张老师专用解析状态
+				temp_buf[len++] = (char)byte;
 			}
-			else if(byte == 0x55)
-			{
-				// 容错：连续收到两个55，可能是重发包头
-				state = 1;
-			}
-			else if(byte == 0x00)
-			{
-				state = 20; // 跳转到商家专用解析状态
-			}
-			break;
-
-		// ----------------------------------------------------
-		// 分支 A：张老师版解析 (55 03 [Data])
-		// ----------------------------------------------------
-		case 10:
-			// 当前 byte 是数据位
-			if (byte == 0x01) AndroidFlag = TrafficRed_Flag;
-			else if (byte == 0x02) AndroidFlag = TrafficYellow_Flag;
-			else if (byte == 0x03) AndroidFlag = TrafficGreen_Flag;
-			state = 0; // 完成，复位
-			Can_RxFiFoBuf[1].Flag = 0;
-			break;
-		// ----------------------------------------------------
-		// 分支 B：商家版解析 (55 xx 02 [Data])
-		// ----------------------------------------------------
-		case 20:
-			// 当前 byte 是第三字节，商家版要求必须是 0x02
-			if (byte == 0x02)
-			{
-				state = 21; // 符合，去读下一字节数据
-			}
-			else if (byte == 0x55)
-			{
-				state = 1; // 容错
-			}
-			else
-			{
-				state = 0; // 格式错误
-			}
-			break;
-
-		case 21: // 商家版数据位
-			if (byte == 0x01) AndroidFlag = TrafficRed_Flag;
-			else if (byte == 0x03) AndroidFlag = TrafficYellow_Flag;
-			else if (byte == 0x02) AndroidFlag = TrafficGreen_Flag;
-			state = 0; // 完成，复位
-			Can_RxFiFoBuf[1].Flag = 0;
-			break;
-		default:
-			state = 0;
-			break;
 		}
-	}
+
+
+
+        // 这里把原来的 while 循环改成了 for 循环遍历 temp_buf
+        // 逻辑完全复用您的状态机，只是数据源变了
+        static uint8_t state = 0;
+
+        for (uint16_t i = 0; i < len; i++)
+        {
+            byte = (uint8_t)temp_buf[i];
+
+            switch (state)
+            {
+            case 0: // 找包头 第1字节
+                if (byte == 0x55){state = 1;}
+                break;
+
+            case 1: // 分支判断 第2字节
+                if(byte == 0x03){state = 10;}      // 张老师版
+                else if(byte == 0x55){state = 1;}  // 重复包头
+                else if(byte == 0x00){state = 20;} // 商家版
+                else if(byte == 0xAA){state = 30;} // 自动驾驶启动数据
+                else state = 0;
+                break;
+
+            case 10: // 张老师版数据 第3字节
+                if(byte == 0x01){AndroidFlag = TrafficRed_Flag;}
+                else if(byte == 0x02){AndroidFlag = TrafficYellow_Flag;}
+                else if(byte == 0x03){AndroidFlag = TrafficGreen_Flag;}
+                state = 0;
+                break;
+
+
+            case 20: // 商家版第3字节
+                if(byte == 0x02){state = 21;}
+                else if(byte == 0x55){state = 1;}
+                else{state = 0;}
+                break;
+            case 21: // 商家版数据 第4字节
+                if (byte == 0x01){AndroidFlag = TrafficRed_Flag;}
+                else if (byte == 0x03){AndroidFlag = TrafficYellow_Flag;}
+                else if (byte == 0x02){AndroidFlag = TrafficGreen_Flag;}
+                state = 0;
+                break;
+
+
+            case 30: // 自动驾驶数据 第3字节
+                if(byte == 0xA0){state = 31;}
+                else{state = 0;}
+            	break;
+            case 31: // 自动驾驶数据 第4字节
+            	state = 32;
+            	break;
+            case 32: // 自动驾驶数据 第5字节
+            	state = 33;
+            	break;
+            case 33: // 自动驾驶数据 第6字节
+              	state = 34;
+            	break;
+            case 34: // 自动驾驶数据 第7字节
+            	if (byte == 0xA0){AndroidGoFlag = 1;}
+              	state = 0;
+            	break;
+
+
+            default:
+                state = 0;
+                break;
+            }
+        }
+
+        // 处理完清零 Flag
+        Can_RxFiFoBuf[1].Flag = 0;
+    }
+    // === 分支 B：字符串协议 (非 0x55 开头) ===
+    else
+    {
+        if (HAL_GetTick() - WifiStartTime >= WifiWaitTime)
+        {
+            // 时间到了！全部读出来
+            char temp_buf[Can_RxFIFOZize + 1];
+            uint16_t len = 0;
+            uint8_t byte;
+
+            while (Can_RxReadBit(pBuf, &byte) == 1)
+            {
+                if (len < Can_RxFIFOZize) temp_buf[len++] = (char)byte;
+            }
+            temp_buf[len] = '\0';
+            // 只有当积累了足够长的数据或者超时后才解析字符串
+			// 这里我们可以简单地假设：只要不是55开头，就尝试用strstr搜一遍
+			char *p;
+			// 形状解析
+			if ((p = strstr(temp_buf, "sharp3=")) != NULL)    CameraData.ruijiao = atoi(p + 7);
+			if ((p = strstr(temp_buf, "dun3=")) != NULL)      CameraData.dunjiao = atoi(p + 5);
+			if ((p = strstr(temp_buf, "right3=")) != NULL)    CameraData.zhijiao = atoi(p + 7);
+			if ((p = strstr(temp_buf, "lin4=")) != NULL)      CameraData.lingxing = atoi(p + 5);
+			if ((p = strstr(temp_buf, "rectangle=")) != NULL) CameraData.changfan = atoi(p + 10);
+			if ((p = strstr(temp_buf, "square=")) != NULL)    CameraData.juxing = atoi(p + 7);
+			if ((p = strstr(temp_buf, "star=")) != NULL)      CameraData.star = atoi(p + 5);
+			if ((p = strstr(temp_buf, "circle=")) != NULL)    CameraData.circle = atoi(p + 7);
+
+			// 颜色解析
+			if ((p = strstr(temp_buf, "red=")) != NULL)    CameraData.red = atoi(p + 4);
+			if ((p = strstr(temp_buf, "green=")) != NULL)  CameraData.green = atoi(p + 6);
+			if ((p = strstr(temp_buf, "blue=")) != NULL)   CameraData.blue = atoi(p + 5);
+			if ((p = strstr(temp_buf, "yellow=")) != NULL) CameraData.yellow = atoi(p + 7);
+			if ((p = strstr(temp_buf, "cyan=")) != NULL)   CameraData.qingse = atoi(p + 5);
+			if ((p = strstr(temp_buf, "orange=")) != NULL) CameraData.orange = atoi(p + 7);
+			if ((p = strstr(temp_buf, "purple=")) != NULL) CameraData.purple = atoi(p + 7);
+			if ((p = strstr(temp_buf, "black=")) != NULL)  CameraData.black = atoi(p + 6);
+
+            Can_RxFiFoBuf[1].Flag = 0;
+        }
+    }
 }
-void Slove_Camera(void)
-{
-	if(Wifi_CameraFlag == 0){return;}
-
-	if(HAL_GetTick() - WifiStartTime > WifiWaitTime)
-	{
-	    // 定义一个足够大的临时数组 (比 FIFO Size 稍大一点安全)
-	    char temp_buf[Can_RxFIFOZize + 1]={0};
-	    uint16_t len = 0;
-	    uint8_t byte;
-	    Can_RXFIFOBUF *pBuf = &Can_RxFiFoBuf[1]; // Wifi 缓冲区
-
-		// ---------------------------------------------------------
-		// 第一步：从环形缓冲区提取数据并转为字符串
-		// ---------------------------------------------------------
-		// 只要有数据就读出来，拼接到 temp_buf
-	    while (Can_RxReadBit(pBuf, &byte) == 1)
-	    {
-	        if (len < Can_RxFIFOZize)
-	        {
-	            temp_buf[len++] = (char)byte;
-	        }
-	    }
-	    temp_buf[len] = '\0'; // 【关键】必须添加字符串结束符！
-
-		if (len == 0) return; // 空数据直接返回
-
-		// ---------------------------------------------------------
-		// 第二步：使用 strstr 和 atoi 暴力解析
-		// ---------------------------------------------------------
-		char *p;
-
-		// 1. 锐角 (sharp3=)
-		if ((p = strstr(temp_buf, "sharp3=")) != NULL) {
-			CameraData.ruijiao = atoi(p + 7); // 跳过 "sharp3=" 这7个字符
-		}
-
-		// 2. 钝角 (dun3=)
-		if ((p = strstr(temp_buf, "dun3=")) != NULL) {
-			CameraData.dunjiao = atoi(p + 5);
-		}
-
-		// 3. 直角 (right3=)
-		if ((p = strstr(temp_buf, "right3=")) != NULL) {
-			CameraData.zhijiao = atoi(p + 7);
-		}
-
-		// 4. 菱形 (lin4=)
-		if ((p = strstr(temp_buf, "lin4=")) != NULL) {
-			CameraData.lingxing = atoi(p + 5);
-		}
-
-		// 5. 长方形 (rectangle=)
-		if ((p = strstr(temp_buf, "rectangle=")) != NULL) {
-			CameraData.changfan = atoi(p + 10);
-		}
-
-		// 6. 正方形 (square=)
-		if ((p = strstr(temp_buf, "square=")) != NULL) {
-			CameraData.juxing = atoi(p + 7);
-		}
-
-		// 7. 五角星 (star=)
-		if ((p = strstr(temp_buf, "star=")) != NULL) {
-			CameraData.star = atoi(p + 5);
-		}
-
-		// 8. 圆形 (circle=)
-		if ((p = strstr(temp_buf, "circle=")) != NULL) {
-			CameraData.circle = atoi(p + 7);
-		}
-
-		// ----------------------------------------------------
-		// 颜色解析区 (Color Analysis)
-		// ----------------------------------------------------
-
-		// 1. 红色 (red=)
-		if ((p = strstr(temp_buf, "red=")) != NULL) {
-			CameraData.red = atoi(p + 4); // "red=" 长度4
-		}
-
-		// 2. 绿色 (green=)
-		if ((p = strstr(temp_buf, "green=")) != NULL) {
-			CameraData.green = atoi(p + 6); // "green=" 长度6
-		}
-
-		// 3. 蓝色 (blue=)
-		if ((p = strstr(temp_buf, "blue=")) != NULL) {
-			CameraData.blue = atoi(p + 5); // "blue=" 长度5
-		}
-
-		// 4. 黄色 (yellow=)
-		if ((p = strstr(temp_buf, "yellow=")) != NULL) {
-			CameraData.yellow = atoi(p + 7); // "yellow=" 长度7
-		}
-
-		// 5. 青色 (cyan=)
-		if ((p = strstr(temp_buf, "cyan=")) != NULL) {
-			CameraData.qingse = atoi(p + 5); // "cyan=" 长度5
-		}
-
-		// 6. 橙色 (orange=)
-		if ((p = strstr(temp_buf, "orange=")) != NULL) {
-			CameraData.orange = atoi(p + 7); // "orange=" 长度7
-		}
-
-		// 7. 紫色 (purple=)
-		if ((p = strstr(temp_buf, "purple=")) != NULL) {
-			CameraData.purple = atoi(p + 7); // "purple=" 长度7
-		}
-
-		// 8. 黑色 (black=)
-		if ((p = strstr(temp_buf, "black=")) != NULL) {
-			CameraData.black = atoi(p + 6); // "black=" 长度6
-		}
 
 
 
-		Can_RxFiFoBuf[1].Flag = 0;
 
-	}
 
-}
+
 
 
 void Slove_GoFlag(void)
@@ -595,9 +539,6 @@ void Slove_ALL(void)
 	if(Can_RxFiFoBuf[1].Flag == 1) /*Wifi*/
 	{
 		Slove_AndroidData();
-		Slove_Camera();
-		Slove_GoFlag();
-
 	}
 	if(Can_RxFiFoBuf[3].Flag == 1) /*循迹*/
 	{
@@ -698,7 +639,22 @@ uint8_t Can_RxReadBit(Can_RXFIFOBUF *CanBuf, uint8_t *data)
     return 1;
 }
 
+/**************************************************************************
+函数功能：CAN-缓冲区不移动指针读取第一字节的数据
+入口参数：CanBuf:对应缓冲区结构体 val接收一字节变量
+返回  值：1-可读 0-空
+**************************************************************************/
+uint8_t RingBuf_PeekByte(Can_RXFIFOBUF *buf, uint8_t *val)
+{
+    if (Can_RxCheckReadEn(buf) == 0) return 0;
 
+    // 注意：根据您的 CheckReadEn 逻辑，rp 指向的是已读位置
+    // 所以要看的数据在 rp + 1
+    uint16_t next_rp = buf->rp + 1;
+    if (next_rp >= Can_RxFIFOZize) next_rp = 0;
 
+    *val = buf->Data[next_rp];
+    return 1;
+}
 
 
