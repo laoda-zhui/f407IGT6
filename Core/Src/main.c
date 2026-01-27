@@ -240,17 +240,19 @@ int main(void)
 //			  sprintf(txdata, "%d",sizeof(READ_RFID));
 //			  CAN_TxtoDisplay(txdata, strlen(txdata));
 
-			  RC522((7*4+1+1), RFID_Read);
+			  Command_GetPortBFloor();
 		  }
 		  if(KeyNum == 4)
 		  {
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_15);
-//			  char txdata[200];
+			  char txdata[200];
 ////			  sprintf(txdata,"red:%d blue:%d green:%d yellow:%d qingse:%d orange:%d purple:%d black:%d\r\n",
 ////					  CameraData.red,CameraData.blue,CameraData.green,CameraData.yellow,CameraData.qingse,CameraData.orange,CameraData.purple,CameraData.black);
 //			  sprintf(txdata,"GareInit:%d\r\nTem:%d\r\nVoiceNum:%d\n\rCarPort:%d\n\r",LightInit,BusData.temperature,LightInit,CarPortFlag);
-//			  CAN_TxtoDisplay(txdata,strlen(txdata));
-
+			  sprintf(txdata, "%d", CarPortFlag);
+			  CAN_TxtoDisplay(txdata,strlen(txdata));
+			  HAL_Delay(10);
+			  Command_LightAuto(CarPortFlag);
 		  }
 	  }
 

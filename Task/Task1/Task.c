@@ -6,7 +6,7 @@
 #define TrackSpeed  	80
 #define TurnSpeed  		80
 
-static int16_t  StepIdx = 0;    // 当前行号
+static uint16_t  StepIdx = 0;    // 当前行号
 static uint8_t  StepState = 0;  // 0:启动 1:等待
 static uint32_t TimerStart = 0; // 计时器
 
@@ -14,8 +14,8 @@ static uint32_t TimerStart = 0; // 计时器
 uint8_t LightInit=0; /*路灯初始档位*/
 uint8_t VoiceNumber=0; /*公交语音号*/
 
-uint8_t Sector; //扇区地址 第几扇区
-uint8_t Block;	//块地址
+uint8_t Sector=0; //扇区地址 第几扇区
+uint8_t Block=0;	//块地址
 char Coordinate[10]; //位置字符串
 
 
@@ -148,6 +148,9 @@ uint8_t Action_WaitGateOpen(void)
 	}
 	return 0;
 }
+
+
+
 void CommandLight(void) //获取路灯初始值
 {
 	LightInit = Command_LightAuto(CarPortFlag);
@@ -172,206 +175,222 @@ void CommandCarPtB1(void)
 
 /*执行任务表*/
 const TaskStep_t MyMission[] = {
-    // 动作类型,        参数1,    参数2,   指针(函数或变量)
+    // ID(可重复，主要用于跳转)  动作类型,        参数1,    参数2,   指针(函数或变量)
 
     // --- 1. 起步 ---
-    {ACT_CMD,         0,        0,     (void*)Command_StartTim}, //开启计时
-    {ACT_TRACK,       TrackSpeed, 0,     NULL}, /*循迹*/
-	{ACT_GO,          GoSpeed, 8,     NULL},	/*前进*/
-	{ACT_LEFT,        TurnSpeed, 0,     NULL},  /*左转面向交通灯*/
-	{ACT_BACK,        100, 6,     NULL},  /*后退一点好识别*/
+	{6, ACT_DELAY,       10,     0,     NULL},
+    {0, ACT_CMD,         0,        0,     (void*)Command_StartTim}, //开启计时
+	{6, ACT_DELAY,       10,     0,     NULL},
+    {1, ACT_TRACK,       TrackSpeed, 0,     NULL}, /*循迹*/
+	{2, ACT_GO,          GoSpeed, 8,     NULL},	/*前进*/
+	{3, ACT_LEFT,        TurnSpeed, 0,     NULL},  /*左转面向交通灯*/
+	{4, ACT_BACK,        100, 6,     NULL},  /*后退一点好识别*/
 
     // --- 2. 交通灯识别流程 ---
-    {ACT_CMD,         0,        0,     (void*)Command_TrafficAInMode}, // 开启识别
-    {ACT_DELAY,       1500,     0,     NULL},                          // 等1.5秒让摄像头稳定
-    {ACT_CMD,         0,        0,     (void*)Command_AndroidTraffic}, // 发送识别指令1
-	{ACT_CMD,         0,        0,     (void*)Command_AndroidTraffic}, // 发送识别指令2
-    {ACT_CMD,         0,        0,     (void*)Command_AndroidTraffic}, // 发送识别指令3
+    {5, ACT_CMD,         0,        0,     (void*)Command_TrafficAInMode}, // 开启识别
+    {6, ACT_DELAY,       1500,     0,     NULL},                          // 等1.5秒让摄像头稳定
+    {7, ACT_CMD,         0,        0,     (void*)Command_AndroidTraffic}, // 发送识别指令1
+	{8, ACT_CMD,         0,        0,     (void*)Command_AndroidTraffic}, // 发送识别指令2
+    {9, ACT_CMD,         0,        0,     (void*)Command_AndroidTraffic}, // 发送识别指令3
 
     // 【关键】等待 AndroidFlag 变动，超时 2000ms
-    {ACT_WAIT_NEQ0,   2000,     0,     (void*)&AndroidFlag}, /*超时2s跳过，如果接收到AndroidFlag颜色则直接发送结果*/
+    {10, ACT_WAIT_NEQ0,   2000,     0,     (void*)&AndroidFlag}, /*超时2s跳过，如果接收到AndroidFlag颜色则直接发送结果*/
 
-    {ACT_CMD,         0,        0,     (void*)Command_TrafficASend},   // 发送结果
-	{ACT_CMD,         0,        0,     (void*)Command_TrafficASend},   // 发送结果
+    {11, ACT_CMD,         0,        0,     (void*)Command_TrafficASend},   // 发送结果
+	{12, ACT_CMD,         0,        0,     (void*)Command_TrafficASend},   // 发送结果
 
     // --- 3. 继续跑路 ---
-    {ACT_TRACK,     TrackSpeed, 0,     NULL},
-    {ACT_CMD,         0,        0,     (void*)Command_GetPortBFloor}, // 发送 - 获取车库层数
-    {ACT_GO,        GoSpeed, 	7,     NULL},
-    {ACT_RIGHT,     TurnSpeed, 	0,     NULL},
-    {ACT_CMD,         0,        0,     (void*)Command_GetPortBFloor}, // 发送 - 获取车库层数
-    {ACT_TRACK,     TrackSpeed, 0,     NULL},
-    {ACT_GO,        GoSpeed, 	8,     NULL},
+    {13, ACT_TRACK,     TrackSpeed, 0,     NULL},
+    {14, ACT_CMD,         0,        0,     (void*)Command_GetPortBFloor}, // 发送 - 获取车库层数
+    {15, ACT_GO,        GoSpeed, 	7,     NULL},
+    {16, ACT_RIGHT,     TurnSpeed, 	0,     NULL},
+    {17, ACT_CMD,         0,        0,     (void*)Command_GetPortBFloor}, // 发送 - 获取车库层数
+    {18, ACT_TRACK,     TrackSpeed, 0,     NULL},
+    {19, ACT_GO,        GoSpeed, 	8,     NULL},
 
 	// --- 4. 读卡-左边是路灯 ---
-	{ACT_DELAY,       100,     	0,     NULL},
-	{ACT_CMD,         0,        0,     (void*)RC522Read},   // 读取卡片结果
-	{ACT_DELAY,       100,     	0,     NULL},
-	{ACT_CMD,         0,        0,     (void*)RFID_Slove},   // 处理卡片结果
-	{ACT_GO,        GoSpeed, 	1,     NULL},
+	{20, ACT_DELAY,       100,     	0,     NULL},
+	{21, ACT_CMD,         0,        0,     (void*)RC522Read},   // 读取卡片结果
+	{22, ACT_DELAY,       100,     	0,     NULL},
+	{23, ACT_CMD,         0,        0,     (void*)RFID_Slove},   // 处理卡片结果
+	{24, ACT_GO,        GoSpeed, 	1,     NULL},
 
 	// --- 5. 面向路灯 ---
-	{ACT_LEFT,        TurnSpeed, 0,     NULL},  /*左转面向路灯*/
-	{ACT_CMD,         0,         0,     (void*)CommandLight},   // 调节路灯
-	{ACT_DELAY,       50,     	0,     NULL},
+	{25, ACT_LEFT,        TurnSpeed, 0,     NULL},  /*左转面向路灯*/
+	{26, ACT_CMD,         0,         0,     (void*)CommandLight},   // 调节路灯
+	{27, ACT_DELAY,       50,     	0,     NULL},
 
 	// --- 6. 转到etc前 ---
-	{ACT_RIGHT,     TurnSpeed, 	0,     NULL},
-	{ACT_CMD,         0,         0,     (void*)SendLight},   // 发送给从车路灯初始档位
+	{28, ACT_RIGHT,     TurnSpeed, 	0,     NULL},
+	{29, ACT_CMD,         0,         0,     (void*)SendLight},   // 发送给从车路灯初始档位
 
-	{ACT_RIGHT,     TurnSpeed, 	0,     NULL},
-	{ACT_DELAY,       50,     	0,     NULL},
+	{30, ACT_RIGHT,     TurnSpeed, 	0,     NULL},
+	{31, ACT_DELAY,       50,     	0,     NULL},
 
-	{ACT_CMD,         0,         0,     (void*)SendLight},   // 发送给从车路灯初始档位
-	{ACT_DELAY,       50,     	0,     NULL},
-	{ACT_CMD,         0,         0,     (void*)SendLight},   // 发送给从车路灯初始档位
+	{32, ACT_CMD,         0,         0,     (void*)SendLight},   // 发送给从车路灯初始档位
+	{33, ACT_DELAY,       50,     	0,     NULL},
+	{34, ACT_CMD,         0,         0,     (void*)SendLight},   // 发送给从车路灯初始档位
 
 
 	// --- 7. 过etc闸门 ---
-	{ACT_CUSTOM_LOOP, 		0, 	0, 		(void*)Action_WaitGateOpen}, /*ETC前进行后退直到开启闸门*/
-    {ACT_TRACK,     TrackSpeed, 0,     NULL},
-	{ACT_DELAY,       50,     	0,     NULL},
-	{ACT_CMD,         0,         0,     (void*)CommandCarPtB1},   // 下降车库
-    {ACT_GO,        GoSpeed, 	7,     NULL},
-	{ACT_DELAY,       50,     	0,     NULL},
-	{ACT_CMD,         0,         0,     (void*)CommandCarPtB1},   // 下降车库
-	{ACT_DELAY,       100,     0,     NULL},
+	{35, ACT_CUSTOM_LOOP, 		0, 	0, 		(void*)Action_WaitGateOpen}, /*ETC前进行后退直到开启闸门*/
+    {36, ACT_TRACK,     TrackSpeed, 0,     NULL},
+	{37, ACT_DELAY,       50,     	0,     NULL},
+	{38, ACT_CMD,         0,         0,     (void*)CommandCarPtB1},   // 下降车库
+    {39, ACT_GO,        GoSpeed, 	7,     NULL},
+	{40, ACT_DELAY,       50,     	0,     NULL},
+	{41, ACT_CMD,         0,         0,     (void*)CommandCarPtB1},   // 下降车库
+	{42, ACT_DELAY,       100,     0,     NULL},
 
 
 	// --- 8. 读卡-前面是特殊地形 ---
-	{ACT_CMD,         0,        0,     (void*)RC522Read},   // 读取卡片结果
-	{ACT_DELAY,       300,     	0,     NULL},
-	{ACT_CMD,         0,        0,     (void*)RFID_Slove},   // 处理卡片结果
+	{43, ACT_CMD,         0,        0,     (void*)RC522Read},   // 读取卡片结果
+	{44, ACT_DELAY,       300,     	0,     NULL},
+	{45, ACT_CMD,         0,        0,     (void*)RFID_Slove},   // 处理卡片结果
 
 	// --- 9. 过特殊地形 ---
-	{ACT_BACK,      GoSpeed, 	10,     NULL},  /*后退一点好冲刺*/
-    {ACT_TRACKMP, TrackSpeed, 	13,     NULL},	/*到白卡 用码盘循迹防止过白卡过头*/
-	{ACT_GO,        GoSpeed, 	58,     NULL},  /*过特殊路段*/
-    {ACT_TRACK,     TrackSpeed, 0,     	NULL},
-    {ACT_GO,        GoSpeed, 	7,     NULL},
+	{46, ACT_BACK,      GoSpeed, 	10,     NULL},  /*后退一点好冲刺*/
+    {47, ACT_TRACKMP, TrackSpeed, 	13,     NULL},	/*到白卡 用码盘循迹防止过白卡过头*/
+	{48, ACT_GO,        GoSpeed, 	58,     NULL},  /*过特殊路段*/
+    {49, ACT_TRACK,     TrackSpeed, 0,     	NULL},
+    {50, ACT_GO,        GoSpeed, 	7,     NULL},
 
 	// --- 10. 读卡 ---
-	{ACT_DELAY,       200,     	0,     NULL},	/*等停稳*/
-	{ACT_CMD,         0,        0,     (void*)RC522Read},   // 读取卡片结果
-	{ACT_DELAY,       100,     	0,     NULL},
-	{ACT_CMD,         0,        0,     (void*)RFID_Slove},   // 处理卡片结果
-	{ACT_DELAY,       100,     	0,     NULL},
-    {ACT_GO,        GoSpeed, 	2,     NULL},
+	{51, ACT_DELAY,       200,     	0,     NULL},	/*等停稳*/
+	{52, ACT_CMD,         0,        0,     (void*)RC522Read},   // 读取卡片结果
+	{53, ACT_DELAY,       100,     	0,     NULL},
+	{54, ACT_CMD,         0,        0,     (void*)RFID_Slove},   // 处理卡片结果
+	{55, ACT_DELAY,       100,     	0,     NULL},
+    {56, ACT_GO,        GoSpeed, 	2,     NULL},
 
 
 	// --- 11. TFT颜色形状识别 ---
-	{ACT_DELAY,       1500,     	0,     NULL}, /*等1.5s摄像头稳定*/
-	{ACT_CMD,         0,        0,     (void*)Command_Androidshape},   // 识别形状
-	{ACT_DELAY,       300,     	0,     NULL},
-	{ACT_CMD,         0,        0,     (void*)Command_Androidshape},   // 识别形状
-	{ACT_DELAY,       300,     	0,     NULL},
-	{ACT_CMD,         0,        0,     (void*)Command_AndroidColor},   // 识别颜色
-	{ACT_DELAY,       300,     	0,     NULL},
-	{ACT_CMD,         0,        0,     (void*)Command_AndroidColor},   // 识别颜色
-	{ACT_DELAY,       500,     	0,     NULL},
-	{ACT_CMD,         0,        0,     (void*)Command_sendshap},   	   // 发送识别的形状
-	{ACT_DELAY,       500,     	0,     NULL},
-	{ACT_CMD,         0,        0,     (void*)Command_sendcolor},  	   // 发送识别的颜色
-	{ACT_DELAY,       500,     	0,     NULL},
+	{57, ACT_DELAY,       1500,     	0,     NULL}, /*等1.5s摄像头稳定*/
+	{58, ACT_CMD,         0,        0,     (void*)Command_Androidshape},   // 识别形状
+	{59, ACT_DELAY,       300,     	0,     NULL},
+	{60, ACT_CMD,         0,        0,     (void*)Command_Androidshape},   // 识别形状
+	{61, ACT_DELAY,       300,     	0,     NULL},
+	{62, ACT_CMD,         0,        0,     (void*)Command_AndroidColor},   // 识别颜色
+	{63, ACT_DELAY,       300,     	0,     NULL},
+	{64, ACT_CMD,         0,        0,     (void*)Command_AndroidColor},   // 识别颜色
+	{65, ACT_DELAY,       500,     	0,     NULL},
+	{66, ACT_CMD,         0,        0,     (void*)Command_sendshap},   	   // 发送识别的形状
+	{67, ACT_DELAY,       500,     	0,     NULL},
+	{68, ACT_CMD,         0,        0,     (void*)Command_sendcolor},  	   // 发送识别的颜色
+	{69, ACT_DELAY,       500,     	0,     NULL},
 
 
 	// --- 12. 到公交站请求回传温度和进行语音识别 ---
-	{ACT_CMD,         0,        0,     (void*)Command_BusCheckTem},  	   // 请求公交站回传温度
-	{ACT_LEFT,        TurnSpeed, 0,     NULL},
+	{70, ACT_CMD,         0,        0,     (void*)Command_BusCheckTem},  	   // 请求公交站回传温度
+	{71, ACT_LEFT,        TurnSpeed, 0,     NULL},
 
-	{ACT_DELAY,       50,     	0,     NULL},
-	{ACT_CMD,         0,        0,     (void*)Command_BusCheckTem},  	   // 请求公交站回传温度
-	{ACT_DELAY,       100,     	0,     NULL},
+	{72, ACT_DELAY,       50,     	0,     NULL},
+	{73, ACT_CMD,         0,        0,     (void*)Command_BusCheckTem},  	   // 请求公交站回传温度
+	{74, ACT_DELAY,       100,     	0,     NULL},
 
-	{ACT_TRACK,     TrackSpeed, 0,     	NULL},
-	{ACT_GO,        GoSpeed, 	16,     NULL},
+	{75, ACT_TRACK,     TrackSpeed, 0,     	NULL},
+	{76, ACT_GO,        GoSpeed, 	16,     NULL},
 
-	{ACT_CMD,         0,        0,     (void*)Command_BusReportRandom},  	/*开启交站语音*/
-	{ACT_CMD,         0,        0,     (void*)Command_BusReportRandom},  	/*开启交站语音*/
-	{ACT_DELAY,       50,     	0,     NULL},
-	{ACT_CMD,         0,        0,     (void*)GetVoicNum},  	/*开启语音识别*/
+	{77, ACT_CMD,         0,        0,     (void*)Command_BusReportRandom},  	/*开启交站语音*/
+	{78, ACT_DELAY,       1,     	0,     NULL},
+	{79, ACT_CMD,         0,        0,     (void*)Command_BusReportRandom},  	/*开启交站语音*/
+	{80, ACT_DELAY,       50,     	0,     NULL},
+	{81, ACT_CMD,         0,        0,     (void*)GetVoicNum},  	/*开启语音识别*/
 
 	// --- 13. 识别完成，来到D2 ---
-	{ACT_DELAY,       1000,     	0,  NULL},
+	{82, ACT_DELAY,       1000,     	0,  NULL},
 
-	{ACT_CMD,         0,        0,     (void*)Command_SlaveCarSTep},  	/*发送给从车公交站温度信息*/
-	{ACT_LEFT,        TurnSpeed, 0,     NULL},
+	{83, ACT_CMD,         0,        0,     (void*)Command_SlaveCarSTep},  	/*发送给从车公交站温度信息*/
+	{82, ACT_DELAY,       100,     	0,  NULL},
+	{84, ACT_BACK,        GoSpeed,  5,     NULL},
+	{84, ACT_LEFT,        TurnSpeed, 0,     NULL},
 
-	{ACT_DELAY,       50,     	0,     NULL},
-	{ACT_CMD,         0,        0,     (void*)Command_SlaveCarSTep},  	/*发送从车公交站温度信息*/
-	{ACT_TRACK,     TrackSpeed, 0,     	NULL},
+	{85, ACT_DELAY,       50,     	0,     NULL},
+	{86, ACT_CMD,         0,        0,     (void*)Command_SlaveCarSTep},  	/*发送从车公交站温度信息*/
+	{87, ACT_TRACK,     TrackSpeed, 0,     	NULL},
 
-	{ACT_DELAY,       50,     	0,     NULL},
-	{ACT_CMD,         0,        0,     (void*)Command_SlaveCarSTep},  	/*发送从车公交站温度信息*/
-	{ACT_GO,        GoSpeed, 	8,     	NULL},
+	{88, ACT_DELAY,       50,     	0,     NULL},
+	{89, ACT_CMD,         0,        0,     (void*)Command_SlaveCarSTep},  	/*发送从车公交站温度信息*/
+	{90, ACT_GO,        GoSpeed, 	10,     	NULL},
 
-	// --- 14. 识别完成，来到D2 ---
-	{ACT_LEFT,        TurnSpeed,  0,     NULL},
-	{ACT_TRACKMP,     TrackSpeed, 28,     NULL},
+	// -- 14.解析卡一位置如果在d3 d1就执行以下读卡
+	{200, ACT_JUMP_IF,        91, 	'3',     (void*)&Coordinate[1]}, //满足在d1跳转91
+	{201, ACT_JUMP_IF,        300, 	'1',     (void*)&Coordinate[1]}, //满足在d3跳转300
+	{203, ACT_JUMP,        	  110, 	  0,     NULL},	//不满足跳转110
 
+		// -- 分支1 卡在D3
+	{91, ACT_LEFT,        TurnSpeed,  0,     NULL},
+	{92, ACT_TRACKRFID,   TrackSpeed, 0,     NULL}, //读卡循迹
+	{93, ACT_GO,          GoSpeed, 	8,     NULL},
+	{94, ACT_DELAY,       800,     	0,     NULL},	/*等停稳*/
+	{95, ACT_CMD,         0,        0,     (void*)RC522Read2},   // 读取卡片结果
+	{96, ACT_DELAY,       100,     	0,     NULL},
+	{97, ACT_CMD,         0,        0,     (void*)RFID_Slove2},   //处理卡片数据
+	{98, ACT_DELAY,       200,     	0,     NULL},
+	{99, ACT_BACK,        GoSpeed, 	20,     NULL},   /*后退到十字路口再右转到白卡*/
+	{100, ACT_RIGHT,      TurnSpeed,  0,     NULL},
+	{203, ACT_JUMP,        	  110, 	  0,     NULL},	// 解卡完成，跳转发送从车启动指令
 
-	// --- 15. 前后读卡 ---
-	{ACT_DELAY,       100,     	0,     NULL},	/*等停稳*/
-	{ACT_CMD,         0,        0,     (void*)RC522Read2},   // 读取卡片结果
-	{ACT_DELAY,       50,     	0,     NULL},
-	{ACT_CMD,         0,        0,     (void*)RC522Read2},   // 读取卡片结果
-	{ACT_DELAY,       100,     	0,     NULL},
-	{ACT_CMD,         0,        0,     (void*)RFID_Slove2},   //处理卡片数据
-	{ACT_DELAY,       500,     	0,     NULL},
-
-	{ACT_BACK,        GoSpeed, 	42,    NULL},
-	{ACT_DELAY,       200,     	0,     NULL},	/*等停稳*/
-	{ACT_CMD,         0,        0,     (void*)RC522Read2},   // 读取卡片结果
-	{ACT_DELAY,       100,     	0,     NULL},
-	{ACT_CMD,         0,        0,     (void*)RFID_Slove2},   //处理卡片数据
-	{ACT_DELAY,       400,     	0,     NULL},
+		// --- 分支2 卡在D1
+	{300, ACT_RIGHT,        TurnSpeed,  0,     NULL},
+	{301, ACT_TRACKRFID,   TrackSpeed, 0,     NULL}, //读卡循迹
+	{302, ACT_GO,          GoSpeed, 	7,     	NULL},
+	{303, ACT_DELAY,       300,     	0,     NULL},	/*等停稳*/
+	{304, ACT_CMD,         0,        0,     (void*)RC522Read2},   // 读取卡片结果
+	{305, ACT_DELAY,       100,     	0,     NULL},
+	{306, ACT_CMD,         0,        0,     (void*)RFID_Slove2},   //处理卡片数据
+	{307, ACT_DELAY,       200,     	0,     NULL},
+	{308, ACT_BACK,        GoSpeed, 	17,     NULL},   /*后退到十字路口再右转到白卡*/
+	{311, ACT_LEFT,       TurnSpeed,  0,     NULL},
 
 	// --- 16. 面向B2 ---
-	{ACT_TRACK,     TrackSpeed, 0,     	NULL},
-	{ACT_DELAY,       50,     	0,     NULL},
-	{ACT_CMD,         0,        0,     (void*)Command_SlaveCarStart},  	/*发送给从车启动信息*/
-	{ACT_GO,        GoSpeed, 	5,     	NULL},
-	{ACT_DELAY,       50,     	0,     NULL},
-	{ACT_CMD,         0,        0,     (void*)Command_SlaveCarStart},  	/*发送给从车启动信息*/
-	{ACT_RIGHT,        TurnSpeed, 0,     NULL},
+	{110, ACT_DELAY,      50,     	0,     NULL},
+	{111, ACT_CMD,        0,        0,     (void*)Command_SlaveCarStart},  	/*发送给从车启动信息*/
+	{112, ACT_DELAY,      50,     	0,     NULL},
+	{113, ACT_CMD,        0,        0,     (void*)Command_SlaveCarStart},  	/*发送给从车启动信息*/
 
-	// --- 17. 读卡-到b2 ---
-	{ACT_TRACK,     TrackSpeed, 0,     	NULL},
-	{ACT_GO,        GoSpeed, 	8,     	NULL},
-	{ACT_DELAY,       200,     	0,     NULL},	/*等停稳*/
-	{ACT_CMD,         0,        0,     (void*)RC522Read2},   // 读取卡片结果
-	{ACT_DELAY,       100,     	0,     NULL},
-	{ACT_CMD,         0,        0,     (void*)RFID_Slove2},   //处理卡片数据
+	// --- 17. 读卡-到B2 ---
+	{114, ACT_TRACK,      TrackSpeed, 0,     	NULL},
+	{115, ACT_CMD,        0,        0,     (void*)Command_SlaveCarStart},  	/*发送给从车启动信息*/
+	{116, ACT_GO,         GoSpeed, 	8,     	NULL},
+	{117, ACT_DELAY,      200,     	0,     NULL},	/*等停稳*/
+	{118, ACT_CMD,        0,        0,     (void*)RC522Read2},   // 读取卡片结果
+	{119, ACT_DELAY,      100,     	0,     NULL},
+	{120, ACT_CMD,        0,        0,     (void*)RFID_Slove2},   //处理卡片数据
 
-	// --- 18. 左转走到b5-道闸开不了 ---
-	{ACT_LEFT,        TurnSpeed,  0,     NULL},
-	{ACT_TRACK,       TrackSpeed, 0,     	NULL},
-	{ACT_GO,          GoSpeed, 	  8,     	NULL},
-	{ACT_TRACKMP,     TrackSpeed, 27,     	NULL},
-
-	// --- 19. 读卡-b5 ---
-	{ACT_DELAY,       200,     	0,     NULL},	/*等停稳*/
-	{ACT_CMD,         0,        0,     (void*)RC522Read2},   // 读取卡片结果
-	{ACT_DELAY,       100,     	0,     NULL},
-	{ACT_CMD,         0,        0,     (void*)RFID_Slove2},   //处理卡片数据
-	{ACT_DELAY,       100,     	0,     NULL},
+	// --- 18. 左转走到B5-道闸开不了 ---
+	{121, ACT_LEFT,       TurnSpeed,  0,     NULL},
+	{122, ACT_TRACK,      TrackSpeed, 0,     	NULL},
+	{123, ACT_GO,         GoSpeed, 	8,     	NULL},
 
 
-	// --- 19. 倒车入库 ---
-	{ACT_TRACK,       TrackSpeed, 0,     	NULL},
-	{ACT_DELAY,       50,     	0,     NULL},
-	{ACT_CMD,         0,        0,     (void*)SendBat},   //处理卡片数据
+	// --- 19. 解析卡1是否在B5读卡-B5 ---
+	{250, ACT_JUMP_IF,        220, 	'5',     (void*)&Coordinate[1]}, //满足在d1跳转220
+	{251, ACT_JUMP,        	  130, 	  0,     NULL},	//不满足跳转130
 
-	{ACT_GO,          GoSpeed, 	  8,     	NULL},
-	{ACT_DELAY,       50,     	0,     NULL},
-	{ACT_CMD,         0,        0,     (void*)SendBat},   //处理卡片数据
-	{ACT_LEFT,        TurnSpeed,  0,     NULL},
-	{ACT_DELAY,       50,     	0,     NULL},
-	{ACT_CMD,         0,        0,     (void*)SendBat},   //处理卡片数据
-	{ACT_TRACKMP,     TrackSpeed, 8,     	NULL},
-	{ACT_DELAY,       50,     	0,     NULL},
-	{ACT_CMD,         0,        0,     (void*)SendBat},   //处理卡片数据
-	{ACT_BACK,        TurnSpeed,  30,     NULL},
+		// --- 分支3 卡在B5
+	{220, ACT_TRACKRFID,  TrackSpeed, 0,     NULL}, //读卡循迹
+	{221, ACT_GO,         GoSpeed, 	6,     	NULL},
+	{125, ACT_DELAY,      200,     	0,     NULL},	/*等停稳*/
+	{126, ACT_CMD,        0,        0,     (void*)RC522Read2},   // 读取卡片结果
+	{127, ACT_DELAY,      100,     	0,     NULL},
+	{128, ACT_CMD,        0,        0,     (void*)RFID_Slove2},   //处理卡片数据
+	{129, ACT_DELAY,      100,     	0,     NULL},
+
+	// --- 20. 倒车入库 ---
+	{130, ACT_TRACK,      TrackSpeed, 0,     	NULL},
+	{131, ACT_DELAY,      50,     	0,     NULL},
+	{132, ACT_CMD,        0,        0,     (void*)SendBat},   //发给从车卡2解密信息
+	{133, ACT_GO,         GoSpeed, 	8,     	NULL},
+	{134, ACT_DELAY,      50,     	0,     NULL},
+	{135, ACT_CMD,        0,        0,     (void*)SendBat},   //发给从车卡2解密信息
+	{136, ACT_LEFT,       TurnSpeed,  0,     NULL},
+	{137, ACT_DELAY,      50,     	0,     NULL},
+	{138, ACT_CMD,        0,        0,     (void*)SendBat},   //发给从车卡2解密信息
+	{139, ACT_TRACKMP,    TrackSpeed, 8,     	NULL},
+	{140, ACT_DELAY,      50,     	0,     NULL},
+	{141, ACT_CMD,        0,        0,     (void*)SendBat},   //发给从车卡2解密信息
+	{142, ACT_BACK,       TurnSpeed,  30,     NULL},
 
 
 
@@ -413,7 +432,7 @@ void Task_Engine_Run(void)
                 case ACT_MPRIGHT: 		Car_MPRight(step->Param1, step->Param2); 	StepState = 1; break;
                 case ACT_TRACKTIME: 	Car_TrackTime(step->Param1, step->Param2); 	StepState = 1; break;
                 case ACT_TRACKMP: 		Car_TrackMp(step->Param1, step->Param2); 	StepState = 1; break;
-
+                case ACT_TRACKRFID: 	Car_TrackRFID(step->Param1);				StepState = 1; break;
 
                 // --- 指令类 (无等待) ---
                 case ACT_CMD:
@@ -430,6 +449,34 @@ void Task_Engine_Run(void)
                     TimerStart = HAL_GetTick(); // 记录开始时间
                     StepState = 1;
                     break;
+
+
+
+				// --- 跳转类 (核心更新) ---
+				case ACT_JUMP:		// 无条件跳转: Param1 = 目标ID
+					StepIdx = Find_Index_By_ID(step->Param1);
+					// StepState 保持 0，下次循环直接执行新的一行
+					break;
+
+                case ACT_JUMP_IF:	//  --- 条件跳转: Param1 = 目标ID, Param2 = 匹配值, ArgPtr = 变量地址
+                	if(step->Ptr != NULL)
+					{
+						uint8_t val = *(uint8_t*)(step->Ptr);
+						if(val == step->Param2)
+						{
+							// 条件满足，跳转！
+							StepIdx = Find_Index_By_ID(step->Param1);
+						}
+						else
+						{
+							// 条件不满足，下一行
+							StepIdx++;
+						}
+					}
+					else StepIdx++;
+					break;
+
+
 
                 // --- 自定义函数
                 case ACT_CUSTOM_LOOP:
@@ -463,12 +510,14 @@ void Task_Engine_Run(void)
                 case ACT_MPRIGHT:
                 case ACT_TRACKTIME:
                 case ACT_TRACKMP:
+                case ACT_TRACKRFID:
                     if(Stop_Flag == Task_Complete)
                     {
                         StepState = 0;
                         StepIdx++;
                     }
                     break;
+
 
                 // --- 延时类：等时间 ---
                 case ACT_DELAY:
@@ -507,7 +556,20 @@ void Task_Engine_Init(void)
     StepState = 0;
 }
 
+// 【核心功能】根据 ID 查找数组下标
+uint16_t Find_Index_By_ID(uint16_t target_id)
+{
+    uint16_t i = 0;
+    while(1)
+    {
+        // 找到目标ID，返回下标
+        if(MyMission[i].StepID == target_id) return i;
 
+        // 遇到结束符还没找到，说明ID写错了，返回0(重头开始)或报错
+        if(MyMission[i].Type == ACT_END) return 0;
 
+        i++;
+    }
+}
 
 

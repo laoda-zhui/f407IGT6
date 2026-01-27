@@ -81,7 +81,8 @@ void Command_CarPortB(uint8_t Floor);
 
 
 /*智能路灯*/
-uint8_t Command_LightAuto(uint8_t Loaction);
+void Command_Light(uint8_t Gear);
+uint8_t Command_LightAuto(uint8_t Target_Gear);
 
 
 /*公交站*/

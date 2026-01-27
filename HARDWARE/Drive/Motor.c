@@ -211,6 +211,7 @@ void Car_Go(uint8_t speed, uint16_t temp)   // 主车前进 参数：速度/距�
     Taget_Pulses = Motor_calculate_pulses(temp);         // 距离转换为码盘值
 
     Car_Speed = speed;      // 速度值
+
     Stop_Flag = Task_Start;          // 运行状态标志位
     CarFlag = Go_Flag;            // 前进标志位
 
@@ -231,6 +232,7 @@ void Car_Back(uint8_t speed, uint16_t temp) // 主车后退 参数：速度/距�
 
     Taget_Pulses = Motor_calculate_pulses(temp);         // 距离转换为码盘值
     Car_Speed = speed;      // 速度值
+
     Stop_Flag = Task_Start;          // 运行状态标志位
     CarFlag = Back_Flag;          // 后退标志位
 
@@ -256,6 +258,7 @@ void Car_MPLeft(uint8_t speed, double Angle)       // 主车左转 参数：角�
 	Taget_AnglePulse = Motor_calculate_pulses(Angle*(M_PI/180.0)*WHEEL_BASE_CM/1.5);
 	Turn_PID.Target = (float)Taget_AnglePulse;
     Car_Speed = speed;      // 速度值
+
     Stop_Flag = Task_Start;          // 运行状态标志位
     CarFlag = wheel_L_Flag;       // 左转标志位
 
@@ -371,12 +374,13 @@ void Car_TrackMp(uint8_t speed, uint16_t Temp)   // 主车循迹 参数：速度
 	Taget_Pulses = Motor_calculate_pulses(Temp);         // 距离转换为码盘值
 
     Car_Speed = speed;      // 速度值
+
     Stop_Flag = Task_Start;          // 运行状态标志位
     CarFlag = TrackMp_Flag;         // 循迹标志位
 }
 
 /**************************************************************************
-函数功能：控制小车规定距离内循迹
+函数功能：控制小车规定距离内后退循迹 (不行别用)
 入口参数：speed:速度(max=120) Mp:循迹距离
 返回  值：无
 **************************************************************************/
@@ -387,12 +391,27 @@ void Car_TrackBackMp(uint8_t speed, uint16_t Temp)   // 主车循迹 参数：�
 
 	Taget_Pulses = Motor_calculate_pulses(Temp);         // 距离转换为码盘值
 
+	Car_Speed = -speed;      // 速度值
+
     Stop_Flag = Task_Start;          // 运行状态标志位
     CarFlag = TrackMpBack_Flag;         // 循迹标志位
-    Car_Speed = -speed;      // 速度值
+
 
 }
 
+
+/**************************************************************************
+函数功能：控制小车白卡循迹(白卡长与黑线平行)
+入口参数：speed:速度(max=120) Mp:循迹距离
+返回  值：无
+**************************************************************************/
+void Car_TrackRFID(uint8_t speed)   // 主车循迹 参数：速度
+{
+    Car_Speed = speed;      // 速度值
+
+    Stop_Flag = Task_Start;          // 运行状态标志位
+    CarFlag = TrackRFID_Flag;         // 循迹标志位
+}
 
 
 
@@ -567,7 +586,8 @@ void Track_Check(void) 	/*这里选择取循迹的后面八个-x1，右边到左
 {
 	static int8_t err; /*误差*/
 	static uint16_t count=0;
-	if((CarFlag == Track_Flag || CarFlag == TrackTime_Flag || CarFlag == TrackMp_Flag || CarFlag == TrackMpBack_Flag) && (Stop_Flag == Task_Start) && (Track_CheckFlag == 1))
+	if((CarFlag == Track_Flag || CarFlag == TrackTime_Flag || CarFlag == TrackMp_Flag || CarFlag == TrackMpBack_Flag ||
+			CarFlag == TrackRFID_Flag ) && (Stop_Flag == Task_Start) && (Track_CheckFlag == 1))
 	{
 		Track_CheckFlag = 0;
 
@@ -593,8 +613,27 @@ void Track_Check(void) 	/*这里选择取循迹的后面八个-x1，右边到左
 			}
 		}
 
+		if(CarFlag == TrackRFID_Flag) /*白卡循迹*/
+		{
+			switch(x1)
+			{
+			case 0xFF: /*1111 1111*/
+				err = 0;
+				count++;
+				if(count > 30)
+				{
+					count=0;
+					Motor_Control(0,0);
+					Stop_Flag = Task_Complete;
+					return;
+				}
+				break;
+			}
+		}
 
-		if((x1&0x81) == 0x00 || (x1 & 0xC3)==0x00) /*白卡循迹补丁*/
+
+
+		if((x1&0x81) == 0x00 || (x1 & 0xC3)==0x00) /*普通十字路口白卡循迹补丁*/
 		{
 			err = 0;
 			Stop_Flag = Task_Complete;
@@ -656,15 +695,17 @@ void Track_Check(void) 	/*这里选择取循迹的后面八个-x1，右边到左
 
 		PID_TurnTrack.Actual = err;
 		PIDSpeed_Update(&PID_TurnTrack);
-		if(CarFlag == Track_Flag || CarFlag == TrackTime_Flag || CarFlag == TrackMp_Flag)
-		{
-			Motor_Control( (Car_Speed - PID_TurnTrack.Out),  (Car_Speed + PID_TurnTrack.Out) );
-		}
+
+
+
 		if(CarFlag == TrackMpBack_Flag)
 		{
 			Motor_Control( (Car_Speed + PID_TurnTrack.Out),  (Car_Speed - PID_TurnTrack.Out) );
 		}
-
+		else
+		{
+			Motor_Control( (Car_Speed - PID_TurnTrack.Out),  (Car_Speed + PID_TurnTrack.Out) );
+		}
 
 	}
 
