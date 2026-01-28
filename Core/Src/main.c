@@ -187,7 +187,6 @@ int main(void)
   /*测试变量-记得删*/
 
 
-
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -215,20 +214,19 @@ int main(void)
 
 			  Start_Flag = 1;
 
+
 		  }
 		  if(KeyNum == 2)
 		  {
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_13);
 
-
-//			  Command_TrafficAInMode();
-//			  Command_EndTim();
-			  Command_CarPortB(4);
+			  Command_3DShowHex(41, 41);
 
 		  }
 		  if(KeyNum == 3)
 		  {
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_14);
+
 
 //			  Command_CarPortB(4);
 
@@ -239,20 +237,21 @@ int main(void)
 //			  memcpy(txdata, READ_RFID, sizeof(READ_RFID));
 //			  sprintf(txdata, "%d",sizeof(READ_RFID));
 //			  CAN_TxtoDisplay(txdata, strlen(txdata));
+//			  CAN_TxtoZigbee(FifoBuf_WifiRx, 8);
 
-			  Command_GetPortBFloor();
+
 		  }
 		  if(KeyNum == 4)
 		  {
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_15);
-			  char txdata[200];
+			  char txdata[550];
+
 ////			  sprintf(txdata,"red:%d blue:%d green:%d yellow:%d qingse:%d orange:%d purple:%d black:%d\r\n",
 ////					  CameraData.red,CameraData.blue,CameraData.green,CameraData.yellow,CameraData.qingse,CameraData.orange,CameraData.purple,CameraData.black);
 //			  sprintf(txdata,"GareInit:%d\r\nTem:%d\r\nVoiceNum:%d\n\rCarPort:%d\n\r",LightInit,BusData.temperature,LightInit,CarPortFlag);
-			  sprintf(txdata, "%d", CarPortFlag);
+//			  sprintf(txdata, "Q1:%s\r\nQ2:%s\r\nQ3:%s\r\n", RQData.RQ1Buf, RQData.RQ2Buf,RQData.RQ3Buf);
 			  CAN_TxtoDisplay(txdata,strlen(txdata));
-			  HAL_Delay(10);
-			  Command_LightAuto(CarPortFlag);
+
 		  }
 	  }
 

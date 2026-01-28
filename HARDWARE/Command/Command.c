@@ -574,7 +574,8 @@ void Command_AndroidTraffic(void)
 **************************************************************************/
 void Command_Androidshape(void)
 {
-	Command_SendAndroid(0x01, 0x02);
+	Command_SendAndroid(0x02, 0x00);   //老师
+	//Command_SendAndroid(0x01, 0x02); //商家
 }
 
 
@@ -586,7 +587,8 @@ void Command_Androidshape(void)
 **************************************************************************/
 void Command_AndroidColor(void)
 {
-	Command_SendAndroid(0x01, 0x03);
+	Command_SendAndroid(0x03, 0x00);  //老师
+	//Command_SendAndroid(0x01, 0x03);//商家
 }
 
 /**************************************************************************
@@ -596,10 +598,20 @@ void Command_AndroidColor(void)
 **************************************************************************/
 void Command_AndroidQR(void)
 {
-	Command_SendAndroid(0x02, 0x00);
+	Command_SendAndroid(0x07, 0x00);  //老师
+//	Command_SendAndroid(0x02, 0x00);//商家
 }
 
-
+/**************************************************************************
+函数功能：命令-安卓终端 开启车牌识别
+入口参数：无
+返回  值：无
+**************************************************************************/
+void Command_AndroidPlatNum(void)
+{
+	Command_SendAndroid(0x08, 0x00);  //老师
+//	Command_SendAndroid(0x02, 0x00);//商家
+}
 
 
 
@@ -1048,7 +1060,7 @@ void Command_AlarmReq(void)
 **************************************************************************/
 void Command_Autosystem(uint8_t Number)
 {
-	uint8_t TxBuf[8]={0xAF,0x06,0x00,0x02,0x00,0x00,0x01,0xBB};
+	uint8_t TxBuf[8]={0xAF,0x06,0x00,0x02,0x00,0x00,0x01,0xBF}; //注意题目的命令，有些题目可能不一样23年真题为0xBF结尾，文件以0xBB结尾
 
 
 	TxBuf[2] = Number;
@@ -1156,6 +1168,39 @@ void Command_SpecialTe(void)
 
 	CAN_TxtoZigbee(TxBuf, 8);
 }
+
+
+
+/*********************************************智能立体显示**************************************************/
+
+/**************************************************************************
+函数功能：命令-智能立体 - 显示文本
+入口参数：无
+返回  值：无
+**************************************************************************/
+void Command_3DShowHex(uint8_t First, uint8_t Second)
+{
+	uint8_t TxBuf[6]={0xFF,0x31,0x00,0x00,0x55,0x00};
+
+
+	TxBuf[2] = First;
+	TxBuf[3] = Second;
+
+
+
+	Infrared_SendpData(TxBuf, 6);
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -1,10 +1,10 @@
-../HARDWARE/Drive/Motor.c:69:6:Motor_Control	7
 ../HARDWARE/Drive/Motor.c:53:6:Motor_Init	1
+../HARDWARE/Drive/Motor.c:69:6:Motor_Control	7
 ../HARDWARE/Drive/Motor.c:91:6:Motor_SyncLeftEncoder	1
 ../HARDWARE/Drive/Motor.c:103:6:Motor_SyncRightEncoder	1
 ../HARDWARE/Drive/Motor.c:115:10:Motor_GetLDifcoder	3
 ../HARDWARE/Drive/Motor.c:131:10:Motor_GetRDifcoder	3
-../HARDWARE/Drive/Motor.c:147:10:Motor_GetLRDifcoder	2
+../HARDWARE/Drive/Motor.c:147:10:Motor_GetLRDifcoder	6
 ../HARDWARE/Drive/Motor.c:177:10:Motor_calculate_pulses	2
 ../HARDWARE/Drive/Motor.c:206:6:Car_Go	1
 ../HARDWARE/Drive/Motor.c:227:6:Car_Back	1
@@ -17,7 +17,7 @@
 ../HARDWARE/Drive/Motor.c:369:6:Car_TrackMp	1
 ../HARDWARE/Drive/Motor.c:387:6:Car_TrackBackMp	1
 ../HARDWARE/Drive/Motor.c:408:6:Car_TrackRFID	1
-../HARDWARE/Drive/Motor.c:429:6:Go_and_Back_Check	14
+../HARDWARE/Drive/Motor.c:429:6:Go_and_Back_Check	18
 ../HARDWARE/Drive/Motor.c:489:6:TurnAngle_Check	7
-../HARDWARE/Drive/Motor.c:528:6:TurnAngle_NewCheck	12
-../HARDWARE/Drive/Motor.c:585:6:Track_Check	34
+../HARDWARE/Drive/Motor.c:528:6:TurnAngle_NewCheck	14
+../HARDWARE/Drive/Motor.c:585:6:Track_Check	40

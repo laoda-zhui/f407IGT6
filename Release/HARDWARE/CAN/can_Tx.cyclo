@@ -1,10 +1,10 @@
 ../HARDWARE/CAN/can_Tx.c:53:6:Can_CmdStruct_Init	2
 ../HARDWARE/CAN/can_Tx.c:81:6:Can_BufWrite	5
 ../HARDWARE/CAN/can_Tx.c:113:9:Can_CheckReadEn	3
-../HARDWARE/CAN/can_Tx.c:137:9:Can_BufRead	3
-../HARDWARE/CAN/can_Tx.c:177:6:CAN_TxtoWifi	2
-../HARDWARE/CAN/can_Tx.c:195:6:CAN_TxtoZigbee	2
-../HARDWARE/CAN/can_Tx.c:213:6:CAN_TxtoDisplay	2
+../HARDWARE/CAN/can_Tx.c:137:9:Can_BufRead	7
+../HARDWARE/CAN/can_Tx.c:177:6:CAN_TxtoWifi	4
+../HARDWARE/CAN/can_Tx.c:195:6:CAN_TxtoZigbee	4
+../HARDWARE/CAN/can_Tx.c:213:6:CAN_TxtoDisplay	4
 ../HARDWARE/CAN/can_Tx.c:230:6:CAN_TxtoMotor	1
 ../HARDWARE/CAN/can_Tx.c:252:6:CAN_TxtoCNT	1
 ../HARDWARE/CAN/can_Tx.c:273:6:CAN_TxtoNV	1

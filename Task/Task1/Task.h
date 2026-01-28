@@ -41,6 +41,7 @@ typedef enum {
     // 逻辑类
     ACT_DELAY,      // 延时等待 (参数: 毫秒)
     ACT_WAIT_NEQ0,   // 等待变量不为0 (参数: 超时ms, 变量地址)
+	ACT_WAIT_VAL_EQ,   // 等待变量为指定值 (参数: 超时ms, 指定值, 变量地址)
 
 	// --- 跳转类 ---
 	ACT_JUMP,			// 无条件跳转: Param1 = 目标ID
@@ -83,12 +84,8 @@ extern uint8_t Block;	//块地址
 extern char Coordinate[10]; //位置字符串
 extern uint8_t SendBattery[3];
 
-
-
-
-
-
-
+extern char QR1Num[50]; //二维码1
+extern char QR2Num[50]; //二维码2
 
 
 

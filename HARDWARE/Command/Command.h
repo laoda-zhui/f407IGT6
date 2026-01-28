@@ -67,7 +67,7 @@ void Command_AndroidTraffic(void);
 void Command_Androidshape(void);
 void Command_AndroidColor(void);
 void Command_AndroidQR(void);
-
+void Command_AndroidPlatNum(void);
 
 
 /*立体车库*/
@@ -111,8 +111,8 @@ void Command_SpecialTe(void);
 /*自动评分系统*/
 void Command_Autosystem(uint8_t Number);
 
-
-
+/*立体显示*/
+void Command_3DShowHex(uint8_t First, uint8_t Second);
 
 
 

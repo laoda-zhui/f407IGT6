@@ -5,6 +5,10 @@
 uint32_t WifiWaitTime = 10,WifiStartTime=0;
 
 
+RQStruct RQData;
+
+
+
 /**************************************************接收数组初始化***************************************************************/
 
 /*对应缓冲数组 -- 大小参考can_RxSolve.h宏定义*/
@@ -155,7 +159,7 @@ void Slove_AndroidData(void)
     Can_RXFIFOBUF *pBuf = &Can_RxFiFoBuf[1];
     if (Can_RxCheckReadEn(pBuf) == 0) return;
 
-    uint8_t head;
+    uint8_t head=0;
 
     // 2. 【关键】先偷看第一个字节，不移动 rp 指针
     RingBuf_PeekByte(pBuf, &head);
@@ -268,6 +272,7 @@ void Slove_AndroidData(void)
                 if (len < Can_RxFIFOZize) temp_buf[len++] = (char)byte;
             }
             temp_buf[len] = '\0';
+
             // 只有当积累了足够长的数据或者超时后才解析字符串
 			// 这里我们可以简单地假设：只要不是55开头，就尝试用strstr搜一遍
 			char *p;
@@ -290,6 +295,65 @@ void Slove_AndroidData(void)
 			if ((p = strstr(temp_buf, "orange=")) != NULL) CameraData.orange = atoi(p + 7);
 			if ((p = strstr(temp_buf, "purple=")) != NULL) CameraData.purple = atoi(p + 7);
 			if ((p = strstr(temp_buf, "black=")) != NULL)  CameraData.black = atoi(p + 6);
+
+			//二维码解析
+
+			char *p1 = strstr(temp_buf, "-1-");
+			char *p2 = strstr(temp_buf, "-2-");
+			char *p3 = strstr(temp_buf, "-3-");
+			char *total_end = temp_buf + strlen(temp_buf);
+
+			// --- 处理 QR1 ---
+			if (p1 != NULL) {
+			    char *data_start = p1 + 3; // 直接指向数据开始
+			    char *data_end = total_end; // 默认到底
+
+			    if (p2 != NULL) data_end = p2; // 有2到2
+
+			    int len = data_end - data_start;
+			    if (len > 0 && len < 50)
+			    {
+			        memcpy(RQData.RQ1Buf, data_start, len);
+			        RQData.RQ1Buf[len] = '\0';
+			    }
+			}
+
+			// --- 处理 QR2 ---
+			if (p2 != NULL) {
+			    char *data_start = p2 + 3;
+			    char *data_end = total_end;
+
+			    if(p3 != NULL) data_end = p3;
+
+			    int len = data_end - data_start;
+			    if(len > 0 && len < 50)
+			    {
+			        memcpy(RQData.RQ2Buf, data_start, len);
+			        RQData.RQ2Buf[len] = '\0';
+			    }
+			}
+
+			// --- 处理 QR3 ---
+			if(p3 != NULL) {
+			    char *data_start = p3 + 3;
+			    char *data_end = total_end;
+
+			    int len = data_end - data_start;
+			    if (len > 0 && len < 50)
+			    {
+			        memcpy(RQData.RQ3Buf, data_start, len);
+			        RQData.RQ3Buf[len] = '\0';
+			    }
+			}
+
+
+
+
+
+
+
+
+
 
             Can_RxFiFoBuf[1].Flag = 0;
         }

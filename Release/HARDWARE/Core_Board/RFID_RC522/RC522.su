@@ -5,13 +5,13 @@
 ../HARDWARE/Core_Board/RFID_RC522/RC522.c:129:8:RC522_ClearBitMask	16	static
 ../HARDWARE/Core_Board/RFID_RC522/RC522.c:144:8:RC522_SetBitMask	16	static
 ../HARDWARE/Core_Board/RFID_RC522/RC522.c:165:8:RC522_SoftReset	24	static
-../HARDWARE/Core_Board/RFID_RC522/RC522.c:193:6:RC522_PcdAntennaOff	0	static
+../HARDWARE/Core_Board/RFID_RC522/RC522.c:193:6:RC522_PcdAntennaOff	8	static
 ../HARDWARE/Core_Board/RFID_RC522/RC522.c:205:6:RC522_PcdAntennaOn	8	static
 ../HARDWARE/Core_Board/RFID_RC522/RC522.c:222:8:RC522_PcdConfigISOType	8	static
 ../HARDWARE/Core_Board/RFID_RC522/RC522.c:250:8:RC522_PcdReset	8	static
 ../HARDWARE/Core_Board/RFID_RC522/RC522.c:273:9:RC522_GetLinkFlag	0	static
 ../HARDWARE/Core_Board/RFID_RC522/RC522.c:285:8:InitRC522	8	static
-../HARDWARE/Core_Board/RFID_RC522/RC522.c:317:6:RC522_LinkTest	0	static
+../HARDWARE/Core_Board/RFID_RC522/RC522.c:317:6:RC522_LinkTest	16	static
 ../HARDWARE/Core_Board/RFID_RC522/RC522.c:335:8:RC522_PcdComMF522	32	static
 ../HARDWARE/Core_Board/RFID_RC522/RC522.c:452:8:RC522_PcdRequest	48	static
 ../HARDWARE/Core_Board/RFID_RC522/RC522.c:482:8:RC522_PcdAnticoll	48	static
@@ -19,5 +19,5 @@
 ../HARDWARE/Core_Board/RFID_RC522/RC522.c:551:8:RC522_PcdSelect	40	static
 ../HARDWARE/Core_Board/RFID_RC522/RC522.c:593:8:RC522_PcdAuthState	40	static
 ../HARDWARE/Core_Board/RFID_RC522/RC522.c:625:8:RC522_PcdWrite	48	static
-../HARDWARE/Core_Board/RFID_RC522/RC522.c:666:8:RC522_PcdRead	48	static
+../HARDWARE/Core_Board/RFID_RC522/RC522.c:666:8:RC522_PcdRead	40	static
 ../HARDWARE/Core_Board/RFID_RC522/RC522.c:702:9:RC522	16	static

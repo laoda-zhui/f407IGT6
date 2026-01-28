@@ -69,6 +69,20 @@ extern float roll;	/*roll是围绕Z轴旋转，也叫翻滚角*/
 
 extern uint8_t x1,x2; /*循迹拆分数据x1:循迹板后面8个灯状况 x2：循迹板后面7个灯状况(循迹板b档情况下x1有效)*/
 
+/*二维码解析数据*/
+typedef struct{
+	char RQ1Buf[100];
+	char RQ2Buf[100];
+	char RQ3Buf[100];
+} RQStruct;
+extern RQStruct RQData;
+
+extern char QR1Num[50]; //二维码1
+
+
+
+
+
 
 
 /*安卓摄像头状态*/

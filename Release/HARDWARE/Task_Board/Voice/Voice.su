@@ -1,5 +1,5 @@
 ../HARDWARE/Task_Board/Voice/Voice.c:13:6:Voice_Init	0	static
 ../HARDWARE/Task_Board/Voice/Voice.c:25:6:Voice_SendData	0	static
 ../HARDWARE/Task_Board/Voice/Voice.c:38:6:HAL_UART_RxCpltCallback	0	static
-../HARDWARE/Task_Board/Voice/Voice.c:55:9:Voice_ASR	40	static
+../HARDWARE/Task_Board/Voice/Voice.c:55:9:Voice_ASR	32	static
 ../HARDWARE/Task_Board/Voice/Voice.c:112:6:Voice_SendCommand	16	static

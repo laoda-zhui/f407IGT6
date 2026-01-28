@@ -30,7 +30,7 @@
 ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.c:2308:13:HAL_CAN_SleepCallback	1
 ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.c:2324:13:HAL_CAN_WakeUpFromRxMsgCallback	1
 ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.c:2341:13:HAL_CAN_ErrorCallback	1
-../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.c:1727:6:HAL_CAN_IRQHandler	47
+../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.c:1727:6:HAL_CAN_IRQHandler	54
 ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.c:2378:22:HAL_CAN_GetState	3
 ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.c:2413:10:HAL_CAN_GetError	1
 ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.c:2425:19:HAL_CAN_ResetError	2

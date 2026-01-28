@@ -241,7 +241,7 @@ void Car_Back(uint8_t speed, uint16_t temp) // 主车后退 参数：速度/距�
 
 
 /**************************************************************************
-函数功能：根据码盘差值控制小车左转 - 打滑不建议使用
+函数功能：根据码盘差值控制小车左转 -  (推荐30)
 入口参数：speed:速度(max=120) Angle:转弯角度
 返回  值：无
 **************************************************************************/
@@ -255,7 +255,7 @@ void Car_MPLeft(uint8_t speed, double Angle)       // 主车左转 参数：角�
 	Motor_SyncRightEncoder();    /*右编码器同步一次*/
 
 	PID_Clear(&Turn_PID);	/*清空一次转向pid*/
-	Taget_AnglePulse = Motor_calculate_pulses(Angle*(M_PI/180.0)*WHEEL_BASE_CM/1.5);
+	Taget_AnglePulse = Motor_calculate_pulses(Angle*(M_PI/180.0)*WHEEL_BASE_CM/3.0);
 	Turn_PID.Target = (float)Taget_AnglePulse;
     Car_Speed = speed;      // 速度值
 
@@ -267,7 +267,7 @@ void Car_MPLeft(uint8_t speed, double Angle)       // 主车左转 参数：角�
 
 
 /**************************************************************************
-函数功能：根据码盘差控制小车右转 - 打滑不建议使用
+函数功能：根据码盘差控制小车右转 - (推荐30)
 入口参数：speed:速度(max=120) Angle:转弯角度
 返回  值：无
 **************************************************************************/
@@ -280,7 +280,7 @@ void Car_MPRight(uint8_t speed, double Angle)       // 主车右转 参数：角
 
 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	*/
 	PID_Clear(&Turn_PID);	/*清空一次转向pid*/
-	Taget_AnglePulse = Motor_calculate_pulses(Angle*(M_PI/180.0)*WHEEL_BASE_CM/1.5);
+	Taget_AnglePulse = Motor_calculate_pulses(Angle*(M_PI/180.0)*WHEEL_BASE_CM/3.0);
 	Turn_PID.Target = (float)Taget_AnglePulse;
 
     Car_Speed = speed;      // 速度值
@@ -474,9 +474,9 @@ void Go_and_Back_Check(void)
 
 /*转向pid结构体*/
 PID_t Turn_PID={
-		.Kp = 0.5,
-		.Ki = 0.1,
-		.Kd = 0.0,
+		.Kp = 0.6,
+		.Ki = 0.0,
+		.Kd = 0.1,
 		.OutMin = -120,
 		.OutMax = 120
 
@@ -534,7 +534,7 @@ void TurnAngle_NewCheck(void)
 
 		uint32_t runTime = HAL_GetTick() - Turn_StartTime;
 
-		if(runTime < 400){return;} /*小于400ms检测黑线*/
+		if(runTime < 500){return;} /*小于400ms检测黑线*/
 		if (runTime > 4000)/*大于4s说明脱线了*/
 		{
 			Motor_Control(0,0);
@@ -566,9 +566,9 @@ void TurnAngle_NewCheck(void)
 
 /****************************PID结构体**********************************/
 PID_t PID_TurnTrack={
-		.Kp = 19.0,
+		.Kp = 13.0,
 		.Ki = 0.0,
-		.Kd = 2.7,
+		.Kd = 4.0,
 
 		.OutMax = 120,
 		.OutMin = -120,
@@ -615,6 +615,13 @@ void Track_Check(void) 	/*这里选择取循迹的后面八个-x1，右边到左
 
 		if(CarFlag == TrackRFID_Flag) /*白卡循迹*/
 		{
+			if((x1&0x81) == 0x00 || (x1 & 0xC3)==0x00) /*普通十字路口白卡循迹补丁*/
+			{
+				err = 0;
+				Stop_Flag = Task_Complete;
+				Motor_Control(0,0);
+				return;
+			}
 			switch(x1)
 			{
 			case 0xFF: /*1111 1111*/
@@ -633,13 +640,7 @@ void Track_Check(void) 	/*这里选择取循迹的后面八个-x1，右边到左
 
 
 
-		if((x1&0x81) == 0x00 || (x1 & 0xC3)==0x00) /*普通十字路口白卡循迹补丁*/
-		{
-			err = 0;
-			Stop_Flag = Task_Complete;
-			Motor_Control(0,0);
-			return;
-		}
+
 
 
 		switch(x1)
@@ -655,21 +656,21 @@ void Track_Check(void) 	/*这里选择取循迹的后面八个-x1，右边到左
 
 			case 0xE7: err = 0; break;		/*直线 1110 0111*/
 
-			case 0xEF: err = -4; break;		/*左转1 1110 1111*/
-			case 0xCF: err = -6; break;		/*左转2  1100 1111*/
-			case 0xDF: err = -7; break;		/*左转2  1101 1111*/
-			case 0x9F: err = -9; break;		/*左转3  1001 1111*/
-			case 0xBF: err = -11; break;	/*左转3  1011 1111*/
-			case 0x3F: err = -12; break;	/*左转3  0011 1111*/
-			case 0x7F: err = -13; break;	/*左转4  0111 1111*/
+			case 0xEF: err = -6; break;		/*左转1 1110 1111*/
+			case 0xCF: err = -7; break;		/*左转2  1100 1111*/
+			case 0xDF: err = -8; break;		/*左转2  1101 1111*/
+			case 0x9F: err = -12; break;	/*左转3  1001 1111*/
+			case 0xBF: err = -15; break;	/*左转3  1011 1111*/
+			case 0x3F: err = -18; break;	/*左转3  0011 1111*/
+			case 0x7F: err = -20; break;	/*左转4  0111 1111*/
 
-			case 0xF7: err = 4; break;		/*右转1  1111 0111*/
-			case 0xF3: err = 6; break;		/*右转2  1111 0011*/
-			case 0xFB: err = 7; break;		/*右转2  1111 1011*/
-			case 0xF9: err = 9; break;		/*右转3  1111 1001*/
-			case 0xFD: err = 11; break;		/*右转2  1111 1101*/
-			case 0xFC: err = 12; break;		/*右转2  1111 1100*/
-			case 0xFE: err = 13; break;		/*右转4  1111 1110*/
+			case 0xF7: err = 6; break;		/*右转1  1111 0111*/
+			case 0xF3: err = 7; break;		/*右转2  1111 0011*/
+			case 0xFB: err = 8; break;		/*右转2  1111 1011*/
+			case 0xF9: err = 12; break;		/*右转3  1111 1001*/
+			case 0xFD: err = 15; break;		/*右转2  1111 1101*/
+			case 0xFC: err = 18; break;		/*右转2  1111 1100*/
+			case 0xFE: err = 20; break;		/*右转4  1111 1110*/
 
 			case 0xFF:	/*脱线了全灭*/
 			{
