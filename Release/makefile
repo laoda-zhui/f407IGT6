@@ -79,7 +79,7 @@ main-build: f407IGT6-can.elf secondary-outputs
 
 # Tool invocations
 f407IGT6-can.elf f407IGT6-can.map: $(OBJS) $(USER_OBJS) C:\Users\zhui\AppData\Roaming\32\workspace\f407igt6_Car\f407IGT6\STM32F407IGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "f407IGT6-can.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\zhui\AppData\Roaming\32\workspace\f407igt6_Car\f407IGT6\STM32F407IGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="f407IGT6-can.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+	arm-none-eabi-gcc -o "f407IGT6-can.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\zhui\AppData\Roaming\32\workspace\f407igt6_Car\f407IGT6\STM32F407IGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="f407IGT6-can.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

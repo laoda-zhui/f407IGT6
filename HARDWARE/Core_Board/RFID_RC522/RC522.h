@@ -7,6 +7,9 @@
 #include "main.h"
 #include "LED.h"
 #include "can_Tx.h"
+#include "Delay.h"
+#include "Beep.h"
+
 
 #define  RFID_Read			0x01
 #define  RFID_Write			0x02

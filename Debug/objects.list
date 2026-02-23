@@ -54,3 +54,5 @@
 "./HARDWARE/Task_Board/bh1750/bh1750.o"
 "./HARDWARE/Time_Interrupt/Time_Interrupt.o"
 "./Task/Task1/Task.o"
+"./Task/Task1/TaskFun.o"
+"./Task/Task1/TaskSlove.o"

@@ -1,4 +1,4 @@
-../HARDWARE/Core_Board/RFID_RC522/RC522.c:32:6:RC522_SendData	8	static
+../HARDWARE/Core_Board/RFID_RC522/RC522.c:32:6:RC522_SendData	0	static
 ../HARDWARE/Core_Board/RFID_RC522/RC522.c:44:8:RC522_ReceiveData	8	static
 ../HARDWARE/Core_Board/RFID_RC522/RC522.c:75:8:RC522_WriteReg	32	static
 ../HARDWARE/Core_Board/RFID_RC522/RC522.c:109:9:RC522_ReadReg	24	static
@@ -11,13 +11,13 @@
 ../HARDWARE/Core_Board/RFID_RC522/RC522.c:250:8:RC522_PcdReset	8	static
 ../HARDWARE/Core_Board/RFID_RC522/RC522.c:273:9:RC522_GetLinkFlag	0	static
 ../HARDWARE/Core_Board/RFID_RC522/RC522.c:285:8:InitRC522	8	static
-../HARDWARE/Core_Board/RFID_RC522/RC522.c:317:6:RC522_LinkTest	8	static
+../HARDWARE/Core_Board/RFID_RC522/RC522.c:317:6:RC522_LinkTest	16	static
 ../HARDWARE/Core_Board/RFID_RC522/RC522.c:335:8:RC522_PcdComMF522	32	static
 ../HARDWARE/Core_Board/RFID_RC522/RC522.c:452:8:RC522_PcdRequest	48	static
 ../HARDWARE/Core_Board/RFID_RC522/RC522.c:482:8:RC522_PcdAnticoll	48	static
-../HARDWARE/Core_Board/RFID_RC522/RC522.c:522:8:RC522_CalulateCRC	24	static
+../HARDWARE/Core_Board/RFID_RC522/RC522.c:522:8:RC522_CalulateCRC	16	static
 ../HARDWARE/Core_Board/RFID_RC522/RC522.c:551:8:RC522_PcdSelect	40	static
 ../HARDWARE/Core_Board/RFID_RC522/RC522.c:593:8:RC522_PcdAuthState	40	static
-../HARDWARE/Core_Board/RFID_RC522/RC522.c:625:8:RC522_PcdWrite	40	static
+../HARDWARE/Core_Board/RFID_RC522/RC522.c:625:8:RC522_PcdWrite	48	static
 ../HARDWARE/Core_Board/RFID_RC522/RC522.c:666:8:RC522_PcdRead	40	static
-../HARDWARE/Core_Board/RFID_RC522/RC522.c:702:9:RC522	24	static
+../HARDWARE/Core_Board/RFID_RC522/RC522.c:702:9:RC522	40	static

@@ -1,4 +1,4 @@
 ../HARDWARE/Core_Board/KEY/KEY.c:10:7:Key_Init	1
 ../HARDWARE/Core_Board/KEY/KEY.c:22:9:Key_GetNum	2
-../HARDWARE/Core_Board/KEY/KEY.c:34:9:KeyNum_GetState	5
+../HARDWARE/Core_Board/KEY/KEY.c:34:9:KeyNum_GetState	4
 ../HARDWARE/Core_Board/KEY/KEY.c:60:6:KeyNum_Tick	3

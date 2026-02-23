@@ -18,7 +18,8 @@ void Command_SlaveCarStart(void);
 void Command_SlaveCarSTep(void);
 void Command_SlaveCarLight(uint8_t LightInit);
 void Command_SlaveCarSendBt(uint8_t First,uint8_t Second, uint8_t Third);
-
+void Command_SlaveCarSendDis(void);
+void Command_SlaveCarSendRFID(uint8_t RFID);
 
 /*道闸*/
 void Command_OpenGate(void);
@@ -26,6 +27,9 @@ void Command_CloseGate(void);
 void Command_GetGateStates(void);
 void Command_SetGateTop(uint8_t First, uint8_t Second, uint8_t Third);
 void Command_SetGateLast(uint8_t First, uint8_t Second, uint8_t Third);
+
+void Command_SetGateLast2(void);
+void Command_SetGateTop2(void);
 
 
 /*LED计时显示*/
@@ -44,9 +48,13 @@ void Command_TrafficBInMode(void);
 void Command_TrafficCInMode(void);
 void Command_TrafficDInMode(void);
 void Command_TrafficASend(void);
+void Command_TrafficASendC(uint8_t Color);
 void Command_TrafficBSend(void);
+void Command_TrafficBSendC(uint8_t Color);
 void Command_TrafficCSend(void);
+void Command_TrafficCSendC(uint8_t Color);
 void Command_TrafficDSend(void);
+void Command_TrafficDSendC(uint8_t Color);
 
 
 
@@ -72,12 +80,13 @@ void Command_AndroidPlatNum(void);
 
 /*立体车库*/
 void Command_CarPortA(uint8_t Floor);
+void Command_CarPortATo1(void);
 void Command_GetPortAFloor(void);
 void Command_GetPortAInfr(void);
 void Command_GetPortBFloor(void);
 void Command_GetPortBInfr(void);
 void Command_CarPortB(uint8_t Floor);
-
+void Command_CarPortBTo1(void);
 
 
 /*智能路灯*/
@@ -97,8 +106,9 @@ void Command_BusCheckTem(void);
 
 
 /*无线充电站*/
-void Command_WireCharStart(void);
-void Command_WireCharEnd(void);
+void Command_WireStart(uint8_t First, uint8_t Second, uint8_t Third);
+void Command_WireChange(uint8_t First, uint8_t Second, uint8_t Third);
+void Command_WireOpen(void);
 
 
 /*ETC闸门*/
@@ -112,10 +122,13 @@ void Command_SpecialTe(void);
 void Command_Autosystem(uint8_t Number);
 
 /*立体显示*/
-void Command_3DShowHex(uint8_t First, uint8_t Second);
-
-
-
+void Command_3DShowHex(uint8_t* SendData,uint8_t len);
+void Command_3DShowHexEnd(uint8_t First, uint8_t Second);
+void Command_3DShowHexZigbee(uint8_t First, uint8_t Second);
+void Command_3DShowJuXing(void);
+void Command_3DShowCirCle(void);
+void Command_3DShowDis(void);
+void Command_3DShowDis2(uint8_t Shi,uint8_t Ge);
 
 
 

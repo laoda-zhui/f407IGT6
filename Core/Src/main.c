@@ -171,7 +171,7 @@ int main(void)
   uint8_t KeyNum=0;
 
   /*任务切片时间-ms*/
-  uint32_t ADC_TaskTime=50,ADC_LastTime=0;/*ADC任务时间*/
+  uint32_t ADC_TaskTime=20,ADC_LastTime=0;/*ADC任务时间*/
 
 //  uint32_t BH1750_TaskTime=180,BH1750_LastTime=0;/*BH1750任务时间*/
 
@@ -210,57 +210,59 @@ int main(void)
 		  if(KeyNum == 1)
 		  {
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_12);
-
-
 			  Start_Flag = 1;
-
 
 		  }
 		  if(KeyNum == 2)
 		  {
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_13);
 
-			  Command_3DShowHex(41, 41);
+			  Command_TFTAPageDown();
 
 		  }
 		  if(KeyNum == 3)
 		  {
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_14);
 
-
-//			  Command_CarPortB(4);
-
-//			  char txdata[200];
-//////			  sprintf(txdata,"red:%d blue:%d green:%d yellow:%d qingse:%d orange:%d purple:%d black:%d\r\n",
-//////			  					  CameraData.red,CameraData.blue,CameraData.green,CameraData.yellow,CameraData.qingse,CameraData.orange,CameraData.purple,CameraData.black);
-////			  sprintf(txdata,"GareInit:%d\r\nTem:%d\r\nVoiceNum:%d\n\rCarPort:%d\n\r",LightInit,BusData.temperature,LightInit,CarPortFlag);
-//			  memcpy(txdata, READ_RFID, sizeof(READ_RFID));
-//			  sprintf(txdata, "%d",sizeof(READ_RFID));
-//			  CAN_TxtoDisplay(txdata, strlen(txdata));
-//			  CAN_TxtoZigbee(FifoBuf_WifiRx, 8);
-
-
+			  Command_AndroidPlatNum();
 		  }
 		  if(KeyNum == 4)
 		  {
 			  HAL_GPIO_TogglePin(GPIOH, GPIO_PIN_15);
-			  char txdata[550];
 
-////			  sprintf(txdata,"red:%d blue:%d green:%d yellow:%d qingse:%d orange:%d purple:%d black:%d\r\n",
-////					  CameraData.red,CameraData.blue,CameraData.green,CameraData.yellow,CameraData.qingse,CameraData.orange,CameraData.purple,CameraData.black);
+
+
+			  char txdata[550];
+//			  sprintf(txdata,"red:%d blue:%d green:%d yellow:%d qingse:%d orange:%d purple:%d black:%d\r\n",
+//					  CameraData.red,CameraData.blue,CameraData.green,CameraData.yellow,CameraData.qingse,CameraData.orange,CameraData.purple,CameraData.black);
+//			  CAN_TxtoDisplay(txdata,strlen(txdata));
 //			  sprintf(txdata,"GareInit:%d\r\nTem:%d\r\nVoiceNum:%d\n\rCarPort:%d\n\r",LightInit,BusData.temperature,LightInit,CarPortFlag);
-//			  sprintf(txdata, "Q1:%s\r\nQ2:%s\r\nQ3:%s\r\n", RQData.RQ1Buf, RQData.RQ2Buf,RQData.RQ3Buf);
+//			  sprintf(txdata, "%s\r\n",SlaveCarData.chepai);
+//			  sprintf(txdata, "Q1:%s\r\nQ2:%s\r\nQ3:%s\r\n%d", RQData.RQ1Buf, RQData.RQ2Buf,RQData.RQ3Buf,BusData.temperature);
+//			  CAN_TxtoDisplay(txdata,strlen(txdata));
+//
+//			  sprintf(txdata,"ruijiao:%d dunjiao:%d zhijiao:%d lingxing:%d changfan:%d juxing:%d star:%d circle:%d\r\n",
+//					  CameraData.ruijiao,CameraData.dunjiao,CameraData.zhijiao,CameraData.lingxing,CameraData.changfan,CameraData.juxing,CameraData.star,CameraData.circle);
+
+			  sprintf(txdata, "Chepai:%s\nColor:%s\n",SlaveCarData.chepai,SlaveCarData.Color);
+//			  sprintf(txdata, "%s\n",SlaveCarData.chepai);
 			  CAN_TxtoDisplay(txdata,strlen(txdata));
+
 
 		  }
 	  }
 
 
 	  /*开启任务*/
-	  if(Start_Flag == 1 || AndroidGoFlag == 1)
+	  if(AndroidGoFlag == 1)
+	  {
+		  Start_Flag = 1;
+		  AndroidGoFlag = 0;
+
+	  }
+	  if(Start_Flag == 1)
 	  {
 		  Task_Engine_Run();
-		  AndroidGoFlag = 0;
 	  }
 
 

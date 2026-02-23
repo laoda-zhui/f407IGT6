@@ -18,7 +18,7 @@
 #include <ctype.h>
 #include "string.h"
 #include "Lib.h"
-
+#include "TaskFun.h"
 
 typedef enum {
     ACT_END = 0,    // 结束标志
@@ -42,13 +42,13 @@ typedef enum {
     ACT_DELAY,      // 延时等待 (参数: 毫秒)
     ACT_WAIT_NEQ0,   // 等待变量不为0 (参数: 超时ms, 变量地址)
 	ACT_WAIT_VAL_EQ,   // 等待变量为指定值 (参数: 超时ms, 指定值, 变量地址)
+	ACT_RESET_TIMER,	//重置检查时间
+    ACT_CHECK_TIMEOUT,  // 检查是否超时，若超时则跳转 (没超时下一行)
 
 	// --- 跳转类 ---
 	ACT_JUMP,			// 无条件跳转: Param1 = 目标ID
     ACT_JUMP_IF,        // 条件跳转: Param1 = 目标ID, Param2 = 匹配值, ArgPtr = 变量地址
-
-	//自定义循环类
-    ACT_CUSTOM_LOOP  // 【新增】自定义循环逻辑
+	ACT_JUMP_IF_NOT		// 条件跳转: Param1 = 目标ID, 变量 != Param2，则跳转到 Param1,ArgPtr = 变量地址
 
 } ActionType_t;
 
@@ -84,8 +84,9 @@ extern uint8_t Block;	//块地址
 extern char Coordinate[10]; //位置字符串
 extern uint8_t SendBattery[3];
 
-extern char QR1Num[50]; //二维码1
-extern char QR2Num[50]; //二维码2
+extern char QR1Num[50];	//解密后的数组二维码1
+extern char QR2Num[50]; //解密后的数组二维码2
+
 
 
 

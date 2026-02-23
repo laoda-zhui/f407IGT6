@@ -66,20 +66,27 @@ void Motor_Init(void)
 入口参数：L_Spend 左侧电机速度  R_Spend 右侧电机转速
 返回  值：无
 **************************************************************************/
-void Motor_Control(int L_Spend,int R_Spend)
+void Motor_Control(int L_Spend, int R_Spend)
 {
-	if(L_Spend > 120){L_Spend=120;}
-	if(L_Spend > 0 && L_Spend < 15){L_Spend = 15;}
-	if(L_Spend < -120){L_Spend=-120;}
-	if(L_Spend < 0 && L_Spend > -15){L_Spend = -15;}
+    // --- 设定最小启动阈值 (根据你的电机实测，通常在 15~20 之间) ---
+    const int MIN_SPEED = 15;
 
-	if(R_Spend > 120){R_Spend=120;}
-	if(R_Spend > 0 && R_Spend < 15){R_Spend = 15;}
-	if(R_Spend < -120){R_Spend=-120;}
-	if(R_Spend < 0 && R_Spend > -15){R_Spend = -15;}
+    // 1. 处理左轮死区
+    if(L_Spend > 0 && L_Spend < MIN_SPEED) L_Spend = MIN_SPEED;
+    if(L_Spend < 0 && L_Spend > -MIN_SPEED) L_Spend = -MIN_SPEED;
 
+    // 2. 处理右轮死区
+    if(R_Spend > 0 && R_Spend < MIN_SPEED) R_Spend = MIN_SPEED;
+    if(R_Spend < 0 && R_Spend > -MIN_SPEED) R_Spend = -MIN_SPEED;
 
-	CAN_TxtoMotor(L_Spend, R_Spend);
+    // 3. 原有的限幅逻辑 (最大120)
+    if(L_Spend > 120) L_Spend = 120;
+    if(L_Spend < -120) L_Spend = -120;
+    if(R_Spend > 120) R_Spend = 120;
+    if(R_Spend < -120) R_Spend = -120;
+
+    // 4. 执行发送
+    CAN_TxtoMotor(L_Spend, R_Spend);
 }
 
 
@@ -301,7 +308,7 @@ void Car_Left(uint8_t SpeedAll)       // 主车左转 参数：角度参考值
 {
 	Turn_StartTime = HAL_GetTick();
 
-    Car_LSpeed = -SpeedAll;      // 速度值
+    Car_LSpeed = -SpeedAll*1.1;      // 速度值
     Car_RSpeed = SpeedAll;
 
     Stop_Flag = Task_Start;          // 运行状态标志位
@@ -321,7 +328,7 @@ void Car_Right(uint8_t SpeedAll)       // 主车右转 参数：角度参考值
 {
 	Turn_StartTime = HAL_GetTick();
     Car_LSpeed = SpeedAll;      // 速度值
-    Car_RSpeed = -SpeedAll;
+    Car_RSpeed = -SpeedAll*1.1;
 
     Stop_Flag = Task_Start;          // 运行状态标志位
     CarFlag = TurnRight_Flag;       // 右转标志位
@@ -453,7 +460,7 @@ void Go_and_Back_Check(void)
 		if(Taget_Pulses <= Motor_GetLDifcoder()) // 行驶距离大于等于需要行驶的码盘值/距离时，停车
 		{
 			Stop_Flag = Task_Complete;
-			Car_Speed_ing = 50;
+			Car_Speed_ing = 45;
 			Motor_Control(0,0);		// 停止
 			return;
 		}
@@ -550,7 +557,7 @@ void TurnAngle_NewCheck(void)
 				Motor_Control(0,0);
 			}
 		}
-		if( (x1 & 0x10) == 0x00 && CarFlag == TurnRight_Flag)
+		if((x1 & 0x18) != 0x18&& CarFlag == TurnRight_Flag)
 		{
 			if (x1 != 0x00)
 			{
@@ -565,14 +572,13 @@ void TurnAngle_NewCheck(void)
 
 
 /****************************PID结构体**********************************/
-PID_t PID_TurnTrack={
-		.Kp = 13.0,
-		.Ki = 0.0,
-		.Kd = 4.0,
-
-		.OutMax = 120,
-		.OutMin = -120,
-		.Target = 0
+PID_t PID_TurnTrack = {
+    .Kp = 4.3,    // 原 9.5 -> 降为 5.5 (因为下面的 error 值变大了，总输出依然够大)
+    .Ki = 0.0,    // 保持 0，循迹不需要积分
+    .Kd = 65.0,   // 原 2.5 -> 猛增到 45.0 (核心！重车防抖专用阻尼)
+    .OutMax = 250, // 稍微放宽限幅，保证大弯能转过来
+    .OutMin = -250,
+    .Target = 0
 };
 
 
@@ -624,88 +630,117 @@ void Track_Check(void) 	/*这里选择取循迹的后面八个-x1，右边到左
 			}
 			switch(x1)
 			{
+
 			case 0xFF: /*1111 1111*/
-				err = 0;
-				count++;
-				if(count > 30)
-				{
-					count=0;
+					count = 0;
+					err = 0;
 					Motor_Control(0,0);
 					Stop_Flag = Task_Complete;
-					return;
-				}
-				break;
+
 			}
 		}
 
 
-
-
-
-
-		switch(x1)
+		/*循迹补丁*/
+		if((x1 & 0x3C) == 0x00)
 		{
-			case 0x3C:	/*十字路口全亮停止 0011 1100,  0000 0000*/
-			case 0x00:
-			{
-				err = 0;
-				Stop_Flag = Task_Complete;
-				Motor_Control(0,0);
-				return;
-			}
-
-			case 0xE7: err = 0; break;		/*直线 1110 0111*/
-
-			case 0xEF: err = -6; break;		/*左转1 1110 1111*/
-			case 0xCF: err = -7; break;		/*左转2  1100 1111*/
-			case 0xDF: err = -8; break;		/*左转2  1101 1111*/
-			case 0x9F: err = -12; break;	/*左转3  1001 1111*/
-			case 0xBF: err = -15; break;	/*左转3  1011 1111*/
-			case 0x3F: err = -18; break;	/*左转3  0011 1111*/
-			case 0x7F: err = -20; break;	/*左转4  0111 1111*/
-
-			case 0xF7: err = 6; break;		/*右转1  1111 0111*/
-			case 0xF3: err = 7; break;		/*右转2  1111 0011*/
-			case 0xFB: err = 8; break;		/*右转2  1111 1011*/
-			case 0xF9: err = 12; break;		/*右转3  1111 1001*/
-			case 0xFD: err = 15; break;		/*右转2  1111 1101*/
-			case 0xFC: err = 18; break;		/*右转2  1111 1100*/
-			case 0xFE: err = 20; break;		/*右转4  1111 1110*/
-
-			case 0xFF:	/*脱线了全灭*/
-			{
-				err = 0;
-
-				if(count > 1000)
-				{
-					count=0;
-					Motor_Control(0,0);
-					Stop_Flag = Task_Complete;
-				}
-				else
-				{
-					count++;
-				}
-				break;
-			}
-			default:
-				break;
+			Motor_Control(0, 0);
+		    Stop_Flag = Task_Complete;
+		    return;
 		}
 
+
+	    switch(x1)
+	    {
+	        case 0x00: // 全亮/全黑 (根据实际情况调整)
+	        {
+	            if(count > 1000) {
+	                count = 0;
+	                Motor_Control(0,0);
+	                Stop_Flag = Task_Complete;
+	                return;
+	            } else {
+	                count++;
+	                // 保持上一次 err，利用惯性盲走
+	            }
+	            break;
+	        }
+
+	        // --- 直线 ---
+	        case 0xE7: err = 0; count=0; break;       /* 1110 0111 */
+
+	        // --- 左偏 (Error 为负) ---
+	        // 小偏：err 设大一点，让 PID 算出的值能突破静摩擦
+	        case 0xEF: err = -25; count=0; break;     /* 1110 1111 */
+	        case 0xC7: err = -35; count=0; break;     /* 1100 0111 */
+
+	        // 中偏：平滑过渡
+	        case 0xCF: err = -40; count=0; break;     /* 1100 1111 */
+	        case 0xDF: err = -42; count=0; break;     /* 1101 1111 */
+	        case 0x9F: err = -47; count=0; break;     /* 1001 1111 */
+
+	        // 大偏：边缘拉回
+	        case 0x8F: err = -55; count=0; break;     /* 1000 1111 */
+	        case 0xBF: err = -60; count=0; break;     /* 1011 1111 */
+	        case 0x3F: err = -65; count=0; break;     /* 0011 1111 */
+	        case 0x1F: err = -75; count=0; break;     /* 0001 1111 */
+	        case 0x7F: err = -85; count=0; break;     /* 0111 1111 */
+
+	        // --- 右偏 (Error 为正) ---
+	        case 0xF7: err = 25; count=0; break;      /* 1111 0111 */
+	        case 0xE3: err = 35; count=0; break;      /* 1110 0011 */
+
+	        case 0xF3: err = 40; count=0; break;      /* 1111 0011 */
+	        case 0xFB: err = 42; count=0; break;      /* 1111 1011 */
+	        case 0xF9: err = 47; count=0; break;      /* 1111 1001 */
+
+	        case 0xF1: err = 55; count=0; break;      /* 1111 0001 */
+	        case 0xFD: err = 60; count=0; break;      /* 1111 1101 */
+	        case 0xFC: err = 65; count=0; break;      /* 1111 1100 */
+	        case 0xF8: err = 75; count=0; break;      /* 1111 1000 */
+	        case 0xFE: err = 85; count=0; break;      /* 1111 1110 */
+
+	        case 0xFF: // 没线
+	        {
+	             if(count > 1000) {
+	                count = 0;
+	                Motor_Control(0,0);
+	                Stop_Flag = Task_Complete;
+	             } else {
+	                count++;
+	             }
+	             break;
+	        }
+	        default: break;
+	    }
+
+	    // -------------------------------------------------------------
+	    // 3. 动态 PID 计算 (Gain Scheduling)
+	    // -------------------------------------------------------------
+	    // 逻辑：大弯降 Kp 防甩，小弯标准 Kp
+	    float abs_err = fabs(err);
+	    if(abs_err > 55)
+	    {
+	        PID_TurnTrack.Kp = 3.0; // 大弯柔和模式
+	    }
+	    else
+	    {
+	        PID_TurnTrack.Kp = 4.2; // 小弯标准模式
+	    }
 
 
 		PID_TurnTrack.Actual = err;
 		PIDSpeed_Update(&PID_TurnTrack);
-
+		float Turn_Compensation = fabs(PID_TurnTrack.Out) * 0.3f; // 补偿系数 0.15
 
 
 		if(CarFlag == TrackMpBack_Flag)
 		{
-			Motor_Control( (Car_Speed + PID_TurnTrack.Out),  (Car_Speed - PID_TurnTrack.Out) );
+			Motor_Control( (Car_Speed + PID_TurnTrack.Out + Turn_Compensation),  (Car_Speed - PID_TurnTrack.Out + Turn_Compensation) );
 		}
 		else
 		{
-			Motor_Control( (Car_Speed - PID_TurnTrack.Out),  (Car_Speed + PID_TurnTrack.Out) );
+			Motor_Control( (Car_Speed - PID_TurnTrack.Out + Turn_Compensation),  (Car_Speed + PID_TurnTrack.Out + Turn_Compensation) );
 		}
 
 	}

@@ -1,1 +1,6 @@
 ../HARDWARE/MyLib/Lib.c:10:9:CharToHex	0	static
+../HARDWARE/MyLib/Lib.c:32:6:AssValue	0	static
+../HARDWARE/MyLib/Lib.c:40:5:get_prio	0	static
+../HARDWARE/MyLib/Lib.c:52:7:Calc	16	static
+../HARDWARE/MyLib/Lib.c:65:7:Solve_Math_String	160	static
+../HARDWARE/MyLib/Lib.c:147:7:Evaluate_Expression	152	static

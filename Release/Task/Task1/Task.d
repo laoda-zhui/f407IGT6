@@ -39,14 +39,15 @@ Task/Task1/Task.o: ../Task/Task1/Task.c ../Task/Task1/Task.h \
  ../HARDWARE/Time_Interrupt/Time_Interrupt.h \
  ../HARDWARE/Time_Interrupt/../Core_Board/KEY/KEY.h \
  ../HARDWARE/Core_Board/RFID_RC522/RC522.h ../Core/Inc/usart.h \
- ../HARDWARE/Core_Board/LED/LED.h \
- ../HARDWARE/Task_Board/Ultrasonic/Ultrasonic.h ../HARDWARE/Delay/Delay.h \
- ../Core/Inc/TIM.h ../HARDWARE/Task_Board/bh1750/bh1750.h \
- ../Core/Inc/i2c.h ../HARDWARE/Task_Board/Infrared/infrared.h \
- ../HARDWARE/CAN/can_cmd.h \
+ ../HARDWARE/Core_Board/LED/LED.h ../HARDWARE/Delay/Delay.h \
+ ../HARDWARE/Core_Board/BEEP/Beep.h \
+ ../HARDWARE/Task_Board/Ultrasonic/Ultrasonic.h ../Core/Inc/TIM.h \
+ ../HARDWARE/Task_Board/bh1750/bh1750.h ../Core/Inc/i2c.h \
+ ../HARDWARE/Task_Board/Infrared/infrared.h ../HARDWARE/CAN/can_cmd.h \
  ../HARDWARE/Task_Board/Photoresistance/Photoresistance.h \
  ../HARDWARE/Command/Command.h ../HARDWARE/Task_Board/BEEP/Task_Beep.h \
- ../HARDWARE/Task_Board/Voice/Voice.h ../HARDWARE/MyLib/Lib.h
+ ../HARDWARE/Task_Board/Voice/Voice.h ../HARDWARE/MyLib/Lib.h \
+ ../Task/Task1/TaskFun.h
 ../Task/Task1/Task.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
@@ -96,8 +97,9 @@ Task/Task1/Task.o: ../Task/Task1/Task.c ../Task/Task1/Task.h \
 ../HARDWARE/Core_Board/RFID_RC522/RC522.h:
 ../Core/Inc/usart.h:
 ../HARDWARE/Core_Board/LED/LED.h:
-../HARDWARE/Task_Board/Ultrasonic/Ultrasonic.h:
 ../HARDWARE/Delay/Delay.h:
+../HARDWARE/Core_Board/BEEP/Beep.h:
+../HARDWARE/Task_Board/Ultrasonic/Ultrasonic.h:
 ../Core/Inc/TIM.h:
 ../HARDWARE/Task_Board/bh1750/bh1750.h:
 ../Core/Inc/i2c.h:
@@ -108,3 +110,4 @@ Task/Task1/Task.o: ../Task/Task1/Task.c ../Task/Task1/Task.h \
 ../HARDWARE/Task_Board/BEEP/Task_Beep.h:
 ../HARDWARE/Task_Board/Voice/Voice.h:
 ../HARDWARE/MyLib/Lib.h:
+../Task/Task1/TaskFun.h:

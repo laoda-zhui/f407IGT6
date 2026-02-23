@@ -20,9 +20,9 @@
 
 
 /*对应缓冲数组*/
+extern uint8_t FifoBuf_WifiRx[Can_RxFIFOZize]; 	/*1接收wifi(使用环形缓冲区)*/
+extern uint8_t FifoBuf_ZigbRx[Can_RxFIFOZize]; 	/*2接收zigbee(使用环形缓冲区)*/
 extern uint8_t FifoBuf_Info[Can_RxInfoZize]; 	/*0接收显示屏*/
-extern uint8_t FifoBuf_WifiRx[Can_RxFIFOZize]; 	/*1接收wifi*/
-extern uint8_t FifoBuf_ZigbRx[Can_RxZigbeeZize]; 	/*2接收zigbee*/
 extern uint8_t FifoBuf_Track[Can_RxTrackZize];	/*3接收循迹*/
 extern uint8_t FifoBuf_Navig[Can_RxNavigZize]; 	/*4接收navig-暂时不知道是啥*/
 extern uint8_t FifoBuf_HOST[Can_RxHOSTZize];	/*5接收主机*/
@@ -35,7 +35,7 @@ extern uint8_t AndroidGoFlag;
 /*定义接收CAN通信缓冲区数组*/
 typedef struct{
 	uint8_t Flag;	/*标志位*/
-	uint8_t  *Data;	/*发送数据缓冲区*/
+	uint8_t  *Data;	/*接收数据缓冲区*/
 	uint16_t rp; 	/*读索引*/
 	uint16_t wp; 	/*写索引*/
 }Can_RXFIFOBUF;
@@ -47,6 +47,8 @@ void Can_RxBufWrite(Can_RXFIFOBUF *CanBuf, uint8_t *Data, uint8_t len);
 uint8_t Can_RxReadBit(Can_RXFIFOBUF *CanBuf, uint8_t *data);
 uint8_t RingBuf_PeekByte(Can_RXFIFOBUF *buf, uint8_t *val);
 uint8_t Can_RxCheckReadEn(Can_RXFIFOBUF *p);
+uint16_t Can_RxGetLen(Can_RXFIFOBUF *p);
+
 
 /*初始化函数*/
 void CanRxBuf_Init(void);
@@ -78,7 +80,6 @@ typedef struct{
 extern RQStruct RQData;
 
 extern char QR1Num[50]; //二维码1
-
 
 
 
@@ -165,8 +166,10 @@ extern ColorShape CameraData;
 
 /*从车回传数据*/
 typedef struct{
-	uint8_t chepai[7];	/*车牌*/
-
+	char chepai[10];	/*车牌 字符串形式*/
+	char Color[10];
+	uint8_t Location; //停车地点
+	uint8_t GoFlag;
 }SlaveCar;
 
 extern SlaveCar SlaveCarData;

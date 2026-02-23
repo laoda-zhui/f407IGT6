@@ -56,6 +56,23 @@ void Command_SetGateTop(uint8_t First, uint8_t Second, uint8_t Third)
 	CAN_TxtoZigbee(TxBuf, 8);
 }
 
+/**************************************************************************
+函数功能：命令-设置道闸显示车牌前三位(从车发来的)
+入口参数：First Second Third  - ASCII码
+返回  值：无
+**************************************************************************/
+void Command_SetGateTop2(void)
+{
+	uint8_t TxBuf[8]={0x55,0x03,0x10,0x00,0x00,0x00,0x00,0xBB};
+
+	TxBuf[3] = SlaveCarData.chepai[0];
+	TxBuf[4] = SlaveCarData.chepai[1];
+	TxBuf[5] = SlaveCarData.chepai[2];
+
+	TxBuf[6] = (TxBuf[2] + TxBuf[3] + TxBuf[4] + TxBuf[5])%256;
+	CAN_TxtoZigbee(TxBuf, 8);
+}
+
 
 
 /**************************************************************************
@@ -75,7 +92,22 @@ void Command_SetGateLast(uint8_t First, uint8_t Second, uint8_t Third)
 	CAN_TxtoZigbee(TxBuf, 8);
 }
 
+/**************************************************************************
+函数功能：命令-设置道闸显示车牌后三位
+入口参数：无
+返回  值：无
+**************************************************************************/
+void Command_SetGateLast2(void)
+{
+	uint8_t TxBuf[8]={0x55,0x03,0x11,0x00,0x00,0x00,0x00,0xBB};
 
+	TxBuf[3] = SlaveCarData.chepai[3];
+	TxBuf[4] = SlaveCarData.chepai[4];
+	TxBuf[5] = SlaveCarData.chepai[5];
+
+	TxBuf[6] = (TxBuf[2] + TxBuf[3] + TxBuf[4] + TxBuf[5])%256;
+	CAN_TxtoZigbee(TxBuf, 8);
+}
 
 
 
@@ -141,7 +173,11 @@ void Command_LEDShowDis(void)
 
 	CAN_TxtoZigbee(TxBuf, 8);
 
+	Dis_Buf = Dis_mm; //保存测量的超声波距离(mm)
+
 }
+
+
 
 
 /**************************************************************************
@@ -265,6 +301,36 @@ void Command_TrafficASend(void)
 
 }
 
+
+/**************************************************************************
+函数功能：命令-发送给信号灯A 指定识别结果
+入口参数：0-red 1-green 2-yellow
+返回  值：无
+**************************************************************************/
+void Command_TrafficASendC(uint8_t Color)
+{
+
+	switch(Color)
+	{
+	case TrafficRed_Flag:
+		CAN_TxtoZigbee(TrafficA_Red, 8);
+		break;
+	case TrafficGreen_Flag:
+		CAN_TxtoZigbee(TrafficA_Green, 8);
+		break;
+	case TrafficYellow_Flag:
+		CAN_TxtoZigbee(TrafficA_Yellow, 8);
+		break;
+	case TrafficNull:
+		break;
+	}
+
+}
+
+
+
+
+
 /**************************************************************************
 函数功能：命令-发送给信号灯B识别结果
 入口参数：0-red  1-yellow 2-green
@@ -289,6 +355,32 @@ void Command_TrafficBSend(void)
 	}
 
 }
+
+/**************************************************************************
+函数功能：命令-发送给信号灯B 指定识别结果
+入口参数：0-red 1-green 2-yellow
+返回  值：无
+**************************************************************************/
+void Command_TrafficBSendC(uint8_t Color)
+{
+
+	switch(Color)
+	{
+	case TrafficRed_Flag:
+		CAN_TxtoZigbee(TrafficB_Red, 8);
+		break;
+	case TrafficGreen_Flag:
+		CAN_TxtoZigbee(TrafficB_Green, 8);
+		break;
+	case TrafficYellow_Flag:
+		CAN_TxtoZigbee(TrafficB_Yellow, 8);
+		break;
+	case TrafficNull:
+		break;
+	}
+
+}
+
 
 
 /**************************************************************************
@@ -317,6 +409,33 @@ void Command_TrafficCSend(void)
 
 
 /**************************************************************************
+函数功能：命令-发送给信号灯C 指定识别结果
+入口参数：0-red 1-green 2-yellow
+返回  值：无
+**************************************************************************/
+void Command_TrafficCSendC(uint8_t Color)
+{
+
+	switch(Color)
+	{
+	case TrafficRed_Flag:
+		CAN_TxtoZigbee(TrafficC_Red, 8);
+		break;
+	case TrafficGreen_Flag:
+		CAN_TxtoZigbee(TrafficC_Green, 8);
+		break;
+	case TrafficYellow_Flag:
+		CAN_TxtoZigbee(TrafficC_Yellow, 8);
+		break;
+	case TrafficNull:
+		break;
+	}
+
+}
+
+
+
+/**************************************************************************
 函数功能：命令-发送给信号灯D识别结果
 入口参数：0-red 1-green 2-yellow
 返回  值：无
@@ -340,8 +459,30 @@ void Command_TrafficDSend(void)
 	}
 
 }
+/**************************************************************************
+函数功能：命令-发送给信号灯D 指定识别结果
+入口参数：0-red 1-green 2-yellow
+返回  值：无
+**************************************************************************/
+void Command_TrafficDSendC(uint8_t Color)
+{
 
+	switch(Color)
+	{
+	case TrafficRed_Flag:
+		CAN_TxtoZigbee(TrafficD_Red, 8);
+		break;
+	case TrafficGreen_Flag:
+		CAN_TxtoZigbee(TrafficD_Green, 8);
+		break;
+	case TrafficYellow_Flag:
+		CAN_TxtoZigbee(TrafficD_Yellow, 8);
+		break;
+	case TrafficNull:
+		break;
+	}
 
+}
 
 
 /*********************************************控制从车指令**************************************************/
@@ -387,7 +528,7 @@ void Command_SlaveCarLight(uint8_t LightInit)
 
 /**************************************************************************
 函数功能：命令-从车发送无线充电的密码
-入口参数：LightInit-初始路灯档位值
+入口参数：First Second Third
 返回  值：无
 **************************************************************************/
 void Command_SlaveCarSendBt(uint8_t First,uint8_t Second, uint8_t Third)
@@ -400,6 +541,34 @@ void Command_SlaveCarSendBt(uint8_t First,uint8_t Second, uint8_t Third)
 	CAN_TxtoZigbee(TxBuf, 8);
 }
 
+/**************************************************************************
+函数功能：命令-从车发送超声波测距
+入口参数：无
+返回  值：无
+**************************************************************************/
+void Command_SlaveCarSendDis(void)
+{
+	uint8_t TxBuf[8]={0x9f,0x02,0x9f,0x05,0x00,0x00,0x00,0xBB};
+
+	TxBuf[4] = Dis_Buf/10;
+
+	CAN_TxtoZigbee(TxBuf, 8);
+}
+
+
+/**************************************************************************
+函数功能：命令-从车发送白卡解密信息
+入口参数：无
+返回  值：无
+**************************************************************************/
+void Command_SlaveCarSendRFID(uint8_t RFID)
+{
+	uint8_t TxBuf[8]={0x9f,0x02,0x9f,0x06,0x00,0x00,0x00,0xBB};
+
+	TxBuf[4] = RFID;
+
+	CAN_TxtoZigbee(TxBuf, 8);
+}
 
 
 
@@ -575,7 +744,7 @@ void Command_AndroidTraffic(void)
 void Command_Androidshape(void)
 {
 	Command_SendAndroid(0x02, 0x00);   //老师
-	//Command_SendAndroid(0x01, 0x02); //商家
+//	Command_SendAndroid(0x01, 0x02); //商家
 }
 
 
@@ -588,7 +757,7 @@ void Command_Androidshape(void)
 void Command_AndroidColor(void)
 {
 	Command_SendAndroid(0x03, 0x00);  //老师
-	//Command_SendAndroid(0x01, 0x03);//商家
+//	Command_SendAndroid(0x01, 0x03);	//商家
 }
 
 /**************************************************************************
@@ -644,6 +813,17 @@ void Command_CarPortA(uint8_t Floor)
 	}
 }
 
+/**************************************************************************
+函数功能：命令-降b车库
+入口参数：降b车库为1层
+返回  值：无
+**************************************************************************/
+void Command_CarPortATo1(void)
+{
+	Command_CarPortA(1);
+}
+
+
 
 
 /**************************************************************************
@@ -694,6 +874,17 @@ void Command_CarPortB(uint8_t Floor)
 		break;
 	}
 }
+
+/**************************************************************************
+函数功能：命令-降b车库
+入口参数：降b车库为1层
+返回  值：无
+**************************************************************************/
+void Command_CarPortBTo1(void)
+{
+	Command_CarPortB(1);
+}
+
 
 
 
@@ -1060,7 +1251,7 @@ void Command_AlarmReq(void)
 **************************************************************************/
 void Command_Autosystem(uint8_t Number)
 {
-	uint8_t TxBuf[8]={0xAF,0x06,0x00,0x02,0x00,0x00,0x01,0xBF}; //注意题目的命令，有些题目可能不一样23年真题为0xBF结尾，文件以0xBB结尾
+	uint8_t TxBuf[8]={0xAF,0x06,0x00,0x02,0x00,0x00,0x01,0xBB}; //注意题目的命令，有些题目可能不一样23年真题为0xBF结尾，文件以0xBB结尾
 
 
 	TxBuf[2] = Number;
@@ -1079,14 +1270,18 @@ void Command_Autosystem(uint8_t Number)
 
 
 /**************************************************************************
-函数功能：命令-无线充电站开启
+函数功能：命令-无线充电站开启 用开启码开启
 入口参数：无
 返回  值：无
 **************************************************************************/
-void Command_WireCharStart(void)
+void Command_WireStart(uint8_t First, uint8_t Second, uint8_t Third)
 {
-	uint8_t TxBuf[8]={0x55,0x0A,0x01,0x01,0x00,0x00,0x00,0xBB};
+	uint8_t TxBuf[8]={0x55,0x0A,0x02,0x00,0x00,0x00,0x00,0xBB};
 
+
+	TxBuf[3] = First;
+	TxBuf[4] = Second;
+	TxBuf[5] = Third;
 
 	TxBuf[6] = (TxBuf[2] + TxBuf[3] + TxBuf[4] + TxBuf[5])%256;
 
@@ -1096,13 +1291,34 @@ void Command_WireCharStart(void)
 
 
 /**************************************************************************
-函数功能：命令-无线充电站关闭
+函数功能：命令-无线充电站 开启码修改
 入口参数：无
 返回  值：无
 **************************************************************************/
-void Command_WireCharEnd(void)
+void Command_WireChange(uint8_t First, uint8_t Second, uint8_t Third)
 {
-	uint8_t TxBuf[8]={0x55,0x0A,0x01,0x02,0x00,0x00,0x00,0xBB};
+	uint8_t TxBuf[8]={0x55,0x0A,0x03,0x00,0x00,0x00,0x00,0xBB};
+
+
+	TxBuf[3] = First;
+	TxBuf[4] = Second;
+	TxBuf[5] = Third;
+
+	TxBuf[6] = (TxBuf[2] + TxBuf[3] + TxBuf[4] + TxBuf[5])%256;
+
+
+	CAN_TxtoZigbee(TxBuf, 8);
+}
+
+
+/**************************************************************************
+函数功能：命令-无线充电站开启 直接开启
+入口参数：无
+返回  值：无
+**************************************************************************/
+void Command_WireOpen(void)
+{
+	uint8_t TxBuf[8]={0x55,0x0A,0x01,0x01,0x00,0x00,0x00,0xBB};
 
 
 	TxBuf[6] = (TxBuf[2] + TxBuf[3] + TxBuf[4] + TxBuf[5])%256;
@@ -1154,7 +1370,7 @@ void Command_ETCDown(void)
 /*********************************************特殊地形**************************************************/
 
 /**************************************************************************
-函数功能：命令-ETC闸门下调初始角度
+函数功能：命令-特殊地形请求回传状态
 入口参数：无
 返回  值：无
 **************************************************************************/
@@ -1174,27 +1390,128 @@ void Command_SpecialTe(void)
 /*********************************************智能立体显示**************************************************/
 
 /**************************************************************************
-函数功能：命令-智能立体 - 显示文本
+函数功能：红外命令-智能立体 - 显示文本
 入口参数：无
 返回  值：无
 **************************************************************************/
-void Command_3DShowHex(uint8_t First, uint8_t Second)
+void Command_3DShowHex(uint8_t* SendData,uint8_t len)
 {
-	uint8_t TxBuf[6]={0xFF,0x31,0x00,0x00,0x55,0x00};
+	 if(SendData == NULL || len == 0 || (len % 2 != 0)) return;
+
+	uint8_t TxBuf[6]={0xFF,0x31,0x00,0x00,0x00,0x00};
+
+	for(uint8_t i=0;i<len;i+=2)
+	{
+		TxBuf[2] = SendData[i];
+		TxBuf[3] = SendData[i+1];
+		 // 判断是否为最后一个汉字
+		if (i + 2 >= len)
+		{
+			TxBuf[4] = 0x55; // 标记结束
+		}
+		else
+		{
+			TxBuf[4] = 0x00; // 还有后续
+		}
+
+		// 发送红外数据
+		Infrared_SendpData(TxBuf, 6);
+
+		My_Delayms(50);
+	}
+
+}
 
 
-	TxBuf[2] = First;
-	TxBuf[3] = Second;
+/**************************************************************************
+函数功能：红外命令-智能立体 - 显示超声波距离
+入口参数：无
+返回  值：无
+**************************************************************************/
+void Command_3DShowDis(void)
+{
+	uint8_t TxBuf[6]={0xFF,0x11,0x00,0x00,0x00,0x00};
+	uint16_t Dis_mm;
+	uint8_t shi,ge;
 
+	Dis_mm = (uint16_t)(Distance*10.0);
+	if(Dis_mm>999){Dis_mm = 999;}
+
+    shi = (Dis_mm % 100) / 10;
+    ge  = Dis_mm % 10;
+
+	TxBuf[2] = shi;
+	TxBuf[3] = ge ;
+
+	// 发送红外数据
+	Infrared_SendpData(TxBuf, 6);
+
+}
+
+/**************************************************************************
+函数功能：红外命令-智能立体 - 显示指定距离
+入口参数：无
+返回  值：无
+**************************************************************************/
+void Command_3DShowDis2(uint8_t Shi,uint8_t Ge)
+{
+	uint8_t TxBuf[6]={0xFF,0x11,0x00,0x00,0x00,0x00};
+
+
+
+	TxBuf[2] = Shi;
+	TxBuf[3] = Ge;
+
+	// 发送红外数据
+	Infrared_SendpData(TxBuf, 6);
+
+}
+
+/**************************************************************************
+函数功能：zigbee命令-智能立体 - 显示文本
+入口参数：无
+返回  值：无
+**************************************************************************/
+void Command_3DShowHexZigbee(uint8_t First, uint8_t Second)
+{
+	uint8_t TxBuf[8]={0x55,0x11,0x31,0x00,0x00,0x00,0x00,0xBB};
+
+
+	TxBuf[3] = First;
+	TxBuf[4] = Second;
+
+
+
+	CAN_TxtoZigbee(TxBuf, 8);
+}
+
+
+
+/**************************************************************************
+函数功能：红外命令-智能立体 - 显示矩形
+入口参数：无
+返回  值：无
+**************************************************************************/
+void Command_3DShowJuXing(void)
+{
+	uint8_t TxBuf[6]={0xFF,0x12,0x01,0x00,0x00,0x00};
 
 
 	Infrared_SendpData(TxBuf, 6);
 }
 
+/**************************************************************************
+函数功能：红外命令-智能立体 - 显示圆形
+入口参数：无
+返回  值：无
+**************************************************************************/
+void Command_3DShowCirCle(void)
+{
+	uint8_t TxBuf[6]={0xFF,0x12,0x02,0x00,0x00,0x00};
 
 
-
-
+	Infrared_SendpData(TxBuf, 6);
+}
 
 
 

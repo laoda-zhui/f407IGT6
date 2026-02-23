@@ -8,6 +8,7 @@
 
 /*测量数据*/
 extern float Distance;
+extern uint16_t Dis_Buf;
 
 /*初始化*/
 void Ultrasonic_Init();

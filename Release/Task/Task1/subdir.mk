@@ -5,13 +5,16 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-../Task/Task1/Task.c 
+../Task/Task1/Task.c \
+../Task/Task1/TaskFun.c 
 
 OBJS += \
-./Task/Task1/Task.o 
+./Task/Task1/Task.o \
+./Task/Task1/TaskFun.o 
 
 C_DEPS += \
-./Task/Task1/Task.d 
+./Task/Task1/Task.d \
+./Task/Task1/TaskFun.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
@@ -21,7 +24,7 @@ Task/Task1/%.o Task/Task1/%.su Task/Task1/%.cyclo: ../Task/Task1/%.c Task/Task1/
 clean: clean-Task-2f-Task1
 
 clean-Task-2f-Task1:
-	-$(RM) ./Task/Task1/Task.cyclo ./Task/Task1/Task.d ./Task/Task1/Task.o ./Task/Task1/Task.su
+	-$(RM) ./Task/Task1/Task.cyclo ./Task/Task1/Task.d ./Task/Task1/Task.o ./Task/Task1/Task.su ./Task/Task1/TaskFun.cyclo ./Task/Task1/TaskFun.d ./Task/Task1/TaskFun.o ./Task/Task1/TaskFun.su
 
 .PHONY: clean-Task-2f-Task1
 

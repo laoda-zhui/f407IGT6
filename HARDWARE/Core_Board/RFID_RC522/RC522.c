@@ -226,7 +226,7 @@ int8_t RC522_PcdConfigISOType(uint8_t type)
 		RC522_ClearBitMask(Status2Reg,0x08);
 		RC522_WriteReg(ModeReg,0x3D);//3F
 		RC522_WriteReg(RxSelReg,0x86);//84
-		RC522_WriteReg(RFCfgReg,0x7F);   //4F
+		RC522_WriteReg(RFCfgReg,0x70);   //4F
 		RC522_WriteReg(TReloadRegL,30);//tmoLength);// TReloadVal = 'h6a =tmoLength(dec)
 		RC522_WriteReg(TReloadRegH,0);
 		RC522_WriteReg(TModeReg,0x8D);
@@ -703,51 +703,62 @@ uint8_t RC522(uint8_t card_addr,uint8_t mode)
 {
 	uint8_t card_key = (card_addr/4)*4+3;
 	LED1(0)LED2(0)LED3(0)LED4(0)
+	uint8_t retry = 10; // 尝试 30 次
 
-	if(RC522_PcdRequest(PICC_REQALL,CT) == MI_OK)		// 寻卡成功
+	RC522_WriteReg(RFCfgReg, 0x70);
+	while(retry--)
 	{
-		LED1(1)
-		if(RC522_PcdAnticoll(SN) == MI_OK)			// 防冲撞成功
+		if(RC522_PcdRequest(PICC_REQALL,CT) == MI_OK)		// 寻卡成功
 		{
-			LED2(1)
-			if(RC522_PcdSelect(SN) == MI_OK)			// 选卡成功
+			LED1(1)
+			if(RC522_PcdAnticoll(SN) == MI_OK)			// 防冲撞成功
 			{
-				LED3(1)
-				if(RC522_PcdAuthState(KEYA,card_key,KEY_A,SN) == MI_OK)	// 验证密钥（A密钥）
+				LED2(1)
+				if(RC522_PcdSelect(SN) == MI_OK)			// 选卡成功
 				{
-					LED4(1)
-					ADDR_Str[10] = card_addr/10%10 + 0x30;
-					ADDR_Str[11] = card_addr%10 + 0x30;
-					CAN_TxtoDisplay((char *)ADDR_Str,14);		// 打印读写操作块地址
-					if(card_addr == card_key)		// 读写块地址为密钥块
+					LED3(1)
+					if(RC522_PcdAuthState(KEYA,card_key,KEY_A,SN) == MI_OK)	// 验证密钥（A密钥）
 					{
-						mode = 0;			// 密钥块禁止读写操作
-						CAN_TxtoDisplay("ADDR ERROR!\n",13);
-					}
+						LED4(1)
+						ADDR_Str[10] = card_addr/10%10 + 0x30;
+						ADDR_Str[11] = card_addr%10 + 0x30;
+						CAN_TxtoDisplay((char *)ADDR_Str,14);		// 打印读写操作块地址
+						if(card_addr == card_key)		// 读写块地址为密钥块
+						{
+							mode = 0;			// 密钥块禁止读写操作
+							//CAN_TxtoDisplay("ADDR ERROR!\n",13);
+						}
 
-					if((mode == RFID_Write) || (mode == RFID_Write_Read))	// 允许写入数据
-					{
-						if((RC522_PcdWrite(card_addr,WRITE_RFID) == MI_OK))		// 写入数据
+						if((mode == RFID_Write) || (mode == RFID_Write_Read))	// 允许写入数据
 						{
-							CAN_TxtoDisplay("WRITE_RFID - OK\n",17);
+							if((RC522_PcdWrite(card_addr,WRITE_RFID) == MI_OK))		// 写入数据
+							{
+								//CAN_TxtoDisplay("WRITE_RFID - OK\n",17);
+							}
+						}
+						if((mode == RFID_Read) || (mode == RFID_Write_Read))	// 允许读出数据
+						{
+							if(RC522_PcdRead(card_addr,READ_RFID) == MI_OK)			// 读取数据
+							{
+								//CAN_TxtoDisplay("READ_RFID - OK\n",16);
+								CAN_TxtoDisplay("DATA(ASCII):\n",14);
+								CAN_TxtoDisplay((char *)READ_RFID,16);
+								CAN_TxtoDisplay("\n",2);
+
+								Beep_Set(1);
+								My_Delayms(200);
+								Beep_Set(0);
+
+								return 1;
+							}
 						}
 					}
-					if((mode == RFID_Read) || (mode == RFID_Write_Read))	// 允许读出数据
-					{
-						if(RC522_PcdRead(card_addr,READ_RFID) == MI_OK)			// 读取数据
-						{
-							CAN_TxtoDisplay("READ_RFID - OK\n",16);
-							CAN_TxtoDisplay("DATA(ASCII):\n",14);
-							CAN_TxtoDisplay((char *)READ_RFID,16);
-							CAN_TxtoDisplay("\n",2);
-							return 1;
-						}
-					}
-					CAN_TxtoDisplay("\n",2);
 				}
 			}
 		}
+		My_Delayms(5);
 	}
+
 	return 0;
 }
 

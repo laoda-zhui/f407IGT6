@@ -3,9 +3,10 @@
 
 /*10ms wifi空闲处理数据*/
 uint32_t WifiWaitTime = 10,WifiStartTime=0;
+uint32_t Zigbee_RxTime = 0;
 
+RQStruct RQData;//二维码数据结构体
 
-RQStruct RQData;
 
 
 
@@ -14,7 +15,7 @@ RQStruct RQData;
 /*对应缓冲数组 -- 大小参考can_RxSolve.h宏定义*/
 uint8_t 	FifoBuf_Info[Can_RxInfoZize] 		= 	{0}; 	/*0接收显示屏*/
 uint8_t 	FifoBuf_WifiRx[Can_RxFIFOZize] 		= 	{0}; 	/*1接收wifi*/
-uint8_t 	FifoBuf_ZigbRx[Can_RxZigbeeZize] 	= 	{0}; 	/*2接收zigbee*/
+uint8_t 	FifoBuf_ZigbRx[Can_RxFIFOZize] 		= 	{0}; 	/*2接收zigbee*/
 uint8_t 	FifoBuf_Track[Can_RxTrackZize] 	  	= 	{0};	/*3接收循迹*/
 uint8_t 	FifoBuf_Navig[Can_RxNavigZize] 	 	= 	{0}; 	/*4接收navig-暂时不知道是啥*/
 uint8_t 	FifoBuf_HOST[Can_RxHOSTZize] 	  	= 	{0};	/*5接收主机*/
@@ -83,10 +84,17 @@ void CanRxBuf_Init(void)
 	{
 		Can_RxFiFoBuf[i].Flag = 0;
 	}
+	//wifi
 	Can_RxFiFoBuf[1].Data = FifoBuf_WifiRx;
 	Can_RxFiFoBuf[1].rp = Can_RxFIFOZize-1;		/*读索引复位*/
 	Can_RxFiFoBuf[1].wp = 0;					/*写索引复位*/
 	Can_RxFiFoBuf[1].Flag = 0;					/*清空cmd结构体的标志位*/
+
+	//zigbee
+	Can_RxFiFoBuf[2].Data = FifoBuf_ZigbRx;
+	Can_RxFiFoBuf[2].rp = Can_RxFIFOZize-1;		/*读索引复位*/
+	Can_RxFiFoBuf[2].wp = 0;					/*写索引复位*/
+	Can_RxFiFoBuf[2].Flag = 0;					/*清空cmd结构体的标志位*/
 
 }
 
@@ -115,8 +123,9 @@ void CanRx_Loop(void)
 			WifiStartTime = HAL_GetTick();
 			break;
 		case 2:			/*zigbee rx*/
-			memcpy(FifoBuf_ZigbRx, RxData, RxMsgArray.DLC);
+			Can_RxBufWrite(&Can_RxFiFoBuf[2], RxData, RxMsgArray.DLC);
 			Can_RxFiFoBuf[2].Flag = 1;
+			Zigbee_RxTime = HAL_GetTick();
 			break;
 		case 0:			/*disp*/
 			memcpy(FifoBuf_Info, RxData, RxMsgArray.DLC);
@@ -346,7 +355,29 @@ void Slove_AndroidData(void)
 			    }
 			}
 
+			// --- 处理车牌号 ---
+			char *pSearch = strstr(temp_buf, "国");
+			if(pSearch != NULL)
+			{
+				char *pStart = pSearch + 3; // 跳过“国”字的3个字节
+				char *pEnd = strchr(temp_buf, '-');
 
+				if(pStart != NULL && pEnd != NULL)
+				{
+					int len = pEnd - (pStart);
+					memcpy(&SlaveCarData.chepai,pStart,len);
+					SlaveCarData.chepai[len] = '\0';
+
+
+					char *pcolorE = strchr(pEnd+1, '-');
+					if(pcolorE != NULL)
+					{
+						int len2 = pcolorE - pEnd - 1;
+						memcpy(&SlaveCarData.Color, pEnd+1, len2);
+						SlaveCarData.Color[len2] = '\0';
+					}
+				}
+			}
 
 
 
@@ -363,26 +394,6 @@ void Slove_AndroidData(void)
 
 
 
-
-
-
-
-void Slove_GoFlag(void)
-{
-	if(FifoBuf_WifiRx[0] == 0x55 && FifoBuf_WifiRx[1] == 0xAA)
-	{
-		if(FifoBuf_WifiRx[2] == 0xA0 && FifoBuf_WifiRx[6] == 0xA0)
-		{
-			AndroidGoFlag = 1;
-		}
-	}
-}
-
-
-
-
-
-
 /**************************************************************************
 函数功能：CAN-Zigbee数据处理
 入口参数：无
@@ -390,56 +401,69 @@ void Slove_GoFlag(void)
 **************************************************************************/
 void Slove_ZigbeeData(void)
 {
+	uint8_t ZigbeeBuf[8]={0};
+
+	 for(uint8_t i = 0; i < 8; i++)
+	{
+		// 尝试读取一个字节
+		if(Can_RxReadBit(&Can_RxFiFoBuf[2], &ZigbeeBuf[i]) == 0)
+		{
+			// 如果读空了（比如不满8字节），这里补0，防止数组越界
+			ZigbeeBuf[i] = 0x00;
+		}
+	}
+
+
 
 	/*车库回传层数状态*/
-	if(FifoBuf_ZigbRx[0] == 0x55)
+	if(ZigbeeBuf[0] == 0x55)
 	{
-		if(FifoBuf_ZigbRx[1] == 0x0D && FifoBuf_ZigbRx[2] == 0x03) /*车库A*/
+		if(ZigbeeBuf[1] == 0x0D && ZigbeeBuf[2] == 0x03) /*车库A*/
 		{
-			if(FifoBuf_ZigbRx[3] == 0x01) /*普通层数回传*/
+			if(ZigbeeBuf[3] == 0x01) /*普通层数回传*/
 			{
-				if(FifoBuf_ZigbRx[4] == 0x01) /*第一层*/
+				if(ZigbeeBuf[4] == 0x01) /*第一层*/
 				{
 					CarPortFlag = CarportA1;
 
 				}
-				if(FifoBuf_ZigbRx[4] == 0x02) /*第二层*/
+				if(ZigbeeBuf[4] == 0x02) /*第二层*/
 				{
 					CarPortFlag = CarportA2;
 
 				}
-				if(FifoBuf_ZigbRx[4] == 0x03) /*第三层*/
+				if(ZigbeeBuf[4] == 0x03) /*第三层*/
 				{
 					CarPortFlag = CarportA3;
 
 				}
-				if(FifoBuf_ZigbRx[4] == 0x04) /*第四层*/
+				if(ZigbeeBuf[4] == 0x04) /*第四层*/
 				{
 					CarPortFlag = CarportA4;
 
 				}
 			}
 		}
-		if(FifoBuf_ZigbRx[1] == 0x05 && FifoBuf_ZigbRx[2] == 0x03) /*车库B*/
+		if(ZigbeeBuf[1] == 0x05 && ZigbeeBuf[2] == 0x03) /*车库B*/
 		{
-			if(FifoBuf_ZigbRx[3] == 0x01) /*普通层数回传*/
+			if(ZigbeeBuf[3] == 0x01) /*普通层数回传*/
 			{
-				if(FifoBuf_ZigbRx[4] == 0x01) /*第一层*/
+				if(ZigbeeBuf[4] == 0x01) /*第一层*/
 				{
 					CarPortFlag = CarportB1;
 
 				}
-				if(FifoBuf_ZigbRx[4] == 0x02) /*第二层*/
+				if(ZigbeeBuf[4] == 0x02) /*第二层*/
 				{
 					CarPortFlag = CarportB2;
 
 				}
-				if(FifoBuf_ZigbRx[4] == 0x03) /*第三层*/
+				if(ZigbeeBuf[4] == 0x03) /*第三层*/
 				{
 					CarPortFlag = CarportB3;
 
 				}
-				if(FifoBuf_ZigbRx[4] == 0x04) /*第四层*/
+				if(ZigbeeBuf[4] == 0x04) /*第四层*/
 				{
 					CarPortFlag = CarportB4;
 
@@ -451,9 +475,9 @@ void Slove_ZigbeeData(void)
 
 
 	/*ETC闸门回传开启状态*/
-	if(FifoBuf_ZigbRx[0] == 0x55 && FifoBuf_ZigbRx[1]  == 0x0c)
+	if(ZigbeeBuf[0] == 0x55 && ZigbeeBuf[1]  == 0x0c)
 	{
-		if(FifoBuf_ZigbRx[2] == 0x01 && FifoBuf_ZigbRx[3] == 0x01 && FifoBuf_ZigbRx[4] == 0x06)
+		if(ZigbeeBuf[2] == 0x01 && ZigbeeBuf[3] == 0x01 && ZigbeeBuf[4] == 0x06)
 		{
 			GateFlag = GateOpen;
 		}
@@ -462,55 +486,90 @@ void Slove_ZigbeeData(void)
 
 
 	/*报警台回传救援坐标*/
-	if(FifoBuf_ZigbRx[0] == 0x55 && FifoBuf_ZigbRx[1]  == 0x07)
+	if(ZigbeeBuf[0] == 0x55 && ZigbeeBuf[1]  == 0x07)
 	{
-		if(FifoBuf_ZigbRx[2] == 0x01)
+		if(ZigbeeBuf[2] == 0x01)
 		{
-			RescueLocation = FifoBuf_ZigbRx[3];
+			RescueLocation = ZigbeeBuf[3];
 		}
 	}
 
 	/*公交站回传数据*/
-	if(FifoBuf_ZigbRx[0] == 0x55 && FifoBuf_ZigbRx[1]  == 0x06)
+	if(ZigbeeBuf[0] == 0x55 && ZigbeeBuf[1]  == 0x06)
 	{
-		if(FifoBuf_ZigbRx[2] == 0x02) /*日期*/
+		if(ZigbeeBuf[2] == 0x02) /*日期*/
 		{
-			BusData.year  =   FifoBuf_ZigbRx[3]/16*10 + FifoBuf_ZigbRx[3]%16;
-			BusData.month =   FifoBuf_ZigbRx[4]/16*10 + FifoBuf_ZigbRx[4]%16;
-			BusData.day   =   FifoBuf_ZigbRx[5]/16*10 + FifoBuf_ZigbRx[5]%16;
+			BusData.year  =   ZigbeeBuf[3]/16*10 + ZigbeeBuf[3]%16;
+			BusData.month =   ZigbeeBuf[4]/16*10 + ZigbeeBuf[4]%16;
+			BusData.day   =   ZigbeeBuf[5]/16*10 + ZigbeeBuf[5]%16;
 
 		}
 
-		if(FifoBuf_ZigbRx[2] == 0x03) /*时间*/
+		if(ZigbeeBuf[2] == 0x03) /*时间*/
 		{
-			BusData.hour  =   FifoBuf_ZigbRx[3]/16*10 + FifoBuf_ZigbRx[3]%16;
-			BusData.min   =   FifoBuf_ZigbRx[4]/16*10 + FifoBuf_ZigbRx[4]%16;
-			BusData.secs  =   FifoBuf_ZigbRx[5]/16*10 + FifoBuf_ZigbRx[5]%16;
+			BusData.hour  =   ZigbeeBuf[3]/16*10 + ZigbeeBuf[3]%16;
+			BusData.min   =   ZigbeeBuf[4]/16*10 + ZigbeeBuf[4]%16;
+			BusData.secs  =   ZigbeeBuf[5]/16*10 + ZigbeeBuf[5]%16;
 		}
 
-		if(FifoBuf_ZigbRx[2] == 0x04) /*天气和温度*/
+		if(ZigbeeBuf[2] == 0x04) /*天气和温度*/
 		{
-			BusData.weather     = FifoBuf_ZigbRx[3];
-			BusData.temperature = FifoBuf_ZigbRx[4];
+			BusData.weather     = ZigbeeBuf[3];
+			BusData.temperature = ZigbeeBuf[4];
 
 		}
 	}
 
 	/*从车发来的车牌信息*/
-	if(FifoBuf_ZigbRx[0] == 0x55 && FifoBuf_ZigbRx[1]  == 0x12)
+	if(ZigbeeBuf[0] == 0x55 && ZigbeeBuf[1]  == 0x01)
 	{
-		if(FifoBuf_ZigbRx[2]  == 0x20)
+		if(ZigbeeBuf[2]  == 0x20)
 		{
-			SlaveCarData.chepai[0] = FifoBuf_ZigbRx[3];
-			SlaveCarData.chepai[1] = FifoBuf_ZigbRx[4];
-			SlaveCarData.chepai[2] = FifoBuf_ZigbRx[5];
+			SlaveCarData.chepai[0] = ZigbeeBuf[3];
+			SlaveCarData.chepai[1] = ZigbeeBuf[4];
+			SlaveCarData.chepai[2] = ZigbeeBuf[5];
 		}
 
-		if(FifoBuf_ZigbRx[2]  == 0x21)
+		if(ZigbeeBuf[2]  == 0x21)
 		{
-			SlaveCarData.chepai[3] = FifoBuf_ZigbRx[3];
-			SlaveCarData.chepai[4] = FifoBuf_ZigbRx[4];
-			SlaveCarData.chepai[5] = FifoBuf_ZigbRx[5];
+			SlaveCarData.chepai[3] = ZigbeeBuf[3];
+			SlaveCarData.chepai[4] = ZigbeeBuf[4];
+			SlaveCarData.chepai[5] = ZigbeeBuf[5];
+		}
+
+	}
+
+
+
+
+	/*从车来发的停车地点*/
+	if(ZigbeeBuf[0] == 0x55 && ZigbeeBuf[1]  == 0x01 && ZigbeeBuf[2]  == 0x44)
+	{
+
+		if(ZigbeeBuf[3]  == 'D' && ZigbeeBuf[4]  == '7')
+		{
+			SlaveCarData.Location = 1;
+		}
+		if(ZigbeeBuf[3]  == 'F' && ZigbeeBuf[4]  == '7')
+		{
+			SlaveCarData.Location = 2;
+		}
+		if(ZigbeeBuf[3]  == 'G' && ZigbeeBuf[4]  == '6')
+		{
+			SlaveCarData.Location = 3;
+		}
+		if(ZigbeeBuf[3]  == 'G' && ZigbeeBuf[4]  == '4')
+		{
+			SlaveCarData.Location = 4;
+		}
+	}
+
+	/*从车发来的允许启动*/
+	if(ZigbeeBuf[0] == 0x55 && ZigbeeBuf[1]  == 0x01)
+	{
+		if(ZigbeeBuf[2]  == 0x66 && ZigbeeBuf[3]  == 0x66)
+		{
+			SlaveCarData.GoFlag = 1;
 		}
 
 	}
@@ -595,11 +654,18 @@ void Slove_Host(void)
 **************************************************************************/
 void Slove_ALL(void)
 {
-	if(Can_RxFiFoBuf[2].Flag == 1) /*Zigbee*/
-	{
-		Slove_ZigbeeData();
-		Can_RxFiFoBuf[2].Flag = 0;
-	}
+	// 在 CanRx_Loop 里记录一下最后接收时间 Zigbee_RxTime = HAL_GetTick();
+
+    while (Can_RxGetLen(&Can_RxFiFoBuf[2]) >= 8)
+    {
+        Slove_ZigbeeData();
+    }
+
+    // 处理剩下的残余数据 (如果有，且超时)
+    if (Can_RxGetLen(&Can_RxFiFoBuf[2]) > 0 && (HAL_GetTick() - Zigbee_RxTime > 50))
+    {
+        Slove_ZigbeeData(); // 这里会补 0
+    }
 	if(Can_RxFiFoBuf[1].Flag == 1) /*Wifi*/
 	{
 		Slove_AndroidData();
@@ -662,7 +728,7 @@ void Can_RxBufWrite(Can_RXFIFOBUF *CanBuf, uint8_t *Data, uint8_t len)
 **************************************************************************/
 uint8_t Can_RxCheckReadEn(Can_RXFIFOBUF *p)
 {
-	if(p == _NULL){return 0;}
+	if(p == NULL){return 0;}
 
 	uint8_t EN = 0;
 
@@ -721,4 +787,27 @@ uint8_t RingBuf_PeekByte(Can_RXFIFOBUF *buf, uint8_t *val)
     return 1;
 }
 
+/**************************************************************************
+函数功能：CAN-获取环形缓冲区当前数据长度
+入口参数：CanBuf:对应缓冲区结构体
+返回  值：数据长度
+**************************************************************************/
+uint16_t Can_RxGetLen(Can_RXFIFOBUF *p)
+{
+    if (p == NULL) return 0;
+
+    // 逻辑核心：因为你的 rp 初始化为 Size-1，且读取时先 ++rp
+    // 所以数据的起始位置逻辑上是 (rp + 1)
+    // 长度 = 写指针 - 读指针的下一位
+
+    int32_t len = p->wp - (p->rp + 1);
+
+    // 如果结果是负数，说明发生了回绕，加上缓冲区总大小即可
+    if (len < 0)
+    {
+        len += Can_RxFIFOZize;
+    }
+
+    return (uint16_t)len;
+}
 
